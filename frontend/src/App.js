@@ -1,24 +1,43 @@
-import logo from './logo.svg';
+// Import CSS for this component
 import './App.css';
+
+// Do some necessary imports for React to function properly
+import React from "react";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+import { Box } from '@mui/material';
+
+import { Login } from "./pages";
+
+const rootStyle = {
+  display: "flex"
+}
+
+const themeIndependentContextStyle = {
+  flexGrow: 1
+}
+
+const themeDependentContextStyle = (theme) => ({
+  backgroundColor: theme.palette.background.default,
+  padding: theme.spacing(2),
+})
+
+// const toolbarStyle = theme.mixins.toolbar
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Box sx={rootStyle}>
+        {/* <NavDrawer /> */}
+        <Box sx={[themeIndependentContextStyle, themeDependentContextStyle]}>
+          {/* Create the routes to render certain pages at certain endpoints */}
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </Box>
+      </Box>
+    </Router>
   );
 }
 
