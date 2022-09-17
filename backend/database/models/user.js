@@ -59,6 +59,9 @@ const User = sequelize.define("user", {
         type: DataTypes.DATE,
         allowNull: false
     },
+},
+{
+    freezeTableName: true
 })
 
 module.exports = { User };

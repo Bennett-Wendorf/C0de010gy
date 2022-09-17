@@ -3,6 +3,9 @@ import { Card, TextField, Container, CssBaseline, Box, Avatar, Typography, FormC
 
 import Person from '@mui/icons-material/Person';
 
+import AuthService from '../../services/auth.service'
+const { useNavigate } = require('react-router-dom')
+
 const cardStyles = {
     marginTop: 8,
     display: 'flex',
@@ -16,14 +19,17 @@ export function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    const navigate = useNavigate()
+
     const handleSubmit = (event) => {
-        event.preventDefault();
-        // //validate a successful login prior to redirect
-        // authService.login(username, password).then(response => {
-        //     navigate("/");
-        // }).catch(err => {
-        //     setError(err.response.data);
-        // })
+        event.preventDefault()
+        //validate a successful login prior to redirect
+        AuthService.login(username, password).then(response => {
+            navigate("/")
+        }).catch(err => {
+            // setError(err.response.data);
+            console.log(err)
+        })
     };
 
     const handleRegister = (event) => {
