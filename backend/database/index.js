@@ -8,9 +8,12 @@ const sequelize = new Sequelize(
     {
         host: connection.host,
         dialect: 'mariadb',
-    },
-    {
-        freezeTableName: true
+        define: {
+            freezeTableName: true,
+            timestamps: true,
+            createdAt: 'CreatedDateTime', 
+            updatedAt: 'LastModifiedDateTime' 
+        }
     }
 )
 

@@ -32,8 +32,7 @@ app.use(helmet({
 }))
 
 // Set up routes
-// app.use('api/auth', authRoute)
-app.post('/api/auth/login', login)
+app.use('/api/auth', authRoute)
 
 // Error handlers
 app.use((req, res) => res.status(404).send("404 NOT FOUND"))

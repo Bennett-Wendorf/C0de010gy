@@ -32,10 +32,6 @@ const Event = sequelize.define("event", {
             key: "UserID"
         }
     },
-    CreatedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
     UserIDLastModifiedBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -43,11 +39,7 @@ const Event = sequelize.define("event", {
             model: "user",
             key: "UserID"
         }
-    },
-    LastModifiedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
+    }
 })
 
 module.exports = { Event };

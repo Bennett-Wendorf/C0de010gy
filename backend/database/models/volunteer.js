@@ -40,10 +40,6 @@ const Volunteer = sequelize.define("volunteer", {
             key: "UserID"
         }
     },
-    CreatedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
     UserIDLastModifiedBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -51,11 +47,7 @@ const Volunteer = sequelize.define("volunteer", {
             model: "user",
             key: "UserID"
         }
-    },
-    LastModifiedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
+    }
 })
 
 module.exports = { Volunteer };

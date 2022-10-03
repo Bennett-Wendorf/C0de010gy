@@ -43,10 +43,6 @@ const User = sequelize.define("user", {
             key: "UserID"
         }
     },
-    CreatedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
     UserIDLastModifiedBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -54,14 +50,7 @@ const User = sequelize.define("user", {
             model: "user",
             key: "UserID"
         }
-    },
-    LastModifiedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
-},
-{
-    freezeTableName: true
+    }
 })
 
 module.exports = { User };

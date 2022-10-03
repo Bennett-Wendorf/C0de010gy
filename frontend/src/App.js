@@ -7,7 +7,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 
 import { Box } from '@mui/material';
 
-import { Login } from "./pages";
+import { Login, Register } from "./pages";
 
 const rootStyle = {
   display: "flex"
@@ -34,6 +34,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Box>
       </Box>

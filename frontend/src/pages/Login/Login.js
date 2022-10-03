@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, TextField, Container, CssBaseline, Box, Avatar, Typography, FormControlLabel, Checkbox, Button, Alert } from "@mui/material";
+import { Grid, Link, Card, TextField, Container, CssBaseline, Box, Avatar, Typography, FormControlLabel, Checkbox, Button, Alert } from "@mui/material";
 
 import Person from '@mui/icons-material/Person';
 
@@ -31,10 +31,6 @@ export function Login() {
             console.log(err)
         })
     };
-
-    const handleRegister = (event) => {
-        event.preventDefault();
-    }
 
     return (
         <Container component="main" maxWidth="sm">
@@ -88,14 +84,13 @@ export function Login() {
                     >
                         Sign In
                     </Button>
-                    <Button
-                        sx={{ mb: 2 }}
-                        fullWidth
-                        variant="outlined"
-                        onClick={handleRegister}
-                    >
-                        Register
-                    </Button>
+                    <Grid container justifyContent="flex-end">
+                        <Grid item>
+                            <Link href="#/register" variant="body2">
+                                Don't have an account? Sign up
+                            </Link>
+                        </Grid>
+                    </Grid>
                     {error ? <Alert severity="error">{error}</Alert> : null}
                 </Box>
             </Card>

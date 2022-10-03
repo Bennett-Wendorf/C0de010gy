@@ -32,10 +32,6 @@ const UserRoleAssigned = sequelize.define("user_role_assigned", {
             key: "UserID"
         }
     },
-    CreatedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
     UserIDLastModifiedBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -43,10 +39,6 @@ const UserRoleAssigned = sequelize.define("user_role_assigned", {
             model: "user",
             key: "UserID"
         }
-    },
-    LastModifiedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
     },
 })
 

@@ -11,7 +11,8 @@ const createUser = async (req, res) => {
     const user = await User.findOne({ where: { Username: username } })
 
     if (user) {
-        res.status(409).send("A user with that username already exists")
+        res.status(409).send({ field: 'username', message: "A user with that username already exists" })
+        return
     }
 
     bcrypt.hash(password, saltRounds, async (err, hashedPassword) => {
@@ -19,9 +20,6 @@ const createUser = async (req, res) => {
             res.status(500).send("An unknown error occurred")
         }
 
-        var currentTime = new Date()
-
-        // TODO: Update userIDCreatedBy and UserIDLastModifiedBy
         const newUser = await User.create({ 
             FirstName: firstName, 
             LastName: lastName, 
@@ -29,9 +27,7 @@ const createUser = async (req, res) => {
             Email: email,
             Password: hashedPassword,
             UserIDCreatedBy: 1,
-            CreatedDateTime: currentTime,
             UserIDLastModifiedBy: 1,
-            LastModifiedDateTime: currentTime 
         })
 
         if (newUser) {

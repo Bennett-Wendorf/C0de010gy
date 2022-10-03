@@ -32,10 +32,6 @@ const Program = sequelize.define("program", {
             key: "UserID"
         }
     },
-    CreatedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
     UserIDLastModifiedBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -43,11 +39,7 @@ const Program = sequelize.define("program", {
             model: "user",
             key: "UserID"
         }
-    },
-    LastModifiedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
+    }
 })
 
 module.exports = { Program };
