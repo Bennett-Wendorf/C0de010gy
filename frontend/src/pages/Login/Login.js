@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, Link, Card, TextField, Container, CssBaseline, Box, Avatar, Typography, FormControlLabel, Checkbox, Button, Alert } from "@mui/material";
+import { Grid, Link, Card, TextField, Container, CssBaseline, Box, Avatar, Typography, Button } from "@mui/material";
 
 import Person from '@mui/icons-material/Person';
 
@@ -15,22 +15,47 @@ const cardStyles = {
 }
 
 export function Login() {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [usernameError, setUsernameError] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
+    const [usernameErrorText, setUsernameErrorText] = useState("");
+    const [passwordErrorText, setPasswordErrorText] = useState("");
 
     const navigate = useNavigate()
 
     const handleSubmit = (event) => {
         event.preventDefault()
+        const data = new FormData(event.currentTarget)
+
+        let username = data.get('username')
+        let password = data.get('password')
+
         //validate a successful login prior to redirect
         AuthService.login(username, password).then(response => {
             navigate("/")
-        }).catch(err => {
-            // setError(err.response.data);
-            console.log(err)
-        })
-    };
+        }).catch(handleResponseError)
+    }
+
+    const handleResponseError = (error) => {
+        let fieldName = error.response.data.field
+        let message = error.response.data.message
+        switch(fieldName) {
+            case 'username':
+                setUsernameError(true)
+                setUsernameErrorText(message)
+                break
+            case 'password':
+                setPasswordError(true)
+                setPasswordErrorText(message)
+                break
+            case 'general':
+                setPasswordError(true)
+                setUsernameError(true)
+                setPasswordErrorText(message)
+                break
+            default:
+                break
+        }
+    }
 
     return (
         <Container component="main" maxWidth="sm">
@@ -43,38 +68,31 @@ export function Login() {
                     Please Sign In To Continue
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <TextField id="username"
+                    <TextField 
+                        id="username"
                         label="Username"
-                        error={error}
+                        name="username"
+                        error={usernameError}
+                        helperText={usernameErrorText}
                         margin="normal"
                         required
                         fullWidth
-                        value={username}
-                        onChange={(e) => {
-                            setUsername(e.target.value);
-                        }}
                         autoComplete="username"
                         variant="filled"
                         autoFocus
                     />
                     <TextField
                         id="password"
-                        error={error}
+                        name="password"
+                        error={passwordError}
+                        helperText={passwordErrorText}
                         margin="normal"
                         required
                         fullWidth
-                        onChange={(e) => {
-                            setPassword(e.target.value);
-                        }}
                         label="Password"
-                        value={password}
                         type="password"
                         variant="filled"
                         autoComplete="current-password"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox value="remember" />}
-                        label="Remember me"
                     />
                     <Button
                         type="submit"
@@ -91,7 +109,6 @@ export function Login() {
                             </Link>
                         </Grid>
                     </Grid>
-                    {error ? <Alert severity="error">{error}</Alert> : null}
                 </Box>
             </Card>
         </Container>

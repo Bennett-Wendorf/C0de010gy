@@ -5,6 +5,7 @@ const dotenv = require('dotenv')
 const helmet = require('helmet')
 const options = { cors: { origin: "*", }, }
 const authRoute = require('./routes/auth')
+const eventRoute = require('./routes/events')
 
 const { login, logout, verifyToken, getNewAccessToken } = require('./controllers/authController')
 
@@ -33,6 +34,7 @@ app.use(helmet({
 
 // Set up routes
 app.use('/api/auth', authRoute)
+app.use('/api/events', eventRoute)
 
 // Error handlers
 app.use((req, res) => res.status(404).send("404 NOT FOUND"))

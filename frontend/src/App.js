@@ -7,39 +7,48 @@ import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 
 import { Box } from '@mui/material';
 
-import { Login, Register } from "./pages";
+import { Login, Register, Events } from "./pages";
+import NavDrawer from "./components/NavDrawer";
 
 const rootStyle = {
-  display: "flex"
+    display: "flex"
 }
 
 const themeIndependentContextStyle = {
-  flexGrow: 1
+    flexGrow: 1
 }
 
 const themeDependentContextStyle = (theme) => ({
-  backgroundColor: theme.palette.background.default,
-  padding: theme.spacing(2),
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing(2),
 })
 
-// const toolbarStyle = theme.mixins.toolbar
+const toolbarStyle = (theme) => theme.mixins.toolbar
+
+const getBasePageLayout = (useNavDrawer, element) => {
+    return (
+        <Box sx={rootStyle}>
+            {useNavDrawer && <NavDrawer />}
+            <Box sx={[themeIndependentContextStyle, themeDependentContextStyle]}>
+                <Box sx={toolbarStyle} />
+                {element}
+            </Box>
+        </Box>
+    )
+}
 
 function App() {
-  return (
-    <Router>
-      <Box sx={rootStyle}>
-        {/* <NavDrawer /> */}
-        <Box sx={[themeIndependentContextStyle, themeDependentContextStyle]}>
-          {/* Create the routes to render certain pages at certain endpoints */}
-          <Routes>
-            <Route path="/" element={<Navigate to="/login" />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </Box>
-      </Box>
-    </Router>
-  );
+    return (
+        <Router>
+            {/* Create the routes to render certain pages at certain endpoints */}
+            <Routes>
+                <Route path="/" element={<Navigate to="/events" />} />
+                <Route path="/login" element={getBasePageLayout(false, <Login />)} />
+                <Route path="/register" element={getBasePageLayout(false, <Register />)} />
+                <Route path="/events" element={getBasePageLayout(true, <Events />)} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;

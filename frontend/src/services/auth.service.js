@@ -1,13 +1,12 @@
-import useUserStore from'../utils/Stores'
+import useUserStore from '../utils/Stores'
 
 import api from '../utils/api'
-const jwt = require('jwt-decode')
+import jwt from 'jwt-decode'
 
 const AUTH_ENDPOINT_BASE = '/api/auth'
 
 var AuthService = {
     login: async (username, password) => {
-        console.log(api)
         return await api.post(AUTH_ENDPOINT_BASE + '/login', { username, password })
             .then((response) => {
                 if (response.data.accessToken) {
@@ -15,6 +14,12 @@ var AuthService = {
                     useUserStore.setState({ UserId: authedUser.id, AccessToken: response.data.accessToken })
                 }
             })
+    },
+    getUserToken: async () => { //TODO: Check if this gets used
+        return useUserStore.getState().AccessToken
+    },
+    removeUsertoken: async () => {
+        useUserStore.setState({ UserID: -1, AccessToken: -1, FullName: "" })
     }
 }
 

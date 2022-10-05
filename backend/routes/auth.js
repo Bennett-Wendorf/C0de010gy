@@ -5,6 +5,7 @@ const { createUser } = require('../controllers/userController')
 
 const router = express.Router()
 
+// TODO: Add additional registration middleware validation for things like email format
 router.post('/register', passwordValidationRules(), validate, createUser)
 
 router.post('/login', login)
