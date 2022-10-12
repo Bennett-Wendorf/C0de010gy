@@ -1,4 +1,4 @@
-const { User } = require('../database/models')
+const { User, UserRoleAssigned, UserRole } = require('../database/models')
 const bcrypt = require('bcrypt')
 
 const saltRounds = 10;
@@ -39,4 +39,17 @@ const createUser = async (req, res) => {
     })
 }
 
-module.exports = { createUser }
+// TODO: Improve this with better sequelize integration
+const getUserRoles = async (user) => {
+    const userRoleAssigneds = await UserRoleAssigned.findAll({ where: { UserID: user.UserID } })
+    let toReturn = []
+    
+    for (let i = 0; i < userRoleAssigneds.length; i++) {
+        const userRole = await UserRole.findOne({ where: { UserRoleID: userRoleAssigneds[i].UserRoleID }, attributes: ['DisplayName'] })
+        toReturn.push(userRole.DisplayName)
+    }
+
+    return toReturn
+}
+
+module.exports = { createUser, getUserRoles }

@@ -75,7 +75,7 @@ export function Register() {
 
     const handleConfirmationOK = () => {
         setIsConfirmationDialogOpen(formControlClasses)
-        navigate('/#/login')
+        navigate('/login')
     }
 
     return (

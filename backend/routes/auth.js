@@ -10,8 +10,8 @@ router.post('/register', passwordValidationRules(), validate, createUser)
 
 router.post('/login', login)
 
-router.get('/refresh', getNewAccessToken)
+router.post('/refresh', getNewAccessToken)
 
-router.get('/logout', logout)
+router.post('/logout', logout)
 
 module.exports = router

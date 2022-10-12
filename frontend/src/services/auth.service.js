@@ -11,15 +11,34 @@ var AuthService = {
             .then((response) => {
                 if (response.data.accessToken) {
                     var authedUser = jwt(response.data.accessToken)
-                    useUserStore.setState({ UserId: authedUser.id, AccessToken: response.data.accessToken })
+                    useUserStore.setState({ UserId: authedUser.id, FullName: response.data.fullName, AccessToken: response.data.accessToken, Roles: response.data.roles ?? [] })
                 }
             })
     },
-    getUserToken: async () => { //TODO: Check if this gets used
-        return useUserStore.getState().AccessToken
+
+    logout: async () => {
+        useUserStore.setState({ UserID: -1, AccessToken: -1, FullName: "", Roles: [] })
+        api.post(AUTH_ENDPOINT_BASE + '/logout')
+            .then((response) => {
+                return response.data
+            })
     },
-    removeUsertoken: async () => {
-        useUserStore.setState({ UserID: -1, AccessToken: -1, FullName: "" })
+
+    fetchRefreshToken: async () => {
+        return await api.post(AUTH_ENDPOINT_BASE + '/refresh', { withCredentials: true })
+            .then((response) => {
+                if (response.data.accessToken) {
+                    var authedUser = jwt(response.data.accessToken)
+                    useUserStore.setState({ UserID: authedUser.id, FullName: response.data.fullName, AccessToken: response.data.accessToken, Roles: response.data.roles ?? [] })
+                }
+
+                return response.data
+            })
+    },
+
+    useHasPermissions: (allowedRoles) => {
+        const userRoles = useUserStore(state => state.Roles)
+        return allowedRoles.some(permission => userRoles.includes(permission))
     }
 }
 

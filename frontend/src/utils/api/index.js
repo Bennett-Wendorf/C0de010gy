@@ -1,13 +1,67 @@
 import axios from "axios"
+import AuthService from "../../services/auth.service";
+import useUserStore from "../Stores";
 
 // Setup the base url to the backend server
-const baseUrl = "http://localhost:8080/";
+const baseUrl = "/";
 
 // Export the axios component with some basic headers and base url defined above
-export default axios.create({
+const api = axios.create({
     baseURL: baseUrl,
     timeout: 10000,
     headers: {
         "Content-Type": "application/json"
     }
 });
+
+api.interceptors.request.use(
+    config => {
+        const token = useUserStore.getState().AccessToken;
+        if (token) {
+            config.headers["Authorization"] = "Bearer " + token
+        }
+        return config
+    },
+    error => {
+        Promise.reject(error)
+    }
+);
+
+api.interceptors.response.use(
+    response => {
+        return response
+    },
+    async error => {
+        const originalRequest = error.config;
+
+        // Don't bother retrieving a new token if an invalid login caused the 401 response
+        if (
+            originalRequest.url !== "/api/auth/login" &&
+            originalRequest.url !== "/api/auth/refresh" &&
+            error.response
+        ) {
+            if (error.response.status === 401 && !originalRequest._retry) {
+                originalRequest._retry = true;
+                return await api
+                    .post(api.baseURL + "api/auth/refresh", { withCredentials: true })
+                    .then(res => {
+                        const { accessToken } = res.data;
+                        useUserStore.setAccessToken(accessToken);
+                        return api(originalRequest);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        if (err.res.status === 401) {
+                            AuthService.logout();
+                            return Promise.reject(err);
+                        }
+                    });
+            }
+            return Promise.reject(error);
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+export default api;

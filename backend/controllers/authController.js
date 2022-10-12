@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
-const jwtDecode = require('jwt-decode')
 const { User } = require('../database/models')
 const bcrypt = require('bcrypt')
+const { getUserRoles } = require('./userController')
 
 let refreshTokens = []
 
@@ -16,6 +16,8 @@ const login = async (req, res) => {
         return
     }
 
+    const userRoles = await getUserRoles(user)
+
     bcrypt.compare(password, user.Password, (err, result) => {
         if (err) {
             res.status(500).send({field: 'general', message: 'An unknown error occurred'})
@@ -24,13 +26,14 @@ const login = async (req, res) => {
             const accessToken = generateAccessToken(user)
             const refreshToken = generateRefreshToken(user)
 
-            refreshToken[refreshToken] = user
+            refreshTokens[refreshToken] = user
 
-            res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true , path: "/auth" })
+            res.cookie("refreshToken", refreshToken, { path: "/api/auth", httpOnly: true, secure: false })
 
             const response = {
-                user: user.username,
+                fullName: user.FullName,
                 accessToken: accessToken,
+                roles: userRoles
             };
 
             res.status(200).json(response)
@@ -86,22 +89,40 @@ const verifyToken = async (req, res, next) => {
 const getNewAccessToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken
 
-    if (refreshToken === null) {
-        return res.sendStatus(401)
-    }
+    // TODO: This process does not appear to be working. Verification is still happening for invalid refresh tokens
+    // if (refreshToken === null || refreshTokens[refreshToken] === null) {
+    //     return res.sendStatus(401)
+    // }
 
-    if (refreshTokens[refreshToken] === null) {
-        return res.sendStatus(401)
-    }
+    if (refreshToken == null) return res.status(401).json({ error: "No token provided" })
 
-    jwt.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    console.log(refreshTokens)
+
+    if (refreshTokens[refreshToken] == null) return res.status(401).json({ error: "Invalid refresh token" })
+
+    jwt.verify(refreshToken, process.env.ACCESS_TOKEN_SECRET, async (err, usr) => {
         if (err) {
             res.status(401).send("Invalid Token")
             return
         }
 
+        // TODO: Improve this by not triggering on every refresh token, only when page refreshes
+        // Get the user from the database, if it exists
+        const user = await User.findOne({ where: { UserID: usr.id } })
+
+        if (user === null){
+            res.status(401).send('No user found with this access token!')
+            return
+        }
+
+        const userRoles = await getUserRoles(user)
+
         const accessToken = generateAccessToken(user)
-        res.json({ accessToken: accessToken })
+        res.json({ 
+            accessToken: accessToken,
+            roles: userRoles,
+            fullName: user.FullName
+        })
     })
 }
 

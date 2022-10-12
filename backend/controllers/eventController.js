@@ -2,7 +2,9 @@ const { Event } = require('../database/models')
 
 const getAllEvents = async (req, res) => {
     const events = await Event.findAll()
-    res.status(200).json(events)
+    res.json({
+        events
+    })
 }
 
 const createEvent = async (req, res) => {

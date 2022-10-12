@@ -1,12 +1,21 @@
 // React stuff
 import React from "react";
-import Children from 'react-children-utilities';
 
 // MUI components
 import { AppBar, Toolbar, Typography, Box, CssBaseline, Tooltip, IconButton } from "@mui/material";
 
+// Menu stuff
+import { Menu, MenuItem } from "@mui/material";
+
+// Dialog stuff
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
+
 import AccountIcon from '@mui/icons-material/AccountCircle';
 import NotificationIcon from '@mui/icons-material/Notifications';
+
+import AuthService from "../services/auth.service";
+import { useNavigate } from "react-router-dom";
+import useUserStore from "../utils/Stores";
 
 const drawerWidth = 220;
 
@@ -37,17 +46,79 @@ const rightButtonFloat = {
     float: "right"
 }
 
-// Create the bar component to be used on every page
-function appBar(props) {
+function AccountMenu() {
+    const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+    const menuOpen = Boolean(menuAnchorEl);
+    const [ isSuccessdialogOpen, setIsSuccessDialogOpen ] = React.useState(false);
+    const navigate = useNavigate();
 
-    // TODO: Add this dialog
-    const handleAccountOpen = () => {
-        console.log("Account button clicked")
+    // Handle menu opening and closing by setting the menu anchor
+    const openMenu = (event) => {
+        setMenuAnchorEl(event.currentTarget)
     }
 
+    const handleMenuClose = () => {
+        setMenuAnchorEl(null)
+    }
+
+    const handleProfileClick = () => {
+        console.log("Profile clicked")
+        handleMenuClose()
+    }
+
+    const handleAccountClick = () => {
+        console.log("Account clicked")
+        handleMenuClose()
+    }
+
+    const handleLogoutClick = () => {
+        AuthService.logout();
+        setIsSuccessDialogOpen(true);
+        handleMenuClose()
+    }
+
+    const handleLoginClick = () => {
+        navigate("/login")
+        handleMenuClose()
+    }
+
+    const handleSuccessOK = () => {
+        setIsSuccessDialogOpen(false)
+    }
+
+    const accessToken = useUserStore(state => state.AccessToken)
+
+    return (
+        <>
+            <Tooltip title="Account" sx={rightButtonFloat}>
+                <IconButton aria-label="account" size="large" onClick={openMenu}>
+                    <AccountIcon />
+                </IconButton>
+            </Tooltip>
+
+            <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
+                {accessToken !== -1 && <MenuItem onClick={handleProfileClick}>Profile</MenuItem>}
+                {accessToken !== -1 && <MenuItem onClick={handleAccountClick}>My account</MenuItem>}
+                {accessToken !== -1 && <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>}
+                {accessToken === -1 && <MenuItem onClick={handleLoginClick}>Login</MenuItem>}
+            </Menu>
+
+            <Dialog open={isSuccessdialogOpen} onClose={handleSuccessOK}>
+                <DialogTitle>Successfully Logged Out</DialogTitle>
+                <DialogContent>You have been successfully logged out!</DialogContent>
+                <DialogActions>
+                    <Button onClick={handleSuccessOK}>OK</Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    )
+}
+
+// Create the bar component to be used on every page
+function Bar(props) {
     // TODO: Add this dialog
     const handleNotificationsOpen = () => {
-        console.log("Account button clicked")
+        console.log("Notifications button clicked")
     }
 
     // Return the JSX necessary to create the bar, with leftChildren to the left of the title and rightChildren to the right
@@ -63,12 +134,8 @@ function appBar(props) {
                         {props.title}
                     </Typography>
                     <Box sx={buttonStyle}>
-                        <Tooltip title="Account" justify="left" sx={rightButtonFloat}>
-                            <IconButton aria-label="account" size="large" onClick={handleAccountOpen}>
-                                <AccountIcon />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Notifications" justify="left" sx={rightButtonFloat}>
+                        <AccountMenu />
+                        <Tooltip title="Notifications" sx={rightButtonFloat}>
                             <IconButton aria-label="notifications" size="large" onClick={handleNotificationsOpen}>
                                 <NotificationIcon />
                             </IconButton>
@@ -80,4 +147,4 @@ function appBar(props) {
     )
 }
 
-export default appBar;
+export default Bar;

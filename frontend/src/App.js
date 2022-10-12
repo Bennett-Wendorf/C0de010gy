@@ -2,13 +2,14 @@
 import './App.css';
 
 // Do some necessary imports for React to function properly
-import React from "react";
+import React, { useEffect } from "react";
 import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import { Box } from '@mui/material';
 
 import { Login, Register, Events } from "./pages";
 import NavDrawer from "./components/NavDrawer";
+import AuthService from './services/auth.service';
 
 const rootStyle = {
     display: "flex"
@@ -38,6 +39,11 @@ const getBasePageLayout = (useNavDrawer, element) => {
 }
 
 function App() {
+
+    useEffect(() => {
+        AuthService.fetchRefreshToken().catch(err => console.log(err.message))
+    }, [])
+
     return (
         <Router>
             {/* Create the routes to render certain pages at certain endpoints */}

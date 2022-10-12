@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 // Import utilities
-import logo from "../res/logo.ico";
+import { ReactComponent as CodeSolid } from "../res/code-solid.svg";
 
 // Import a bunch of mui components to help build the nav drawer
 import { Drawer, CssBaseline, List, Divider, ListItem, ListItemIcon, ListItemText, Box } from "@mui/material";
@@ -12,6 +12,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import EventIcon from '@mui/icons-material/Event'
 import PeopleIcon from '@mui/icons-material/People'
 import AnalyticsIcon from '@mui/icons-material/Analytics'
+import AuthService from "../services/auth.service";
 
 // Define what we want the width of the drawer to be
 const drawerWidth = 220;
@@ -32,15 +33,9 @@ const drawerStyle = (theme) => ({
     '& .MuiDrawer-paper': drawerPaperStyle
 })
 
-const linkStyle =  {
+const linkStyle = {
     color: "inherit",
     textDecoration: "none"
-}
-
-const logoImgStyle = {
-    width: "30px",
-    objectFit: "cover",
-    marginRight: "20px",
 }
 
 const logoStyle = {
@@ -59,6 +54,8 @@ function NavDrawer() {
         setOpen(!open);
     };
 
+    const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
+
     // TODO: Make this drawer responsive. See https://github.com/mui/material-ui/blob/v5.10.8/docs/data/material/getting-started/templates/dashboard/Dashboard.js
     // Build the actual JSX to build the nav drawer
     return (
@@ -72,7 +69,7 @@ function NavDrawer() {
             >
                 {/* Generate the title and logo section and add a divider below it */}
                 <Box sx={logoStyle}>
-                    <Box component="img" sx={logoImgStyle} alt={"logo"} src={logo} />
+                    <CodeSolid style={{ marginRight: "20px" }} fill="white" width="2rem" />
                     <Box component="h3" sx={{ fontFamily: "hack" }}>C0de010gy</Box>
                 </Box>
                 <Divider />
@@ -82,7 +79,7 @@ function NavDrawer() {
                     <Link to="/dashboard" style={linkStyle}>
                         <ListItem button key="Dashboard">
                             <ListItemIcon>{<DashboardIcon />}</ListItemIcon>
-                            <ListItemText primary="Dashboard"/>
+                            <ListItemText primary="Dashboard" />
                         </ListItem>
                     </Link>
 
@@ -93,19 +90,23 @@ function NavDrawer() {
                         </ListItem>
                     </Link>
 
-                    <Link to="/users" style={linkStyle}>
-                        <ListItem button key="Users">
-                            <ListItemIcon>{<PeopleIcon />}</ListItemIcon>
-                            <ListItemText primary="Users" />
-                        </ListItem>
-                    </Link>
+                    {userIsAdmin &&
+                        <Link to="/users" style={linkStyle}>
+                            <ListItem button key="Users">
+                                <ListItemIcon>{<PeopleIcon />}</ListItemIcon>
+                                <ListItemText primary="Users" />
+                            </ListItem>
+                        </Link>
+                    }
 
-                    <Link to="/stats" style={linkStyle}>
-                        <ListItem button key="Statistics">
-                            <ListItemIcon>{<AnalyticsIcon />}</ListItemIcon>
-                            <ListItemText primary="Statistics" />
-                        </ListItem>
-                    </Link>
+                    {userIsAdmin &&
+                        <Link to="/stats" style={linkStyle}>
+                            <ListItem button key="Statistics">
+                                <ListItemIcon>{<AnalyticsIcon />}</ListItemIcon>
+                                <ListItemText primary="Statistics" />
+                            </ListItem>
+                        </Link>
+                    }
 
                 </List>
             </Drawer>

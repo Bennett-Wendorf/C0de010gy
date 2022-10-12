@@ -6,12 +6,13 @@ import api from "../../utils/api";
 import useUserStore from "../../utils/Stores"
 import Bar from "../../components/AppBar";
 import { EventTable } from './EventTable';
+import AuthService from '../../services/auth.service'
 
 // Import icons from mui
 import AddIcon from '@mui/icons-material/AddCircle';
 
 // Import general mui stuff
-import { Button, IconButton, TextareaAutosize, Tooltip } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 
 // Import dialog stuff from mui
 import { TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
@@ -107,7 +108,7 @@ export function Events() {
     const updateEvents = () => {
         api.get(`/api/events`)
             .then(response => {
-                setEvents(response.data ? response.data.rows : [])
+                setEvents(response.data ? response.data.events : [])
                 console.log("Updating events");
             })
             .catch(err => console.log(err))
@@ -118,16 +119,20 @@ export function Events() {
         updateEvents()
     }, [])
 
+    const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
+
     // Build the event page
     return (
         <div>
             {/* Define the bar for the top of the screen, with its buttons */}
             <Bar title="Events">
-                <Tooltip title="Add">
-                    <IconButton aria-label="add" size="large" onClick={handleClickOpen}>
-                        <AddIcon />
-                    </IconButton>
-                </Tooltip>
+                {userIsAdmin && 
+                    <Tooltip title="Add">
+                        <IconButton aria-label="add" size="large" onClick={handleClickOpen}>
+                            <AddIcon />
+                        </IconButton>
+                    </Tooltip>
+                }
             </Bar>
 
             {/* Include the EventTable component here. This component is defined above */}
@@ -151,11 +156,13 @@ export function Events() {
                         inputProps={{ maxLength: maxSummaryLength }}
                         helperText={`${newEventSummary.length}/${maxSummaryLength}`}
                     />
-                    <TextareaAutosize
+                    <TextField
                         id="Description"
                         label="Description"
                         type="text"
                         fullWidth
+                        rows={6}
+                        multiline
                         variant="filled"
                         margin="normal"
                         onChange={handleNewDescriptionChange}
