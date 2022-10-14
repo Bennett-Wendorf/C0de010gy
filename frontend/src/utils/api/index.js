@@ -18,7 +18,7 @@ api.interceptors.request.use(
     config => {
         const token = useUserStore.getState().AccessToken;
         if (token) {
-            config.headers["Authorization"] = "Bearer " + token
+            config.headers["Authorization"] = "Bearer:" + token
         }
         return config
     },
@@ -42,20 +42,12 @@ api.interceptors.response.use(
         ) {
             if (error.response.status === 401 && !originalRequest._retry) {
                 originalRequest._retry = true;
-                return await api
-                    .post(api.baseURL + "api/auth/refresh", { withCredentials: true })
-                    .then(res => {
-                        const { accessToken } = res.data;
-                        useUserStore.setAccessToken(accessToken);
-                        return api(originalRequest);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        if (err.res.status === 401) {
-                            AuthService.logout();
-                            return Promise.reject(err);
-                        }
-                    });
+                AuthService.fetchRefreshToken().catch(err => {
+                    if (err.response.status === 401) {
+                        AuthService.logout()
+                        return Promise.reject(err)
+                    }
+                })
             }
             return Promise.reject(error);
         }

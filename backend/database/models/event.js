@@ -24,6 +24,18 @@ const Event = sequelize.define("event", {
         type: DataTypes.DATE,
         allowNull: false
     },
+    NeededVolunteers: {
+        type: DataTypes.SMALLINT,
+        allowNull: false
+    },
+    Location: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    VolunteerQualifications: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     UserIDCreatedBy: {
         type: DataTypes.INTEGER,
         allowNull: false,

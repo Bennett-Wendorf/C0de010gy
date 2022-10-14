@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import api from "../../utils/api";
 
 // Import general mui stuff
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextareaAutosize } from '@mui/material';
+import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextareaAutosize } from '@mui/material';
 
 // Import dialog stuff from mui
 import { TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
@@ -16,19 +16,32 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 // Setup a general format for dates
-const dateFormatOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }
+const dateFormatOptions = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour12: true,
+    hour: '2-digit',
+    minute: '2-digit',
+}
 
 // Create a component for the table of events
 export function EventTable({ rows, eventUpdate }) {
 
     const maxSummaryLength = 100
     const maxDescriptionLength = 500
+    const maxLocationLength = 100
+    const maxVolunteerQualificationsLength = 250
 
     const defaultUpdateSummary = ""
     const defaultUpdateDescription = ""
-    const defaultUpdateStartDate = new Date()
-    const defaultUpdateEndDate = new Date()
-    defaultUpdateEndDate.setDate(defaultUpdateEndDate.getDate() + 1)
+    const defaultNeededVolunteers = "0"
+    const defaultLocation = ""
+    const defaultVolunteerQualifications = ""
+    const defaultUpdateStartTime = new Date()
+    const defaultUpdateEndTime = new Date()
+    defaultUpdateEndTime.setDate(defaultUpdateEndTime.getDate() + 1)
 
     // Create relevant pieces of state for the dialog popups
     const [isModifyDialogOpen, setIsModifyDialogOpen] = useState(false)
@@ -38,16 +51,33 @@ export function EventTable({ rows, eventUpdate }) {
     // Create pieces of state for handling event updates
     const [updateSummary, setUpdateSummary] = useState(defaultUpdateSummary)
     const [updateDescription, setUpdateDescription] = useState(defaultUpdateDescription)
-    const [updateStartDate, setUpdateStartDate] = useState(defaultUpdateStartDate)
-    const [updateEndDate, setUpdateEndDate] = useState(defaultUpdateEndDate)
+    const [updateNeededVolunteers, setUpdateNeededVolunteers] = useState(defaultNeededVolunteers)
+    const [updateLocation, setUpdateLocation] = useState(defaultLocation)
+    const [updateVolunteerQualifications, setUpdateVolunteerQualifications] = useState(defaultVolunteerQualifications)
+    const [updateStartTime, setUpdateStartTime] = useState(defaultUpdateStartTime)
+    const [updateEndTime, setUpdateEndTime] = useState(defaultUpdateEndTime)
+
+    const [updateSummaryError, setUpdateSummaryError] = useState(false)
+    const [updateDescriptionError, setUpdateDescriptionError] = useState(false)
+    const [updateNeededVolunteersError, setUpdateNeededVolunteersError] = useState(false)
+    const [updateLocationError, setUpdateLocationError] = useState(false)
+    const [updateVolunteerQualificationsError, setUpdateVolunteerQualificationsError] = useState(false)
+    const [updateSummaryErrorText, setUpdateSummaryErrorText] = useState("")
+    const [updateDescriptionErrorText, setUpdateDescriptionErrorText] = useState("")
+    const [updateNeededVolunteersErrorText, setUpdateNeededVolunteersErrorText] = useState("")
+    const [updateLocationErrorText, setUpdateLocationErrorText] = useState("")
+    const [updateVolunteerQualificationsErrorText, setUpdateVolunteerQualificationsErrorText] = useState("")
 
     // Handle when a row is clicked and set up the pieces of state
     const handleRowClick = (event) => {
         setSelectedEvent(event)
-        setUpdateSummary(defaultUpdateSummary)
-        setUpdateDescription(defaultUpdateDescription)
-        setUpdateStartDate(defaultUpdateStartDate)
-        setUpdateEndDate(defaultUpdateEndDate)
+        setUpdateSummary(event.Summary)
+        setUpdateDescription(event.Description ?? "")
+        setUpdateNeededVolunteers(event.NeededVolunteers)
+        setUpdateLocation(event.Location ?? "")
+        setUpdateVolunteerQualifications(event.VolunteerQualifications ?? "")
+        setUpdateStartTime(event.StartTime)
+        setUpdateEndTime(event.EndTime)
         setIsModifyDialogOpen(true)
     }
 
@@ -60,12 +90,24 @@ export function EventTable({ rows, eventUpdate }) {
         setUpdateDescription(event.target.value)
     }
 
-    const handleUpdateStartDateChange = (event) => {
-        setUpdateStartDate(event.target.value)
+    const handleUpdateNeededVolunteersChange = (event) => {
+        setUpdateNeededVolunteers(event.target.value)
     }
 
-    const handleUpdateEndDateChange = (event) => {
-        setUpdateEndDate(event.target.value)
+    const handleUpdateLocationChange = (event) => {
+        setUpdateLocation(event.target.value)
+    }
+
+    const handleUpdateVolunteerQualificationsChange = (event) => {
+        setUpdateVolunteerQualifications(event.target.value)
+    }
+
+    const handleUpdateStartTimeChange = (event) => {
+        setUpdateStartTime(event.target.value)
+    }
+
+    const handleUpdateEndTimeChange = (event) => {
+        setUpdateEndTime(event.target.value)
     }
 
     const handleClose = () => {
@@ -89,8 +131,8 @@ export function EventTable({ rows, eventUpdate }) {
             eventID: selectedEvent.eventID,
             summary: updateSummary,
             description: updateDescription,
-            startDate: updateStartDate,
-            endDate: updateEndDate
+            startTime: updateStartTime,
+            endTime: updateEndTime
         }
 
         // Make a call to the backend api to update the event
@@ -123,8 +165,10 @@ export function EventTable({ rows, eventUpdate }) {
                     <TableHead>
                         <TableRow>
                             <TableCell>Summary</TableCell>
-                            <TableCell align="right">Start Date</TableCell>
-                            <TableCell align="right">End Date</TableCell>
+                            <TableCell align="left">Start Time</TableCell>
+                            <TableCell align="left">End Time</TableCell>
+                            <TableCell align="right">Location</TableCell>
+                            <TableCell align="right">Needed Volunteers</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -137,8 +181,10 @@ export function EventTable({ rows, eventUpdate }) {
                                 hover
                             >
                                 <TableCell>{row.Summary}</TableCell>
-                                <TableCell align="right" size="small">{row.StartDate.toLocaleDateString("en-US", dateFormatOptions)}</TableCell>
-                                <TableCell align="right" size="small">{row.EndDate.toLocaleDateString("en-US", dateFormatOptions)}</TableCell>
+                                <TableCell align="left" size="small">{new Date(row.StartTime).toLocaleString("en-US", dateFormatOptions)}</TableCell>
+                                <TableCell align="left" size="small">{new Date(row.EndTime).toLocaleString("en-US", dateFormatOptions)}</TableCell>
+                                <TableCell align="right" size="small">{row.Location}</TableCell>
+                                <TableCell align="right" size="small">{row.NeededVolunteers}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -155,51 +201,115 @@ export function EventTable({ rows, eventUpdate }) {
                     Modify event "{selectedEvent.Summary}"
                 </DialogTitle>
                 <DialogContent>
-                    <TextField 
-                        autoFocus 
-                        id="Title" 
-                        label="Title" 
-                        type="text" 
-                        fullWidth 
-                        variant="outlined" 
-                        margin="normal" 
-                        onChange={handleUpdateSummaryChange} 
-                        value={updateSummary} 
-                        inputProps={{ maxLength: maxSummaryLength }}
-                         helperText={`${updateSummary.length}/${maxSummaryLength}`} 
-                    />
-                    <TextareaAutosize
-                        id="Description"
-                        label="Description"
-                        type="text"
-                        fullWidth
-                        variant="filled"
-                        margin="normal"
-                        onChange={handleUpdateDescriptionChange}
-                        value={updateDescription}
-                        inputProps={{ maxLength: maxDescriptionLength }}
-                        helperText={`${updateDescription.length}/${maxDescriptionLength}`}
-                    />
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker 
-                            label="Start Date" 
-                            required
-                            variant="filled"
-                            value={updateStartDate} 
-                            onChange={handleUpdateStartDateChange} 
-                            renderInput={(params) => <TextField margin="normal" {...params} />} 
-                        />
-                    </LocalizationProvider>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker 
-                            label="end Date"
-                            required
-                            variant="filled"
-                            value={updateEndDate} 
-                            onChange={handleUpdateEndDateChange} 
-                            renderInput={(params) => <TextField margin="normal" {...params} />} 
-                        />
-                    </LocalizationProvider>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                autoFocus
+                                id="Title"
+                                label="Title"
+                                type="text"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                onChange={handleUpdateSummaryChange}
+                                value={updateSummary}
+                                inputProps={{ maxLength: maxSummaryLength }}
+                                error={updateSummaryError}
+                                helperText={updateSummaryError ? updateSummaryErrorText : `${updateSummary.length}/${maxSummaryLength}`}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                id="Description"
+                                label="Description"
+                                type="text"
+                                fullWidth
+                                multiline
+                                rows={5}
+                                variant="filled"
+                                margin="none"
+                                onChange={handleUpdateDescriptionChange}
+                                value={updateDescription}
+                                inputProps={{ maxLength: maxDescriptionLength }}
+                                error={updateDescriptionError}
+                                helperText={updateDescriptionError ? updateDescriptionErrorText : `${updateDescription.length}/${maxDescriptionLength}`}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                id="NeededVolunteers"
+                                name="NeededVolunteers"
+                                label="Number of Volunteers Needed"
+                                type="number"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                onChange={handleUpdateNeededVolunteersChange}
+                                value={updateNeededVolunteers}
+                                inputProps={{ maxLength: 5 }}
+                                error={updateNeededVolunteersError}
+                                helperText={updateNeededVolunteersErrorText}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                id="Location"
+                                name="Location"
+                                label="Location"
+                                type="text"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                onChange={handleUpdateLocationChange}
+                                value={updateLocation}
+                                inputProps={{ maxLength: maxLocationLength }}
+                                error={updateLocationError}
+                                helperText={updateLocationError ? updateLocationErrorText : `${updateLocation.length}/${maxLocationLength}`}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                id="VolunteerQualifications"
+                                name="VolunteerQualifications"
+                                label="Volunteer Qualifications"
+                                type="text"
+                                fullWidth
+                                multiline
+                                rows={2}
+                                variant="filled"
+                                margin="none"
+                                onChange={handleUpdateVolunteerQualificationsChange}
+                                value={updateVolunteerQualifications}
+                                inputProps={{ maxLength: maxVolunteerQualificationsLength }}
+                                error={updateVolunteerQualificationsError}
+                                helperText={updateVolunteerQualificationsError ? updateVolunteerQualificationsErrorText : `${updateVolunteerQualifications.length}/${maxVolunteerQualificationsLength}`}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DateTimePicker
+                                    label="Start Time"
+                                    required
+                                    variant="filled"
+                                    value={updateStartTime}
+                                    onChange={handleUpdateStartTimeChange}
+                                    renderInput={(params) => <TextField margin="none" {...params} />}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DateTimePicker
+                                    label="End Time"
+                                    required
+                                    variant="filled"
+                                    value={updateEndTime}
+                                    onChange={handleUpdateEndTimeChange}
+                                    renderInput={(params) => <TextField margin="none" {...params} />}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                    </Grid>
                 </DialogContent>
 
                 {/* Generate the buttons to act as actions on the dialog popup */}

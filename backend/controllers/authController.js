@@ -68,31 +68,39 @@ const logout = async (req, res) => {
     res.sendStatus(204)
 }
 
-const verifyToken = async (req, res, next) => {
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(" ")[1]
+// Check if the current user has a valid access token, and if so, also check if they have the allowed permissions
+const hasPermissions = (allowedPermissions) => {
+    return async (req, res, next) => {
+        const errorString = "You do not have permission to perform this action"
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(":")[1]
 
-    if (token === null) {
-        return res.status(401).send("Invalid token")
-    }
-
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) {
-            return res.status(401).send("Invalid token")
+        if (token == null) {
+            return res.status(401).json({ field: 'general', message: errorString })
         }
 
-        req.user = user
-        next()
-    })
+        await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, usr) => {
+            if (err) {
+                return res.status(401).json({ field: 'general', message: errorString })
+            }
+
+            const user = await User.findOne({ where: { UserID: usr.id } })
+
+            var userRoles = await getUserRoles(user)
+
+            if (allowedPermissions.some(permission => userRoles.includes(permission))) {
+                req.userID = usr.id
+                next()
+            } else {
+                console.log("Permission denied")
+                return res.status(401).json({ field: 'general', message: errorString })
+            }
+        })
+    }
 }
 
 const getNewAccessToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken
-
-    // TODO: This process does not appear to be working. Verification is still happening for invalid refresh tokens
-    // if (refreshToken === null || refreshTokens[refreshToken] === null) {
-    //     return res.sendStatus(401)
-    // }
 
     if (refreshToken == null) return res.status(401).json({ error: "No token provided" })
 
@@ -126,4 +134,4 @@ const getNewAccessToken = async (req, res) => {
     })
 }
 
-module.exports = { login, logout, verifyToken, getNewAccessToken }
+module.exports = { login, logout, hasPermissions, getNewAccessToken }

@@ -5,7 +5,19 @@ import React, { useState } from "react";
 import api from "../../utils/api";
 
 // Import form control stuff from mui
-import { TextField, Container, CssBaseline, Grid, Dialog, DialogTitle, DialogContent, DialogActions, formControlClasses } from "@mui/material";
+import { 
+    TextField, 
+    Container, 
+    CssBaseline, 
+    Grid, 
+    Dialog, 
+    DialogTitle, 
+    DialogContent, 
+    DialogActions, 
+    formControlClasses, 
+    Checkbox, 
+    FormControlLabel
+} from "@mui/material";
 
 // Import general mui stuff
 import { Avatar, Typography, Card, Box, Button, Link } from "@mui/material";
@@ -14,11 +26,15 @@ import Person from '@mui/icons-material/Person';
 import { useNavigate } from "react-router-dom";
 
 const cardStyles = {
-    marginTop: 8,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     p: 5
+}
+
+const checkboxStyles = {
+    display: 'flex',
+    justifyContent: 'center',
 }
 
 export function Register() {
@@ -47,12 +63,21 @@ export function Register() {
         let password = data.get('password')
         let passwordConfirm = data.get('passwordConfirm')
 
+        let newRoles = []
+        if (data.get('isVolunteer')) {
+            newRoles.push('Volunteer')
+        }
+        if (data.get('isDonor')){ 
+            newRoles.push('Donor')
+        }
+
         const newUser = {
             firstName: data.get('firstName'),
             lastName: data.get('lastName'),
             username: data.get('username'),
             password: password,
-            email: data.get('email')
+            email: data.get('email'),
+            roles: newRoles
         }
 
         api.post(`/api/auth/register`, newUser).then((response) => {
@@ -173,6 +198,18 @@ export function Register() {
                                     helperText={passwordConfirmErrorText}
                                 />
                             </Grid>
+                            <Grid item xs={12} sx={checkboxStyles}>
+                                <FormControlLabel
+                                    control={<Checkbox name="isVolunteer" id="isVolunteer" color="primary" />}
+                                    label="Volunteer"
+                                    labelPlacement="top"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox name="isDonor" id="isDonor" color="primary" />}
+                                    label="Donor"
+                                    labelPlacement="top"
+                                />
+                            </Grid>
                         </Grid>
                         <Button
                             type="submit"
@@ -188,6 +225,11 @@ export function Register() {
                                     Already have an account? Sign in
                                 </Link>
                             </Grid>
+                            <Grid item>
+                            <Link href="/" variant="body2">
+                                You can also skip registration and sign in as a guest
+                            </Link>
+                        </Grid>
                         </Grid>
                     </Box>
                 </Card>

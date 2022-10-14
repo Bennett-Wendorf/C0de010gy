@@ -38,7 +38,7 @@ export function Login() {
     const handleResponseError = (error) => {
         let fieldName = error.response.data.field
         let message = error.response.data.message
-        switch(fieldName) {
+        switch (fieldName) {
             case 'username':
                 setUsernameError(true)
                 setUsernameErrorText(message)
@@ -68,7 +68,7 @@ export function Login() {
                     Please Sign In To Continue
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <TextField 
+                    <TextField
                         id="username"
                         label="Username"
                         name="username"
@@ -106,6 +106,11 @@ export function Login() {
                         <Grid item>
                             <Link href="#/register" variant="body2">
                                 Don't have an account? Sign up
+                            </Link>
+                        </Grid>
+                        <Grid item>
+                            <Link href="/" variant="body2">
+                                You can also skip registration and sign in as a guest
                             </Link>
                         </Grid>
                     </Grid>

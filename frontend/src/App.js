@@ -21,17 +21,17 @@ const themeIndependentContextStyle = {
 
 const themeDependentContextStyle = (theme) => ({
     backgroundColor: theme.palette.background.default,
-    padding: theme.spacing(2),
+    padding: theme.spacing(2.5),
 })
 
 const toolbarStyle = (theme) => theme.mixins.toolbar
 
-const getBasePageLayout = (useNavDrawer, element) => {
+const getBasePageLayout = (useNavElements, element) => {
     return (
         <Box sx={rootStyle}>
-            {useNavDrawer && <NavDrawer />}
+            {useNavElements && <NavDrawer />}
             <Box sx={[themeIndependentContextStyle, themeDependentContextStyle]}>
-                <Box sx={toolbarStyle} />
+                {useNavElements && <Box sx={toolbarStyle} />}
                 {element}
             </Box>
         </Box>

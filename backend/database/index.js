@@ -13,7 +13,8 @@ const sequelize = new Sequelize(
             timestamps: true,
             createdAt: 'CreatedDateTime', 
             updatedAt: 'LastModifiedDateTime' 
-        }
+        },
+        logging: false
     }
 )
 

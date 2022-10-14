@@ -49,7 +49,7 @@ const rightButtonFloat = {
 function AccountMenu() {
     const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
     const menuOpen = Boolean(menuAnchorEl);
-    const [ isSuccessdialogOpen, setIsSuccessDialogOpen ] = React.useState(false);
+    const [isSuccessdialogOpen, setIsSuccessDialogOpen] = React.useState(false);
     const navigate = useNavigate();
 
     // Handle menu opening and closing by setting the menu anchor
@@ -86,6 +86,10 @@ function AccountMenu() {
         setIsSuccessDialogOpen(false)
     }
 
+    const loginRedirect = () => {
+        navigate("/login")
+    }
+
     const accessToken = useUserStore(state => state.AccessToken)
 
     return (
@@ -107,6 +111,7 @@ function AccountMenu() {
                 <DialogTitle>Successfully Logged Out</DialogTitle>
                 <DialogContent>You have been successfully logged out!</DialogContent>
                 <DialogActions>
+                    <Button onClick={loginRedirect}>Back to Login</Button>
                     <Button onClick={handleSuccessOK}>OK</Button>
                 </DialogActions>
             </Dialog>

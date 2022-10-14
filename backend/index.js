@@ -8,8 +8,6 @@ const authRoute = require('./routes/auth')
 const eventRoute = require('./routes/events')
 const cookieParser = require('cookie-parser')
 
-const { login, logout, verifyToken, getNewAccessToken } = require('./controllers/authController')
-
 // Define the port to run the backend on as the environment variable for port, or 8080 if that variable is not defined
 const PORT = process.env.PORT || 8080;
 

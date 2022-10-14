@@ -1,6 +1,6 @@
 const express = require('express')
 const { passwordValidationRules, validate } = require('../validator.js')
-const { login, logout, verifyToken, getNewAccessToken } = require('../controllers/authController')
+const { login, logout, hasPermissions, getNewAccessToken } = require('../controllers/authController')
 const { createUser } = require('../controllers/userController')
 
 const router = express.Router()

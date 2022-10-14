@@ -3,8 +3,10 @@ const bcrypt = require('bcrypt')
 
 const saltRounds = 10;
 
+// TODO: Add middleware for logging last time user performed an action
+
 const createUser = async (req, res) => {
-    const { firstName, lastName, username, email, password } = req.body
+    const { firstName, lastName, username, email, password, roles } = req.body
 
     // TODO: Double check validation rules here, or add them to the validation middleware
 
@@ -32,6 +34,7 @@ const createUser = async (req, res) => {
 
         if (newUser) {
             res.body = newUser
+            createUserRoles(newUser, roles)
             res.status(201).send("New user created successfully")
         } else {
             res.sendStatus(500)
@@ -50,6 +53,19 @@ const getUserRoles = async (user) => {
     }
 
     return toReturn
+}
+
+// TODO: Improve this with better sequelize integration
+const createUserRoles = async (user, roles) => {
+    roles.map(async (role) => {
+        const userRole = await UserRole.findOne({ where: { DisplayName: role } })
+        await UserRoleAssigned.create({ 
+            UserID: user.UserID, 
+            UserRoleID: userRole.UserRoleID,
+            UserIDCreatedBy: 1,
+            UserIDLastModifiedBy: 1,
+        })
+    })
 }
 
 module.exports = { createUser, getUserRoles }
