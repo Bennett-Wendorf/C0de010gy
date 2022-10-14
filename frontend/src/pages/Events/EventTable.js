@@ -1,8 +1,10 @@
 // Import React stuff
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Import utilities and components
 import api from "../../utils/api";
+import AuthService from '../../services/auth.service'
 
 // Import general mui stuff
 import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextareaAutosize } from '@mui/material';
@@ -29,6 +31,8 @@ const dateFormatOptions = {
 // Create a component for the table of events
 export function EventTable({ rows, eventUpdate }) {
 
+    const navigate = useNavigate()
+
     const maxSummaryLength = 100
     const maxDescriptionLength = 500
     const maxLocationLength = 100
@@ -45,7 +49,14 @@ export function EventTable({ rows, eventUpdate }) {
 
     // Create relevant pieces of state for the dialog popups
     const [isModifyDialogOpen, setIsModifyDialogOpen] = useState(false)
+    const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
     const [isDeleteConfOpen, setIsDeleteConfOpen] = useState(false)
+    const [isRegConfOpen, setIsRegConfOpen] = useState(false)
+    const [isVolunteerRoleConfOpen, setIsVolunteerRoleConfOpen] = useState(false)
+    const [isDonorRoleConfOpen, setIsDonorRoleConfOpen] = useState(false)
+    const [isSuccessOpen, setIsSuccessOpen] = useState(false)
+    const [successMessage, setSuccessMessage] = useState("")
+
     const [selectedEvent, setSelectedEvent] = useState({})
 
     // Create pieces of state for handling event updates
@@ -81,6 +92,11 @@ export function EventTable({ rows, eventUpdate }) {
         setIsModifyDialogOpen(true)
     }
 
+    const handleRowClickView = (event) => {
+        setSelectedEvent(event)
+        setIsViewDialogOpen(true)
+    }
+
     // Functions to handle changes in values for modification dialog
     const handleUpdateSummaryChange = (event) => {
         setUpdateSummary(event.target.value)
@@ -114,12 +130,63 @@ export function EventTable({ rows, eventUpdate }) {
         setIsModifyDialogOpen(false)
     }
 
+    const handleViewClose = () => {
+        setIsViewDialogOpen(false)
+    }
+
     const handleConfirmationClose = () => {
         setIsDeleteConfOpen(false)
     }
 
     const handleDeleteConfirmation = () => {
         setIsDeleteConfOpen(true)
+    }
+
+    const handleRegistrationConfirmationClose = () => {
+        setIsRegConfOpen(false)
+    }
+
+    const handleVolunteerRoleConfirmationClose = () => {
+        setIsVolunteerRoleConfOpen(false)
+    }
+
+    const handleDonorRoleConfirmationClose = () => {
+        setIsDonorRoleConfOpen(false)
+    }
+
+    const handleSuccessClose = () => {
+        setIsSuccessOpen(false)
+        setIsViewDialogOpen(false)
+        setIsModifyDialogOpen(false)
+    }
+
+    const handleRegistration = () => {
+        navigate('/register')
+    }
+
+    const handleAddVolunteerRole = () => {
+        api.post('/api/user/addRole', {
+            role: "Volunteer"
+        })
+            .then((response) => {
+                setIsVolunteerRoleConfOpen(false)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+    const handleAddDonorRole = () => {
+        api.post('/api/user/addRole', {
+            role: "Donor"
+        })
+            .then((response) => {
+                console.log(response)
+                setIsDonorRoleConfOpen(false)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     // Handle database update on submission of the dialog
@@ -154,6 +221,49 @@ export function EventTable({ rows, eventUpdate }) {
             })
     }
 
+    const userIsVolunteer = AuthService.useHasPermissions(['Volunteer'])
+
+    // Handle volunteer and donation button presses
+    const handleVolunteer = () => {
+        if (!AuthService.isLoggedIn()) {
+            setIsRegConfOpen(true)
+        } else if (!userIsVolunteer) {
+            setIsVolunteerRoleConfOpen(true)
+        } else {
+            api.post(`/api/events/${selectedEvent.EventID}/volunteer`)
+                .then(response => {
+                    eventUpdate()
+                    setSuccessMessage(response.data.message)
+                    setIsSuccessOpen(true)
+                })
+                .catch(error => {
+                    alert(error.response.data && error.response.data.message ? error.response.data.message : error.message)
+                })
+        }
+    }
+
+    const userIsDonor = AuthService.useHasPermissions(['Donor'])
+
+    const handleDonate = () => {
+        if (!AuthService.isLoggedIn()) {
+            setIsRegConfOpen(true)
+        } else if (!userIsDonor) {
+            setIsDonorRoleConfOpen(true)
+        } else {
+            api.post(`api/events/${selectedEvent.EventID}/donate`)
+                .then(response => {
+                    eventUpdate()
+                    setSuccessMessage(response.data.message)
+                    setIsSuccessOpen(true)
+                })
+                .catch(error => {
+                    alert(error.response.data && error.response.data.message ? error.response.data.message : error.message)
+                })
+        }
+    }
+
+    const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
+
     return (
         <>
             {/* Build the event table */}
@@ -177,7 +287,7 @@ export function EventTable({ rows, eventUpdate }) {
                             <TableRow
                                 key={row.EventID}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
-                                onClick={(event) => handleRowClick(row)}
+                                onClick={(event) => { userIsAdmin ? handleRowClick(row) : handleRowClickView(row) }}
                                 hover
                             >
                                 <TableCell>{row.Summary}</TableCell>
@@ -331,6 +441,191 @@ export function EventTable({ rows, eventUpdate }) {
                 <DialogActions>
                     <Button onClick={handleConfirmationClose}>Cancel</Button>
                     <Button onClick={handleDelete} color="error">Confirm Delete</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* The popup dialog for viewing event details */}
+            <Dialog open={isViewDialogOpen} onClose={handleViewClose}>
+                <DialogTitle>
+                    Event "{selectedEvent.Summary}"
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                autoFocus
+                                id="Title"
+                                label="Title"
+                                type="text"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                disabled
+                                value={selectedEvent.Summary}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                id="Description"
+                                label="Description"
+                                type="text"
+                                fullWidth
+                                multiline
+                                rows={5}
+                                variant="filled"
+                                margin="none"
+                                disabled
+                                value={selectedEvent.Description ?? ""}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                id="NeededVolunteers"
+                                name="NeededVolunteers"
+                                label="Number of Volunteers Needed"
+                                type="number"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                disabled
+                                value={selectedEvent.NeededVolunteers}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                id="Location"
+                                name="Location"
+                                label="Location"
+                                type="text"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                disabled
+                                value={selectedEvent.Location ?? ""}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                id="VolunteerQualifications"
+                                name="VolunteerQualifications"
+                                label="Volunteer Qualifications"
+                                type="text"
+                                fullWidth
+                                multiline
+                                rows={2}
+                                variant="filled"
+                                margin="none"
+                                disabled
+                                value={selectedEvent.VolunteerQualifications ?? ""}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                id="StartTime"
+                                name="StartTime"
+                                label="Start Time"
+                                type="text"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                disabled
+                                value={new Date(selectedEvent.StartTime).toLocaleString("en-US", dateFormatOptions)}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                id="EndTime"
+                                name="EndTime"
+                                label="End Time"
+                                type="text"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                disabled
+                                value={new Date(selectedEvent.EndTime).toLocaleString("en-US", dateFormatOptions)}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleVolunteer}
+                                fullWidth
+                            >
+                                Volunteer for this Event
+                            </Button>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleDonate}
+                                fullWidth
+                            >
+                                Donate to this Event
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+
+                {/* Generate the buttons to act as actions on the dialog popup */}
+                <DialogActions>
+                    <Button onClick={handleViewClose}>OK</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Popup dialog for prompting for registration */}
+            <Dialog open={isRegConfOpen} onClose={handleRegistrationConfirmationClose}>
+                <DialogTitle>
+                    Register Now?
+                </DialogTitle>
+                <DialogContent>
+                    You must have an account to perform this action. Would you like to register now?
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleRegistrationConfirmationClose}>Cancel</Button>
+                    <Button onClick={handleRegistration}>Register</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Popup dialog for confirming addition of Volunteer role */}
+            <Dialog open={isVolunteerRoleConfOpen} onClose={handleVolunteerRoleConfirmationClose}>
+                <DialogTitle>
+                    Become a Volunteer?
+                </DialogTitle>
+                <DialogContent>
+                    You must have the Volunteer role to volunteer for an event. Would you like to become a volunteer now?
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleVolunteerRoleConfirmationClose}>Cancel</Button>
+                    <Button onClick={handleAddVolunteerRole}>OK</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Popup dialog for confirming addition of Donor role */}
+            <Dialog open={isDonorRoleConfOpen} onClose={handleDonorRoleConfirmationClose}>
+                <DialogTitle>
+                    Become a Donor?
+                </DialogTitle>
+                <DialogContent>
+                    You must have the Donor role to donate to an event. Would you like to become a donor now?
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDonorRoleConfirmationClose}>Cancel</Button>
+                    <Button onClick={handleAddDonorRole}>OK</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Popup dialog for indicating success of volunteering */}
+            <Dialog open={isSuccessOpen} onClose={handleSuccessClose}>
+                <DialogTitle>
+                    Success!
+                </DialogTitle>
+                <DialogContent>
+                    {successMessage}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleSuccessClose}>OK</Button>
                 </DialogActions>
             </Dialog>
         </>

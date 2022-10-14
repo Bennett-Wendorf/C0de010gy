@@ -92,7 +92,6 @@ const hasPermissions = (allowedPermissions) => {
                 req.userID = usr.id
                 next()
             } else {
-                console.log("Permission denied")
                 return res.status(401).json({ field: 'general', message: errorString })
             }
         })
@@ -103,8 +102,6 @@ const getNewAccessToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken
 
     if (refreshToken == null) return res.status(401).json({ error: "No token provided" })
-
-    console.log(refreshTokens)
 
     if (refreshTokens[refreshToken] == null) return res.status(401).json({ error: "Invalid refresh token" })
 

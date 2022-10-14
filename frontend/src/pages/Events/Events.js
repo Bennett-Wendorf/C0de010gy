@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 
 // Import utilites and components
 import api from "../../utils/api";
-import useUserStore from "../../utils/Stores"
 import Bar from "../../components/AppBar";
 import { EventTable } from './EventTable';
 import AuthService from '../../services/auth.service'

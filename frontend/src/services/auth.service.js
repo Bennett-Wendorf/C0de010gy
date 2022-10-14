@@ -36,6 +36,10 @@ var AuthService = {
             })
     },
 
+    isLoggedIn: () => {
+        return useUserStore.getState().AccessToken !== -1
+    },
+
     useHasPermissions: (allowedRoles) => {
         const userRoles = useUserStore(state => state.Roles)
         return allowedRoles.some(permission => userRoles.includes(permission))
