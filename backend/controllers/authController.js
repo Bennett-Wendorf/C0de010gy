@@ -88,6 +88,12 @@ const hasPermissions = (allowedPermissions) => {
 
             var userRoles = await getUserRoles(user)
 
+            if (allowedPermissions.length == 0) {
+                req.userID = usr.id
+                next()
+                return
+            }
+
             if (allowedPermissions.some(permission => userRoles.includes(permission))) {
                 req.userID = usr.id
                 next()

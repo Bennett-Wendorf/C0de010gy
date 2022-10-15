@@ -165,11 +165,13 @@ export function EventTable({ rows, eventUpdate }) {
     }
 
     const handleAddVolunteerRole = () => {
-        api.post('/api/user/addRole', {
-            role: "Volunteer"
+        api.post('/api/user/role', {
+            roles: ["Volunteer"]
         })
             .then((response) => {
                 setIsVolunteerRoleConfOpen(false)
+                setSuccessMessage(response.data.message)
+                setIsSuccessOpen(true)
             })
             .catch((error) => {
                 console.log(error)
@@ -177,8 +179,8 @@ export function EventTable({ rows, eventUpdate }) {
     }
 
     const handleAddDonorRole = () => {
-        api.post('/api/user/addRole', {
-            role: "Donor"
+        api.post('/api/user/role', {
+            roles: ["Donor"]
         })
             .then((response) => {
                 console.log(response)

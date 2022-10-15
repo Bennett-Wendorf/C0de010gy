@@ -34,12 +34,30 @@ const createUser = async (req, res) => {
 
         if (newUser) {
             res.body = newUser
-            createUserRoles(newUser, roles)
+            createUserRoles(newUser, roles, 1)
             res.status(201).send("New user created successfully")
         } else {
             res.sendStatus(500)
         }
     })
+}
+
+const addUserRoles = async (req, res) => {
+    const userID = req.userID
+    const { roles } = req.body
+
+    const user = await User.findOne({ where: { UserID: userID } })
+
+    if (!user) {
+        res.status(404).send({ field: 'general', message: "User not found" })
+        return
+    }
+
+    // TODO: Validate that the roles are valid
+    // TODO: Ensure the user doesn't have these roles already before adding them
+
+    createUserRoles(user, roles, userID)
+    res.status(200).json({ field: 'general', message: "User roles added successfully" })
 }
 
 // TODO: Improve this with better sequelize integration
@@ -56,16 +74,16 @@ const getUserRoles = async (user) => {
 }
 
 // TODO: Improve this with better sequelize integration
-const createUserRoles = async (user, roles) => {
+const createUserRoles = async (user, roles, actionUserID) => {
     roles.map(async (role) => {
         const userRole = await UserRole.findOne({ where: { DisplayName: role } })
         await UserRoleAssigned.create({ 
             UserID: user.UserID, 
             UserRoleID: userRole.UserRoleID,
-            UserIDCreatedBy: 1,
-            UserIDLastModifiedBy: 1,
+            UserIDCreatedBy: actionUserID,
+            UserIDLastModifiedBy: actionUserID,
         })
     })
 }
 
-module.exports = { createUser, getUserRoles }
+module.exports = { createUser, getUserRoles, addUserRoles }
