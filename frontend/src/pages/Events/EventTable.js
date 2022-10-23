@@ -16,6 +16,7 @@ import { TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@m
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import useUserStore from "../../utils/Stores";
 
 // Setup a general format for dates
 const dateFormatOptions = {
@@ -54,8 +55,12 @@ export function EventTable({ rows, eventUpdate }) {
     const [isRegConfOpen, setIsRegConfOpen] = useState(false)
     const [isVolunteerRoleConfOpen, setIsVolunteerRoleConfOpen] = useState(false)
     const [isDonorRoleConfOpen, setIsDonorRoleConfOpen] = useState(false)
-    const [isSuccessOpen, setIsSuccessOpen] = useState(false)
-    const [successMessage, setSuccessMessage] = useState("")
+    const [isActionSuccessOpen, setIsActionSuccessOpen] = useState(false)
+    const [isAddRoleSuccessOpen, setIsAddRoleSuccessOpen] = useState(false)
+    const [actionSuccessMessage, setActionSuccessMessage] = useState("")
+    const [addRoleSuccessMessage, setAddRoleSuccessMessage] = useState("")
+    const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false)
+    const [errorDialogText, setErrorDialogText] = useState("")
 
     const [selectedEvent, setSelectedEvent] = useState({})
 
@@ -154,41 +159,59 @@ export function EventTable({ rows, eventUpdate }) {
         setIsDonorRoleConfOpen(false)
     }
 
-    const handleSuccessClose = () => {
-        setIsSuccessOpen(false)
+    const handleActionSuccessClose = () => {
+        setIsActionSuccessOpen(false)
         setIsViewDialogOpen(false)
         setIsModifyDialogOpen(false)
+    }
+
+    const handleAddRoleSuccessClose = () => {
+        setIsAddRoleSuccessOpen(false)
+    }
+
+    const handleErrorDialogClose = () => {
+        setIsErrorDialogOpen(false)
+    }
+
+    const alertError = (error) => {
+        setErrorDialogText(error.response?.data?.message ? error.response.data.message : error.message)
+        setIsErrorDialogOpen(true)
     }
 
     const handleRegistration = () => {
         navigate('/register')
     }
 
+    const addRole = useUserStore(state => state.addRole)
+
     const handleAddVolunteerRole = () => {
         api.post('/api/user/role', {
             roles: ["Volunteer"]
         })
-            .then((response) => {
-                setIsVolunteerRoleConfOpen(false)
-                setSuccessMessage(response.data.message)
-                setIsSuccessOpen(true)
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+        .then((response) => {
+            setIsVolunteerRoleConfOpen(false)
+            setAddRoleSuccessMessage(response.data.message)
+            addRole('Volunteer')
+            completeVolunteer()
+            .then(() => 
+                setIsAddRoleSuccessOpen(true))
+        })
+        .catch((error) => {
+            console.log(error)
+        })
     }
 
     const handleAddDonorRole = () => {
         api.post('/api/user/role', {
             roles: ["Donor"]
         })
-            .then((response) => {
-                console.log(response)
-                setIsDonorRoleConfOpen(false)
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+        .then((response) => {
+            console.log(response)
+            setIsDonorRoleConfOpen(false)
+        })
+        .catch((error) => {
+            console.log(error)
+        })
     }
 
     // Handle database update on submission of the dialog
@@ -232,16 +255,20 @@ export function EventTable({ rows, eventUpdate }) {
         } else if (!userIsVolunteer) {
             setIsVolunteerRoleConfOpen(true)
         } else {
-            api.post(`/api/events/${selectedEvent.EventID}/volunteer`)
+            completeVolunteer()
+        }
+    }
+
+    const completeVolunteer = async () => {
+        await api.post(`/api/events/${selectedEvent.EventID}/volunteer`)
                 .then(response => {
                     eventUpdate()
-                    setSuccessMessage(response.data.message)
-                    setIsSuccessOpen(true)
+                    setActionSuccessMessage(response.data.message)
+                    setIsActionSuccessOpen(true)
                 })
                 .catch(error => {
-                    alert(error.response.data && error.response.data.message ? error.response.data.message : error.message)
+                    alertError(error)
                 })
-        }
     }
 
     const userIsDonor = AuthService.useHasPermissions(['Donor'])
@@ -255,11 +282,12 @@ export function EventTable({ rows, eventUpdate }) {
             api.post(`api/events/${selectedEvent.EventID}/donate`)
                 .then(response => {
                     eventUpdate()
-                    setSuccessMessage(response.data.message)
-                    setIsSuccessOpen(true)
+                    setActionSuccessMessage(response.data.message)
+                    setIsActionSuccessOpen(true)
+                    addRole('Donor')
                 })
                 .catch(error => {
-                    alert(error.response.data && error.response.data.message ? error.response.data.message : error.message)
+                    alertError(error)
                 })
         }
     }
@@ -618,16 +646,42 @@ export function EventTable({ rows, eventUpdate }) {
                 </DialogActions>
             </Dialog>
 
-            {/* Popup dialog for indicating success of volunteering */}
-            <Dialog open={isSuccessOpen} onClose={handleSuccessClose}>
+            {/* Popup dialog for indicating success of volunteering or donating */}
+            <Dialog open={isActionSuccessOpen} onClose={handleActionSuccessClose}>
                 <DialogTitle>
                     Success!
                 </DialogTitle>
                 <DialogContent>
-                    {successMessage}
+                    {actionSuccessMessage}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleSuccessClose}>OK</Button>
+                    <Button onClick={handleActionSuccessClose}>OK</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Popup dialog for indicating success of adding a role */}
+            <Dialog open={isAddRoleSuccessOpen} onClose={handleAddRoleSuccessClose}>
+                <DialogTitle>
+                    Success!
+                </DialogTitle>
+                <DialogContent>
+                    {addRoleSuccessMessage}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleAddRoleSuccessClose}>OK</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Popup dialog for indicating error */}
+            <Dialog open={isErrorDialogOpen} onClose={handleErrorDialogClose}>
+                <DialogTitle>
+                    Error!
+                </DialogTitle>
+                <DialogContent>
+                    {errorDialogText}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleErrorDialogClose}>OK</Button>
                 </DialogActions>
             </Dialog>
         </>

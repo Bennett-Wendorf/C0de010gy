@@ -39,4 +39,37 @@ const deleteEvent = async (req, res) => {
     res.sendStatus(200)
 }
 
-module.exports = { getAllEvents, createEvent, updateEvent, deleteEvent }
+const validateNewEvent = (req, res, next) => {
+    if(!req.body.summary || req.body.summary.length == 0){
+        res.status(400).json({ field: 'summary', message: 'Summary is required' })
+        return
+    } 
+
+    if(!req.body.startTime){
+        res.status(400).json({ field: 'startTime', message: 'Start time is required' })
+        return
+    }
+
+    if(!req.body.endTime){
+        res.status(400).json({ field: 'endTime', message: 'End time is required' })
+        return
+    }
+
+    let startTime = new Date(req.body.startTime)
+    let endTime = new Date(req.body.endTime)
+    let currentTime = new Date()
+
+    if (startTime > endTime) {
+        res.status(400).json({ field: 'time', message: 'Start time must be before end time' })
+        return
+    }
+
+    if (startTime < currentTime) {
+        res.status(400).json({ field: 'time', message: 'Start time must be in the future' })
+        return
+    }
+
+    next()
+}
+
+module.exports = { getAllEvents, createEvent, updateEvent, deleteEvent, validateNewEvent }

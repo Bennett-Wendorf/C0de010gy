@@ -49,7 +49,7 @@ const rightButtonFloat = {
 function AccountMenu() {
     const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
     const menuOpen = Boolean(menuAnchorEl);
-    const [isSuccessdialogOpen, setIsSuccessDialogOpen] = React.useState(false);
+    const [isSuccessDialogOpen, setIsSuccessDialogOpen] = React.useState(false);
     const navigate = useNavigate();
 
     // Handle menu opening and closing by setting the menu anchor
@@ -91,6 +91,7 @@ function AccountMenu() {
     }
 
     const accessToken = useUserStore(state => state.AccessToken)
+    const fullName = useUserStore(state => state.FullName)
 
     return (
         <>
@@ -101,13 +102,13 @@ function AccountMenu() {
             </Tooltip>
 
             <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
-                {accessToken !== -1 && <MenuItem onClick={handleProfileClick}>Profile</MenuItem>}
+                {accessToken !== -1 && <MenuItem disabled>{fullName}</MenuItem>}
                 {accessToken !== -1 && <MenuItem onClick={handleAccountClick}>My account</MenuItem>}
                 {accessToken !== -1 && <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>}
                 {accessToken === -1 && <MenuItem onClick={handleLoginClick}>Login</MenuItem>}
             </Menu>
 
-            <Dialog open={isSuccessdialogOpen} onClose={handleSuccessOK}>
+            <Dialog open={isSuccessDialogOpen} onClose={handleSuccessOK}>
                 <DialogTitle>Successfully Logged Out</DialogTitle>
                 <DialogContent>You have been successfully logged out!</DialogContent>
                 <DialogActions>

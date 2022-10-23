@@ -17,7 +17,7 @@ const User = sequelize.define("user", {
     FullName: {
         type: DataTypes.VIRTUAL,
         get() {
-            return this.firstName && this.lastName ? `${this.firstName} ${this.lastName}` : "";
+            return this.FirstName && this.LastName ? `${this.FirstName} ${this.LastName}` : "";
         },
         set(value) {
             throw new Error('Do not try to set the `fullName` value!');

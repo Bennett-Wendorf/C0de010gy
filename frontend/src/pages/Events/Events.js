@@ -1,7 +1,7 @@
 // Import React stuff
 import React, { useState, useEffect } from "react";
 
-// Import utilites and components
+// Import utilities and components
 import api from "../../utils/api";
 import Bar from "../../components/AppBar";
 import { EventTable } from './EventTable';
@@ -111,9 +111,21 @@ export function Events() {
         setNewEventEndDate(defaultNewEndDate)
     }
 
+    const resetErrors = () => {
+        setNewEventSummaryError(false)
+        setNewEventDescriptionError(false)
+        setNewNeededVolunteersError(false)
+        setNewEventLocationError(false)
+        setNewEventVolunteerQualificationsError(false)
+        setNewEventSummaryErrorText("")
+        setNewEventDescriptionErrorText("")
+        setNewNeededVolunteersErrorText("")
+        setNewEventLocationErrorText("")
+        setNewEventVolunteerQualificationsErrorText("")
+    }
+
     // Create a new event in the database and ensure data on the frontend is up to date
     const handleSubmit = () => {
-        setIsDialogOpen(false)
 
         // Generate an object with the information for the new event
         const newEvent = {
@@ -129,11 +141,13 @@ export function Events() {
         // Send a request to the backend to create a new event
         api.post(`/api/events`, newEvent)
             .then(response => {
+                setIsDialogOpen(false)
                 updateEvents()
             })
             .catch(handleResponseError)
 
         resetNewEventValues()
+        resetErrors()
     }
 
     const handleResponseError = (error) => {
@@ -293,24 +307,24 @@ export function Events() {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DateTimePicker 
-                                    label="Start Date" 
+                                <DateTimePicker
+                                    label="Start Date"
                                     required
                                     variant="filled"
-                                    value={newEventStartDate} 
-                                    onChange={handleNewEventStartDateChange} 
-                                    renderInput={(params) => <TextField margin="none" {...params} />} 
+                                    value={newEventStartDate}
+                                    onChange={handleNewEventStartDateChange}
+                                    renderInput={(params) => <TextField margin="none" {...params} />}
                                 />
                             </LocalizationProvider>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DateTimePicker 
+                                <DateTimePicker
                                     label="end Date"
                                     required
                                     variant="filled"
-                                    value={newEventEndDate} 
-                                    onChange={handleNewEventEndDateChange} 
+                                    value={newEventEndDate}
+                                    onChange={handleNewEventEndDateChange}
                                     renderInput={(params) => <TextField margin="none" {...params} />}
                                 />
                             </LocalizationProvider>
