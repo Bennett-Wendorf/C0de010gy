@@ -10,7 +10,7 @@ const Donation = sequelize.define("donation", {
     },
     EventID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: "event",
             key: "EventID"
@@ -26,10 +26,6 @@ const Donation = sequelize.define("donation", {
     },
     Amount: {
         type: DataTypes.DECIMAL,
-        allowNull: false
-    },
-    Restricted: {
-        type: DataTypes.BOOLEAN,
         allowNull: false
     },
     UserIDCreatedBy: {

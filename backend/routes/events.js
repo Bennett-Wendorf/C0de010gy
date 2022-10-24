@@ -1,6 +1,7 @@
 const express = require('express')
 const { getAllEvents, createEvent, updateEvent, deleteEvent } = require('../controllers/eventController')
-const { volunteer } = require('../controllers/volunteerController')
+const { volunteer, hasVolunteered, cancelVolunteer, validateNewVolunteer } = require('../controllers/volunteerController')
+const { donateToEvent, hasDonated, getEventDonations, validateNewDonation } = require('../controllers/donateController')
 const { hasPermissions } = require('../controllers/authController')
 const { validateNewEvent } = require('../controllers/eventController')
 
@@ -15,9 +16,19 @@ router.route('/')
 router.put('/:id', hasPermissions(['Administrator']), updateEvent)
 
 // Delete the event with the specified id
-router.delete('/delete/:id', hasPermissions(['Administrator']), deleteEvent)
+router.delete('/:id', hasPermissions(['Administrator']), deleteEvent)
 
 // Volunteer for the event with the specified ID
-router.post('/:id/volunteer', hasPermissions(['Volunteer']), volunteer)
+router.route('/:id/volunteer')
+    .post(hasPermissions(['Volunteer']), validateNewVolunteer, volunteer)
+    .get(hasPermissions([]), hasVolunteered)
+    .delete(hasPermissions(['Volunteer']), cancelVolunteer)
+
+// Donate to the event with the specified ID
+router.route('/:id/donate')
+    .post(hasPermissions(['Donor']), validateNewDonation, donateToEvent)
+    .get(hasPermissions([]), hasDonated)
+
+router.get('/:id/donations', hasPermissions(['Donor']), getEventDonations)
 
 module.exports = router

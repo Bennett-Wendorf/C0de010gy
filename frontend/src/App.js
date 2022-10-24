@@ -41,7 +41,7 @@ const getBasePageLayout = (useNavElements, element) => {
 function App() {
 
     useEffect(() => {
-        AuthService.fetchRefreshToken().catch(err => console.log(err.message))
+        AuthService.fetchRefreshToken().catch(err => {})
     }, [])
 
     return (

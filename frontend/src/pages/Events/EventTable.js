@@ -7,7 +7,21 @@ import api from "../../utils/api";
 import AuthService from '../../services/auth.service'
 
 // Import general mui stuff
-import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, TextareaAutosize } from '@mui/material';
+import {
+    Grid,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Button,
+    Typography,
+    FormControlLabel,
+    Checkbox,
+    InputAdornment
+} from '@mui/material';
 
 // Import dialog stuff from mui
 import { TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
@@ -62,7 +76,16 @@ export function EventTable({ rows, eventUpdate }) {
     const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false)
     const [errorDialogText, setErrorDialogText] = useState("")
 
+    const [isDonateDialogOpen, setIsDonateDialogOpen] = useState(false)
+    const [donationAmount, setDonationAmount] = useState(0)
+
+    const [isViewDonationsDialogOpen, setIsViewDonationsDialogOpen] = useState(false)
+
+    const [hasVolunteered, setHasVolunteered] = useState(false)
+    const [hasDonated, setHasDonated] = useState(false)
+
     const [selectedEvent, setSelectedEvent] = useState({})
+    const [selectedEventDonations, setSelectedEventDonations] = useState([])
 
     // Create pieces of state for handling event updates
     const [updateSummary, setUpdateSummary] = useState(defaultUpdateSummary)
@@ -97,9 +120,27 @@ export function EventTable({ rows, eventUpdate }) {
         setIsModifyDialogOpen(true)
     }
 
-    const handleRowClickView = (event) => {
+    const handleRowClickView = async (event) => {
         setSelectedEvent(event)
-        setIsViewDialogOpen(true)
+        checkIfVolunteered(event)
+            .then((volunteered) => {
+                if (volunteered) {
+                    setHasVolunteered(true)
+                } else {
+                    setHasVolunteered(false)
+                }
+                setIsViewDialogOpen(true)
+            })
+        checkIfDonated(event)
+            .then((donated) => {
+                if (donated) {
+                    setHasDonated(true)
+                } else {
+                    setHasDonated(false)
+                }
+                setIsViewDialogOpen(true)
+            })
+        updateEventDonations(event)
     }
 
     // Functions to handle changes in values for modification dialog
@@ -163,6 +204,8 @@ export function EventTable({ rows, eventUpdate }) {
         setIsActionSuccessOpen(false)
         setIsViewDialogOpen(false)
         setIsModifyDialogOpen(false)
+        setIsDonateDialogOpen(false)
+        setIsViewDonationsDialogOpen(false)
     }
 
     const handleAddRoleSuccessClose = () => {
@@ -171,6 +214,18 @@ export function EventTable({ rows, eventUpdate }) {
 
     const handleErrorDialogClose = () => {
         setIsErrorDialogOpen(false)
+    }
+
+    const handleDonateClose = () => {
+        setIsDonateDialogOpen(false)
+    }
+
+    const handleViewDonationsClose = () => {
+        setIsViewDonationsDialogOpen(false)
+    }
+
+    const handleDonationAmountChange = (amount) => {
+        setDonationAmount(amount.target.value)
     }
 
     const alertError = (error) => {
@@ -188,30 +243,34 @@ export function EventTable({ rows, eventUpdate }) {
         api.post('/api/user/role', {
             roles: ["Volunteer"]
         })
-        .then((response) => {
-            setIsVolunteerRoleConfOpen(false)
-            setAddRoleSuccessMessage(response.data.message)
-            addRole('Volunteer')
-            completeVolunteer()
-            .then(() => 
-                setIsAddRoleSuccessOpen(true))
-        })
-        .catch((error) => {
-            console.log(error)
-        })
+            .then((response) => {
+                setIsVolunteerRoleConfOpen(false)
+                setAddRoleSuccessMessage(response.data.message)
+                addRole('Volunteer')
+                completeVolunteer()
+                    .then(() =>
+                        setIsAddRoleSuccessOpen(true))
+            })
+            .catch((error) => {
+                alertError(error)
+            })
     }
 
     const handleAddDonorRole = () => {
         api.post('/api/user/role', {
             roles: ["Donor"]
         })
-        .then((response) => {
-            console.log(response)
-            setIsDonorRoleConfOpen(false)
-        })
-        .catch((error) => {
-            console.log(error)
-        })
+            .then((response) => {
+                setIsDonorRoleConfOpen(false)
+                setAddRoleSuccessMessage(response.data.message)
+                addRole('Donor')
+                completeDonate()
+                    .then(() =>
+                        setIsAddRoleSuccessOpen(true))
+            })
+            .catch((error) => {
+                alertError(error)
+            })
     }
 
     // Handle database update on submission of the dialog
@@ -240,7 +299,7 @@ export function EventTable({ rows, eventUpdate }) {
         setIsDeleteConfOpen(false)
 
         // Make the call to the backend to delete the selected event
-        api.delete(`/api/events/delete/${selectedEvent.eventID}`)
+        api.delete(`/api/events/${selectedEvent.eventID}`)
             .then(response => {
                 eventUpdate()
             })
@@ -261,14 +320,35 @@ export function EventTable({ rows, eventUpdate }) {
 
     const completeVolunteer = async () => {
         await api.post(`/api/events/${selectedEvent.EventID}/volunteer`)
-                .then(response => {
-                    eventUpdate()
-                    setActionSuccessMessage(response.data.message)
-                    setIsActionSuccessOpen(true)
-                })
-                .catch(error => {
-                    alertError(error)
-                })
+            .then(response => {
+                setActionSuccessMessage(response.data.message)
+                setIsActionSuccessOpen(true)
+            })
+            .catch(error => {
+                alertError(error)
+            })
+    }
+
+    const checkIfVolunteered = async (event) => {
+        return api.get(`/api/events/${event.EventID}/volunteer`)
+            .then(response => {
+                return response.data
+            })
+            .catch(error => {
+                return false
+            }
+            )
+    }
+
+    const handleCancelVolunteer = () => {
+        api.delete(`/api/events/${selectedEvent.EventID}/volunteer`)
+            .then(response => {
+                setActionSuccessMessage(response.data.message)
+                setIsActionSuccessOpen(true)
+            })
+            .catch(error => {
+                alertError(error)
+            })
     }
 
     const userIsDonor = AuthService.useHasPermissions(['Donor'])
@@ -279,17 +359,49 @@ export function EventTable({ rows, eventUpdate }) {
         } else if (!userIsDonor) {
             setIsDonorRoleConfOpen(true)
         } else {
-            api.post(`api/events/${selectedEvent.EventID}/donate`)
-                .then(response => {
-                    eventUpdate()
-                    setActionSuccessMessage(response.data.message)
-                    setIsActionSuccessOpen(true)
-                    addRole('Donor')
-                })
-                .catch(error => {
-                    alertError(error)
-                })
+            setIsDonateDialogOpen(true)
         }
+    }
+
+    const completeDonate = async () => {
+        let newDonation = {
+            amount: donationAmount
+        }
+
+        await api.post(`api/events/${selectedEvent.EventID}/donate`, newDonation)
+            .then(response => {
+                setActionSuccessMessage(response.data.message)
+                setIsActionSuccessOpen(true)
+                updateEventDonations(selectedEvent)
+            })
+            .catch(error => {
+                alertError(error)
+            })
+    }
+
+    const checkIfDonated = async (event) => {
+        return api.get(`/api/events/${event.EventID}/donate`)
+            .then(response => {
+                return response.data
+            })
+            .catch(error => {
+                return false
+            })
+    }
+
+    const handleViewDonations = () => {
+        setIsViewDonationsDialogOpen(true)
+    }
+
+    const updateEventDonations = async (event) => {
+        return api.get(`/api/events/${event.EventID}/donations`)
+            .then(response => {
+                setSelectedEventDonations(response.data)
+            })
+            .catch(error => {
+                alertError(error)
+                setSelectedEventDonations([])
+            })
     }
 
     const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
@@ -575,26 +687,54 @@ export function EventTable({ rows, eventUpdate }) {
                                 value={new Date(selectedEvent.EndTime).toLocaleString("en-US", dateFormatOptions)}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleVolunteer}
-                                fullWidth
-                            >
-                                Volunteer for this Event
-                            </Button>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleDonate}
-                                fullWidth
-                            >
-                                Donate to this Event
-                            </Button>
-                        </Grid>
+                        {hasVolunteered &&
+                            <Grid item xs={12} sm={6}>
+                                <Button
+                                    onClick={handleCancelVolunteer}
+                                    color="error"
+                                    variant="contained"
+                                    fullWidth
+                                >
+                                    Cancel Volunteer
+                                </Button>
+                            </Grid>
+                        }
+                        {!hasVolunteered &&
+                            <Grid item xs={12} sm={6}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleVolunteer}
+                                    fullWidth
+                                >
+                                    Volunteer for this Event
+                                </Button>
+                            </Grid>
+                        }
+                        {hasDonated &&
+                            <Grid item xs={12} sm={6}>
+                                <Button
+                                    onClick={handleViewDonations}
+                                    color="secondary"
+                                    variant="contained"
+                                    fullWidth
+                                >
+                                    View My Donations
+                                </Button>
+                            </Grid>
+                        }
+                        {!hasDonated &&
+                            <Grid item xs={12} sm={6}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleDonate}
+                                    fullWidth
+                                >
+                                    Donate to this Event
+                                </Button>
+                            </Grid>
+                        }
                     </Grid>
                 </DialogContent>
 
@@ -603,6 +743,77 @@ export function EventTable({ rows, eventUpdate }) {
                     <Button onClick={handleViewClose}>OK</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Popup dialog for donating to an event */}
+            <Dialog open={isDonateDialogOpen} onClose={handleDonateClose}>
+                <DialogTitle>
+                    Donate to Event "{selectedEvent.Summary}"
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+                                autoFocus
+                                id="Amount"
+                                name="Amount"
+                                label="Amount"
+                                type="number"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                value={donationAmount}
+                                onChange={handleDonationAmountChange}
+                            />
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+
+                {/* Generate the buttons to act as actions on the dialog popup */}
+                <DialogActions>
+                    <Button onClick={handleDonateClose}>Cancel</Button>
+                    <Button onClick={completeDonate} color="primary">Donate</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Popup dialog for editing donations to an event */}
+            <Dialog open={isViewDonationsDialogOpen} onClose={handleViewDonationsClose}>
+                <DialogTitle>
+                    Viewing Donations for Event "{selectedEvent.Summary}"
+                </DialogTitle>
+                <DialogContent>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="Events">
+                            {/* Generate the headers of the rows */}
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Date Donated</TableCell>
+                                    <TableCell align="right">Amount</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {/* Map each event from the backend to a row in the table */}
+                                {selectedEventDonations.map((donation) => (
+                                    <TableRow
+                                        key={donation.DonationID}
+                                    >
+                                        <TableCell size="small">{new Date(donation.CreatedDateTime).toLocaleString("en-US", dateFormatOptions)}</TableCell>
+                                        <TableCell align="right" size="small">$ {donation.Amount.toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        })}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDonate} color="primary" variant="contained">Add Donation</Button>
+                    <Button onClick={handleViewDonationsClose}>Close</Button>
+                </DialogActions>
+            </Dialog>
+
 
             {/* Popup dialog for prompting for registration */}
             <Dialog open={isRegConfOpen} onClose={handleRegistrationConfirmationClose}>
@@ -646,6 +857,7 @@ export function EventTable({ rows, eventUpdate }) {
                 </DialogActions>
             </Dialog>
 
+            {/* TODO: Convert this and other dialogs to use the Alert component with Snackbar */}
             {/* Popup dialog for indicating success of volunteering or donating */}
             <Dialog open={isActionSuccessOpen} onClose={handleActionSuccessClose}>
                 <DialogTitle>

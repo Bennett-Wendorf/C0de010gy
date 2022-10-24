@@ -61,11 +61,6 @@ function AccountMenu() {
         setMenuAnchorEl(null)
     }
 
-    const handleProfileClick = () => {
-        console.log("Profile clicked")
-        handleMenuClose()
-    }
-
     const handleAccountClick = () => {
         console.log("Account clicked")
         handleMenuClose()
@@ -95,6 +90,7 @@ function AccountMenu() {
 
     return (
         <>
+            {/* TODO: Use the Badge component here for number of notifications */}
             <Tooltip title="Account" sx={rightButtonFloat}>
                 <IconButton aria-label="account" size="large" onClick={openMenu}>
                     <AccountIcon />
