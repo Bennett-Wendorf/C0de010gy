@@ -64,7 +64,6 @@ const getAllDonations = async (req, res) => {
     try {
         const donations = await Donation.findAll({ where: { UserID: userID }})
         const donationsWithEvent = await Promise.all(donations.map(getDonationEvent))
-        console.log("Donations with event: ", donationsWithEvent)
         res.status(200).json(donationsWithEvent)
     }
     catch (err) {

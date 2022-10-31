@@ -75,8 +75,6 @@ const hasPermissions = (allowedPermissions) => {
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(":")[1]
 
-        console.log(token)
-
         if (token == null) {
             return res.status(401).json({ field: 'general', message: errorString, error: "No token provided" })
         }
