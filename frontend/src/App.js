@@ -7,7 +7,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 
 import { Box } from '@mui/material';
 
-import { Login, Register, Events } from "./pages";
+import { Login, Register, Events, Donations } from "./pages";
 import NavDrawer from "./components/NavDrawer";
 import AuthService from './services/auth.service';
 
@@ -52,6 +52,7 @@ function App() {
                 <Route path="/login" element={getBasePageLayout(false, <Login />)} />
                 <Route path="/register" element={getBasePageLayout(false, <Register />)} />
                 <Route path="/events" element={getBasePageLayout(true, <Events />)} />
+                <Route path='/donation' element={getBasePageLayout(true, <Donations />)} />
             </Routes>
         </Router>
     );

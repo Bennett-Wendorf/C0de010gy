@@ -10,8 +10,6 @@ const getAllEvents = async (req, res) => {
 const createEvent = async (req, res) => {
     const { summary, description, neededVolunteers, location, volunteerQualifications, startTime, endTime } = req.body
 
-    // TODO: Add input validation here or in middleware
-
     const newEvent = await Event.create({
         Summary: summary,
         Description: description,
@@ -72,4 +70,16 @@ const validateNewEvent = (req, res, next) => {
     next()
 }
 
-module.exports = { getAllEvents, createEvent, updateEvent, deleteEvent, validateNewEvent }
+const ensureEventExists = async (req, res, next) => {
+    const { id } = req.params
+
+    const event = await Event.findOne({ where: { EventID: id }})
+    if (!event) {
+        res.status(404).json({ field: 'general', message: 'Event not found' })
+        return
+    }
+
+    next()
+}
+
+module.exports = { getAllEvents, createEvent, updateEvent, deleteEvent, validateNewEvent, ensureEventExists }

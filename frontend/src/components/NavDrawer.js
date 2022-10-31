@@ -12,6 +12,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import EventIcon from '@mui/icons-material/Event'
 import PeopleIcon from '@mui/icons-material/People'
 import AnalyticsIcon from '@mui/icons-material/Analytics'
+import PaidIcon from '@mui/icons-material/Paid'
+
 import AuthService from "../services/auth.service";
 
 // Define what we want the width of the drawer to be
@@ -89,6 +91,15 @@ function NavDrawer() {
                             <ListItemText primary="Events" />
                         </ListItem>
                     </Link>
+
+                    {AuthService.isLoggedIn() &&
+                        <Link to="/donation" style={linkStyle}>
+                            <ListItem button key="Donate">
+                                <ListItemIcon>{<PaidIcon />}</ListItemIcon>
+                                <ListItemText primary="Donate" />
+                            </ListItem>
+                        </Link>
+                    }
 
                     {userIsAdmin &&
                         <Link to="/users" style={linkStyle}>

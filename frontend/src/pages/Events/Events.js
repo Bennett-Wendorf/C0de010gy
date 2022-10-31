@@ -218,7 +218,7 @@ export function Events() {
 
             {/* Create the dialog box that will pop up when the Add button is pressed. This will add a new event to the database */}
             <Dialog open={isDialogOpen} onClose={handleClose}>
-                <DialogTitle>Create a Event</DialogTitle>
+                <DialogTitle>Create an Event</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>

@@ -57,11 +57,17 @@ export function Register() {
 
     const handleSubmit = (event) => {
         event.preventDefault()
+        resetErrors()
         const data = new FormData(event.currentTarget)
 
-        // TODO: Handle some basic validation like ensuring that newPassword and newPasswordConfirm are the same
         let password = data.get('password')
         let passwordConfirm = data.get('passwordConfirm')
+        if (password !== passwordConfirm) {
+            setPasswordError(true)
+            setPasswordConfirmError(true)
+            setPasswordConfirmErrorText("Passwords do not match")
+            return
+        }
 
         let newRoles = []
         if (data.get('isVolunteer')) {
@@ -85,6 +91,22 @@ export function Register() {
         }).catch(handleResponseError)
     }
 
+    const resetErrors = () => {
+        setFirstNameError(false)
+        setLastNameError(false)
+        setUsernameError(false)
+        setEmailError(false)
+        setPasswordError(false)
+        setPasswordConfirmError(false)
+        setFirstNameErrorText("")
+        setLastNameErrorText("")
+        setUsernameErrorText("")
+        setEmailErrorText("")
+        setPasswordErrorText("")
+        setPasswordConfirmErrorText("")
+    }
+
+
     const handleResponseError = (error) => {
         let fieldName = error.response.data.field
         let message = error.response.data.message
@@ -92,6 +114,26 @@ export function Register() {
             case 'username':
                 setUsernameError(true)
                 setUsernameErrorText(message)
+                break
+            case 'email':
+                setEmailError(true)
+                setEmailErrorText(message)
+                break
+            case 'password':
+                setPasswordError(true)
+                setPasswordErrorText(message)
+                break
+            case 'passwordConfirm':
+                setPasswordConfirmError(true)
+                setPasswordConfirmErrorText(message)
+                break
+            case 'firstName':
+                setFirstNameError(true)
+                setFirstNameErrorText(message)
+                break
+            case 'lastName':
+                setLastNameError(true)
+                setLastNameErrorText(message)
                 break
             default:
                 break
@@ -121,7 +163,6 @@ export function Register() {
                                 <TextField
                                     autoComplete="given-name"
                                     name="firstName"
-                                    required
                                     fullWidth
                                     id="firstName"
                                     label="First Name"
@@ -135,7 +176,6 @@ export function Register() {
                                 <TextField
                                     autoComplete="family-name"
                                     name="lastName"
-                                    required
                                     fullWidth
                                     id="lastName"
                                     label="Last Name"

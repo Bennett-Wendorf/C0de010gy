@@ -75,19 +75,22 @@ const hasPermissions = (allowedPermissions) => {
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(":")[1]
 
+        console.log(token)
+
         if (token == null) {
-            return res.status(401).json({ field: 'general', message: errorString })
+            return res.status(401).json({ field: 'general', message: errorString, error: "No token provided" })
         }
 
         await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, usr) => {
             if (err) {
-                return res.status(401).json({ field: 'general', message: errorString })
+                return res.status(401).json({ field: 'general', message: errorString, error: "Invalid token" })
             }
 
             const user = await User.findOne({ where: { UserID: usr.id } })
 
             var userRoles = await getUserRoles(user)
 
+            // If no permissions are required, allow the user to continue
             if (allowedPermissions.length == 0) {
                 req.userID = usr.id
                 next()
@@ -98,7 +101,7 @@ const hasPermissions = (allowedPermissions) => {
                 req.userID = usr.id
                 next()
             } else {
-                return res.status(401).json({ field: 'general', message: errorString })
+                return res.status(401).json({ field: 'general', message: errorString, error: "Bad permissions" })
             }
         })
     }

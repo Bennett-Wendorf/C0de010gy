@@ -42,16 +42,22 @@ api.interceptors.response.use(
         ) {
             if (error.response.status === 401 && !originalRequest._retry) {
                 originalRequest._retry = true;
-                AuthService.fetchRefreshToken().catch(err => {
-                    if (err.response.status === 401) {
-                        AuthService.logout()
-                        return Promise.reject(err)
+               return await AuthService.fetchRefreshToken()
+                    .then(res => {
+                        const token = res.accessToken
+                        useUserStore.setState({ AccessToken: token })
+                        return api(originalRequest)
+                    })
+                    .catch(err => {
+                        if (err.response.status === 401) {
+                            AuthService.logout()
+                            return Promise.reject(err)
+                        }
                     }
-                })
+                )
             }
             return Promise.reject(error);
         }
-
         return Promise.reject(error);
     }
 );

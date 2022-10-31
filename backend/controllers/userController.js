@@ -3,19 +3,8 @@ const bcrypt = require('bcrypt')
 
 const saltRounds = 10;
 
-// TODO: Add middleware for logging last time user performed an action
-
 const createUser = async (req, res) => {
     const { firstName, lastName, username, email, password, roles } = req.body
-
-    // TODO: Double check validation rules here, or add them to the validation middleware
-
-    const user = await User.findOne({ where: { Username: username } })
-
-    if (user) {
-        res.status(409).send({ field: 'username', message: "A user with that username already exists" })
-        return
-    }
 
     bcrypt.hash(password, saltRounds, async (err, hashedPassword) => {
         if (err) {
@@ -23,8 +12,8 @@ const createUser = async (req, res) => {
         }
 
         const newUser = await User.create({ 
-            FirstName: firstName, 
-            LastName: lastName, 
+            FirstName: firstName == "" ? null : firstName, 
+            LastName: lastName == "" ? null : lastName, 
             Username: username,
             Email: email,
             Password: hashedPassword,
@@ -86,4 +75,32 @@ const createUserRoles = async (user, roles, actionUserID) => {
     })
 }
 
-module.exports = { createUser, getUserRoles, addUserRoles }
+const validateNewUser = async (req, res, next) => {
+    const { firstName, lastName, username, email, password, roles } = req.body
+
+    if (!email.includes('@')) {
+        res.status(400).json({ field: 'email', message: 'Email is invalid' })
+        return
+    }
+
+    if (roles.includes('Administrator')) {
+        res.status(403).json({ field: 'general', message: 'You do not have permission to assign admin roles' })
+        return
+    }
+
+    if (!password.match( /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/g)) {
+        res.status(400).json({ field: 'password', message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number' })
+        return
+    }
+
+    const user = await User.findOne({ where: { Username: username } })
+
+    if (user) {
+        res.status(409).send({ field: 'username', message: "A user with that username already exists" })
+        return
+    }
+
+    next()
+}
+
+module.exports = { createUser, getUserRoles, addUserRoles, validateNewUser }

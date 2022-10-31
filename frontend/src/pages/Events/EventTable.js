@@ -18,8 +18,6 @@ import {
     Paper,
     Button,
     Typography,
-    FormControlLabel,
-    Checkbox,
     InputAdornment
 } from '@mui/material';
 
@@ -140,7 +138,6 @@ export function EventTable({ rows, eventUpdate }) {
                 }
                 setIsViewDialogOpen(true)
             })
-        updateEventDonations(event)
     }
 
     // Functions to handle changes in values for modification dialog
@@ -337,7 +334,7 @@ export function EventTable({ rows, eventUpdate }) {
             .catch(error => {
                 return false
             }
-            )
+        )
     }
 
     const handleCancelVolunteer = () => {
@@ -390,6 +387,7 @@ export function EventTable({ rows, eventUpdate }) {
     }
 
     const handleViewDonations = () => {
+        updateEventDonations(selectedEvent)
         setIsViewDonationsDialogOpen(true)
     }
 

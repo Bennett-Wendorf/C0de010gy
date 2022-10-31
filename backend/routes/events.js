@@ -3,7 +3,7 @@ const { getAllEvents, createEvent, updateEvent, deleteEvent } = require('../cont
 const { volunteer, hasVolunteered, cancelVolunteer, validateNewVolunteer } = require('../controllers/volunteerController')
 const { donateToEvent, hasDonated, getEventDonations, validateNewDonation } = require('../controllers/donateController')
 const { hasPermissions } = require('../controllers/authController')
-const { validateNewEvent } = require('../controllers/eventController')
+const { validateNewEvent, ensureEventExists } = require('../controllers/eventController')
 
 const router = express.Router()
 
@@ -26,7 +26,7 @@ router.route('/:id/volunteer')
 
 // Donate to the event with the specified ID
 router.route('/:id/donate')
-    .post(hasPermissions(['Donor']), validateNewDonation, donateToEvent)
+    .post(hasPermissions(['Donor']), ensureEventExists, validateNewDonation, donateToEvent)
     .get(hasPermissions([]), hasDonated)
 
 router.get('/:id/donations', hasPermissions(['Donor']), getEventDonations)

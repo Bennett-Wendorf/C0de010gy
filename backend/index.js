@@ -7,6 +7,7 @@ const options = { cors: { origin: "*", }, }
 const authRoute = require('./routes/auth')
 const eventRoute = require('./routes/events')
 const userRoute = require('./routes/user')
+const donationRoute = require('./routes/donations')
 const cookieParser = require('cookie-parser')
 
 // Define the port to run the backend on as the environment variable for port, or 8080 if that variable is not defined
@@ -36,6 +37,7 @@ app.use(cookieParser())
 app.use('/api/auth', authRoute)
 app.use('/api/events', eventRoute)
 app.use('/api/user', userRoute)
+app.use('/api/donations', donationRoute)
 
 // Error handlers
 app.use((req, res) => res.status(404).send("404 NOT FOUND"))
