@@ -8,6 +8,8 @@ import Grid2 from '@mui/material/Unstable_Grid2'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
 
+import AuthService from "../../services/auth.service";
+
 // Setup a general format for dates
 const dateFormatOptions = {
     year: 'numeric',
@@ -40,9 +42,12 @@ const dividerStyles = {
     m: 0.75
 }
 
-export default function CarouselCard({ event, eventClick, style }) {
+export default function CarouselCard({ event, eventClick, eventClickView }) {
+
+    const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
+
     return (
-        <Card sx={cardStyles} style={style} onClick={eventClick}>
+        <Card sx={cardStyles} onClick={() => { userIsAdmin ? eventClick(event) : eventClickView(event) }}>
             <Typography sx={summaryStyles}>
                 {event.Summary}
             </Typography>
@@ -53,19 +58,11 @@ export default function CarouselCard({ event, eventClick, style }) {
                 End: {new Date(event.EndTime).toLocaleString("en-US", dateFormatOptions)}
             </Typography>
             <Divider sx={dividerStyles} />
-            <Grid2 container spacing={2}>
-                <Grid2 xs={8}>
-                    <Grid2 container spacing={1}>
-                        <Grid2><LocationOnIcon /></Grid2>
-                        <Grid2><Typography noWrap>{event.Location}</Typography></Grid2>
-                    </Grid2>
-                </Grid2>
-                <Grid2 xs={4}>
-                    <Grid2 container spacing={1}>
-                        <Grid2><PeopleIcon /></Grid2>
-                        <Grid2><Typography>{event.NeededVolunteers}</Typography></Grid2>
-                    </Grid2>
-                </Grid2>
+            <Grid2 container spacing={3} columns={24}>
+                <Grid2 xs={3}><LocationOnIcon /></Grid2>
+                <Grid2 xs={13}><Typography noWrap>{event.Location}</Typography></Grid2>
+                <Grid2 xs={3}><PeopleIcon /></Grid2>
+                <Grid2 xs={5}><Typography>{event.NeededVolunteers}</Typography></Grid2>
             </Grid2>
         </Card>
 

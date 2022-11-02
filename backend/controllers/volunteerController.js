@@ -68,7 +68,6 @@ const cancelVolunteer = async (req, res) => {
 
 const validateNewVolunteer = async (req, res, next) => {
     const { id } = req.params
-    console.log(req)
     const userID  = req.userID
 
     // Check for duplicate volunteer entries

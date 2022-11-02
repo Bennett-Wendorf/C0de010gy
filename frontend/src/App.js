@@ -48,7 +48,7 @@ function App() {
         <Router>
             {/* Create the routes to render certain pages at certain endpoints */}
             <Routes>
-                <Route path="/" element={<Navigate to="/events" />} />
+                <Route path="/" element={<Navigate to="/dashboard" />} />
                 <Route path="/login" element={getBasePageLayout(false, <Login />)} />
                 <Route path="/register" element={getBasePageLayout(false, <Register />)} />
                 <Route path="/dashboard" element={getBasePageLayout(true, <Dashboard />)} />

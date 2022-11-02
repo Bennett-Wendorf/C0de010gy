@@ -61,9 +61,14 @@ export function Events() {
     const [newEventLocationErrorText, setNewEventLocationErrorText] = useState("")
     const [newEventVolunteerQualificationsErrorText, setNewEventVolunteerQualificationsErrorText] = useState("")
 
+    const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false)
+    const [errorDialogText, setErrorDialogText] = useState("")
+
     // Handle opening and closing of the dialog for new event
     const handleClickOpen = () => {
         setIsDialogOpen(true)
+        setNewEventStartDate(defaultNewStartDate)
+        setNewEventEndDate(defaultNewEndDate)
     }
 
     const handleClose = () => {
@@ -107,8 +112,6 @@ export function Events() {
         setNewEventNeededVolunteers(defaultNewNeededVolunteers)
         setEventNewLocation(defualtNewLocation)
         setNewEventVolunteerQualifications(defaultNewVolunteerQualifications)
-        setNewEventStartDate(defaultNewStartDate)
-        setNewEventEndDate(defaultNewEndDate)
     }
 
     const resetErrors = () => {
@@ -143,10 +146,10 @@ export function Events() {
             .then(response => {
                 setIsDialogOpen(false)
                 updateEvents()
+                resetNewEventValues()
             })
             .catch(handleResponseError)
 
-        resetNewEventValues()
         resetErrors()
     }
 
@@ -178,8 +181,17 @@ export function Events() {
                 alert(message)
                 break
             default:
+                alertError(error)
                 break
         }
+    }
+
+    const alertError = (error) => {
+        setErrorDialogText(error.response?.data?.message ? error.response.data.message : error.message)
+        setIsErrorDialogOpen(true)
+    }
+    const handleErrorDialogClose = () => {
+        setIsErrorDialogOpen(false)
     }
 
     // Make an api call to the backend to update the list of events
@@ -334,6 +346,20 @@ export function Events() {
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={handleSubmit}>Submit</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* TODO: Set this up to use a different error method, such as banner */}
+            {/* Popup dialog for indicating error */}
+            <Dialog open={isErrorDialogOpen} onClose={handleErrorDialogClose}>
+                <DialogTitle>
+                    Error!
+                </DialogTitle>
+                <DialogContent>
+                    {errorDialogText}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleErrorDialogClose}>OK</Button>
                 </DialogActions>
             </Dialog>
         </div>

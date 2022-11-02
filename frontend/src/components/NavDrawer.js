@@ -37,7 +37,8 @@ const drawerStyle = (theme) => ({
 
 const linkStyle = {
     color: "inherit",
-    textDecoration: "none"
+    textDecoration: "none",
+    cursor: "default"
 }
 
 const logoStyle = {
@@ -102,8 +103,8 @@ function NavDrawer() {
                     }
 
                     {userIsAdmin &&
-                        <Link to="/users" style={linkStyle}>
-                            <ListItem button key="Users">
+                        <Link to="/users" style={linkStyle} onClick={e => e.preventDefault()}>
+                            <ListItem disabled button key="Users">
                                 <ListItemIcon>{<PeopleIcon />}</ListItemIcon>
                                 <ListItemText primary="Users" />
                             </ListItem>
@@ -111,8 +112,8 @@ function NavDrawer() {
                     }
 
                     {userIsAdmin &&
-                        <Link to="/stats" style={linkStyle}>
-                            <ListItem button key="Statistics">
+                        <Link to="/stats" style={linkStyle} onClick={e => e.preventDefault()}>
+                            <ListItem disabled button key="Statistics">
                                 <ListItemIcon>{<AnalyticsIcon />}</ListItemIcon>
                                 <ListItemText primary="Statistics" />
                             </ListItem>

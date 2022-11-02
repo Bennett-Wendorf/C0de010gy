@@ -2,7 +2,7 @@
 import React from "react";
 
 // MUI components
-import { AppBar, Toolbar, Typography, Box, CssBaseline, Tooltip, IconButton } from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, CssBaseline, Tooltip, IconButton, Divider } from "@mui/material";
 
 // Menu stuff
 import { Menu, MenuItem } from "@mui/material";
@@ -45,6 +45,14 @@ const buttonStyle = {
 const rightButtonFloat = {
     float: "right"
 }
+
+const userNameStyles = (theme) => ({
+    color: theme.palette.primary.main,
+    fontWeight: "bold",
+    ml: 2,
+    mb: 1,
+    mr: 2,
+})
 
 function AccountMenu() {
     const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
@@ -98,8 +106,9 @@ function AccountMenu() {
             </Tooltip>
 
             <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
-                {accessToken !== -1 && <MenuItem disabled>{fullName}</MenuItem>}
-                {accessToken !== -1 && <MenuItem onClick={handleAccountClick}>My account</MenuItem>}
+                {accessToken !== -1 && <Typography sx={userNameStyles}>{fullName}</Typography>}
+                <Divider />
+                {accessToken !== -1 && <MenuItem disabled onClick={handleAccountClick}>My account</MenuItem>}
                 {accessToken !== -1 && <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>}
                 {accessToken === -1 && <MenuItem onClick={handleLoginClick}>Login</MenuItem>}
             </Menu>
@@ -138,7 +147,7 @@ function Bar(props) {
                     <Box sx={buttonStyle}>
                         <AccountMenu />
                         <Tooltip title="Notifications" sx={rightButtonFloat}>
-                            <IconButton aria-label="notifications" size="large" onClick={handleNotificationsOpen}>
+                            <IconButton disabled aria-label="notifications" size="large" onClick={handleNotificationsOpen}>
                                 <NotificationIcon />
                             </IconButton>
                         </Tooltip>

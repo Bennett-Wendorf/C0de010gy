@@ -382,7 +382,7 @@ export default function ModifyEventDialog(props) {
                                 type="text"
                                 fullWidth
                                 multiline
-                                rows={5}
+                                rows={4}
                                 variant="filled"
                                 margin="none"
                                 onChange={handleUpdateDescriptionChange}
@@ -448,6 +448,7 @@ export default function ModifyEventDialog(props) {
                                     label="Start Time"
                                     required
                                     variant="filled"
+                                    margin="none"
                                     value={updateStartTime}
                                     onChange={handleUpdateStartTimeChange}
                                     renderInput={(params) => <TextField margin="none" {...params} />}
@@ -460,11 +461,23 @@ export default function ModifyEventDialog(props) {
                                     label="End Time"
                                     required
                                     variant="filled"
+                                    margin="none"
                                     value={updateEndTime}
                                     onChange={handleUpdateEndTimeChange}
                                     renderInput={(params) => <TextField margin="none" {...params} />}
                                 />
                             </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                margin="none"
+                                fullWidth
+                                disabled
+                            >
+                                Edit Programs
+                            </Button>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -518,7 +531,7 @@ export default function ModifyEventDialog(props) {
                                 type="text"
                                 fullWidth
                                 multiline
-                                rows={5}
+                                rows={4}
                                 variant="filled"
                                 margin="none"
                                 disabled
@@ -597,6 +610,7 @@ export default function ModifyEventDialog(props) {
                                 <Button
                                     onClick={handleCancelVolunteer}
                                     color="error"
+                                    margin="none"
                                     variant="contained"
                                     fullWidth
                                 >
@@ -609,6 +623,7 @@ export default function ModifyEventDialog(props) {
                                 <Button
                                     variant="contained"
                                     color="primary"
+                                    margin="none"
                                     onClick={handleVolunteer}
                                     fullWidth
                                 >
@@ -621,6 +636,7 @@ export default function ModifyEventDialog(props) {
                                 <Button
                                     onClick={handleViewDonations}
                                     color="secondary"
+                                    margin="none"
                                     variant="contained"
                                     fullWidth
                                 >
@@ -633,6 +649,7 @@ export default function ModifyEventDialog(props) {
                                 <Button
                                     variant="contained"
                                     color="primary"
+                                    margin="none"
                                     onClick={handleDonate}
                                     fullWidth
                                 >
@@ -640,6 +657,17 @@ export default function ModifyEventDialog(props) {
                                 </Button>
                             </Grid>
                         }
+                        <Grid item xs={12}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                margin="none"
+                                fullWidth
+                                disabled
+                            >
+                                View Programs
+                            </Button>
+                        </Grid>
                     </Grid>
                 </DialogContent>
 
@@ -669,6 +697,15 @@ export default function ModifyEventDialog(props) {
                                 margin="none"
                                 value={donationAmount}
                                 onChange={handleDonationAmountChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Card Number"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                helperText="Note: This is a demo, so no real card numbers will be charged and no card information will be sent or stored."
                             />
                         </Grid>
                     </Grid>

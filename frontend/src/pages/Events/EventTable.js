@@ -48,7 +48,6 @@ export function EventTable({ rows, eventUpdate }) {
     }
 
     const handleRowClickView = async (event) => {
-        console.log("Clicking row")
         setSelectedEvent(event)
         checkIfVolunteered(event)
             .then((volunteered) => {
