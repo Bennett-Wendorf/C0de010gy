@@ -11,7 +11,7 @@ const eventListMargin = 40
 export default function Carousel({ events }) {
     const listRef = useRef()
 
-    const [paperWidth, setPaperWidth] = useState(window.innerWidth)
+    const [paperWidth, setPaperWidth] = useState(window.innerWidth - drawerWidth - eventListMargin)
 
     useEffect(() => {
         function handleWindowResize() {
@@ -49,7 +49,6 @@ export default function Carousel({ events }) {
                         gridAutoFlow: "column",
                         gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr)) !important",
                         gridAutoColumns: "minmax(320px, 1fr)",
-                        
                     }}
                 >
                     {events.map((event) => (

@@ -98,7 +98,6 @@ export function Dashboard() {
             {/* Define the bar for the top of the screen, with its buttons */}
             <Bar title="Dashboard" />
             <Carousel events={testEvents} />
-            {/* <CarouselCard event={testEvents[0]} /> */}
         </div>
     )
 }

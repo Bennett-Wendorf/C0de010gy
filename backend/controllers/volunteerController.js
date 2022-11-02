@@ -68,6 +68,7 @@ const cancelVolunteer = async (req, res) => {
 
 const validateNewVolunteer = async (req, res, next) => {
     const { id } = req.params
+    console.log(req)
     const userID  = req.userID
 
     // Check for duplicate volunteer entries
@@ -85,7 +86,7 @@ const validateNewVolunteer = async (req, res, next) => {
     // Check for overlapping volunteer times
     const overlappingVolunteer = await Volunteer.findOne({ 
         where: {
-            UserID: userId, 
+            UserID: userID, 
             [Op.or]: [
                 {StartTime: {
                     [Op.between]: [event.StartTime, event.EndTime]
