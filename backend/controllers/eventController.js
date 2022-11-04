@@ -1,7 +1,28 @@
 const { Event } = require('../database/models')
+const { Op } = require('sequelize')
 
 const getAllEvents = async (req, res) => {
-    const events = await Event.findAll()
+    const events = await Event.findAll({
+        order: [
+            ['StartTime', 'ASC']
+        ]
+    })
+    res.json({
+        events
+    })
+}
+
+const getAllFutureEvents = async (req, res) => {
+    const events = await Event.findAll({
+        where: {
+            StartTime: {
+                [Op.gt]: new Date()
+            }
+        },
+        order: [
+            ['StartTime', 'ASC']
+        ]
+    })
     res.json({
         events
     })
@@ -82,4 +103,4 @@ const ensureEventExists = async (req, res, next) => {
     next()
 }
 
-module.exports = { getAllEvents, createEvent, updateEvent, deleteEvent, validateNewEvent, ensureEventExists }
+module.exports = { getAllEvents, getAllFutureEvents, createEvent, updateEvent, deleteEvent, validateNewEvent, ensureEventExists }

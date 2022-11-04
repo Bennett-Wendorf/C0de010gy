@@ -1,5 +1,5 @@
 const express = require('express')
-const { getAllEvents, createEvent, updateEvent, deleteEvent } = require('../controllers/eventController')
+const { getAllEvents, getAllFutureEvents, createEvent, updateEvent, deleteEvent } = require('../controllers/eventController')
 const { volunteer, hasVolunteered, cancelVolunteer, validateNewVolunteer } = require('../controllers/volunteerController')
 const { donateToEvent, hasDonated, getEventDonations, validateNewDonation } = require('../controllers/donateController')
 const { hasPermissions } = require('../controllers/authController')
@@ -11,6 +11,8 @@ const router = express.Router()
 router.route('/')
     .get(getAllEvents)
     .post(hasPermissions(['Administrator']), validateNewEvent, createEvent)
+
+router.get('/future' , getAllFutureEvents)
 
 // Update the existing event with the specified id
 router.put('/:id', hasPermissions(['Administrator']), updateEvent)

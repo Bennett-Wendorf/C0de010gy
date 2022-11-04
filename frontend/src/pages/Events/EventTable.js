@@ -30,6 +30,10 @@ const dateFormatOptions = {
     minute: '2-digit',
 }
 
+const dateColorStyles = (value) => (theme) => {
+    return new Date(value) < new Date() ? { color: theme.palette.text.disabled } : { color: theme.palette.text.primary }
+}
+
 // Create a component for the table of events
 export function EventTable({ rows, eventUpdate }) {
 
@@ -119,8 +123,12 @@ export function EventTable({ rows, eventUpdate }) {
                                 hover
                             >
                                 <TableCell>{row.Summary}</TableCell>
-                                <TableCell align="left" size="small">{new Date(row.StartTime).toLocaleString("en-US", dateFormatOptions)}</TableCell>
-                                <TableCell align="left" size="small">{new Date(row.EndTime).toLocaleString("en-US", dateFormatOptions)}</TableCell>
+                                <TableCell align="left" size="small" sx={dateColorStyles(row.StartTime)}>
+                                    {new Date(row.StartTime).toLocaleString("en-US", dateFormatOptions)}
+                                </TableCell>
+                                <TableCell align="left" size="small"sx={dateColorStyles(row.EndTime)}>
+                                    {new Date(row.EndTime).toLocaleString("en-US", dateFormatOptions)}
+                                </TableCell>
                                 <TableCell align="right" size="small">{row.Location}</TableCell>
                                 <TableCell align="right" size="small">{row.NeededVolunteers}</TableCell>
                             </TableRow>

@@ -22,7 +22,7 @@ export function Dashboard() {
 
     // Make an api call to the backend to update the list of events
     const updateEvents = () => {
-        api.get(`/api/events`)
+        api.get(`/api/events/future`)
             .then(response => {
                 setEvents(response.data ? response.data.events : [])
                 console.log("Updating events");

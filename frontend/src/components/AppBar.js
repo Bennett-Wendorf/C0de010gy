@@ -105,13 +105,20 @@ function AccountMenu() {
                 </IconButton>
             </Tooltip>
 
-            <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
-                {accessToken !== -1 && <Typography sx={userNameStyles}>{fullName}</Typography>}
-                <Divider />
-                {accessToken !== -1 && <MenuItem disabled onClick={handleAccountClick}>My account</MenuItem>}
-                {accessToken !== -1 && <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>}
-                {accessToken === -1 && <MenuItem onClick={handleLoginClick}>Login</MenuItem>}
-            </Menu>
+            {accessToken !== -1 &&
+                <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
+                    <Typography sx={userNameStyles}>{fullName}</Typography>
+                    <Divider />
+                    <MenuItem disabled onClick={handleAccountClick}>My Account</MenuItem>
+                    <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+                </Menu>
+            }
+            
+            {accessToken === -1 &&
+                <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
+                    <MenuItem onClick={handleLoginClick}>Login</MenuItem>
+                </Menu>
+            }
 
             <Dialog open={isSuccessDialogOpen} onClose={handleSuccessOK}>
                 <DialogTitle>Successfully Logged Out</DialogTitle>
