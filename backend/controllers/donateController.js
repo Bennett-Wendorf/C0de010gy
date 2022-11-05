@@ -1,5 +1,4 @@
-const { Donation } = require('../database/models')
-const { Event } = require('../database/models')
+const { Donation, Event } = require('../database')
 
 const donateToEvent = async (req, res) => {
     const { id } = req.params

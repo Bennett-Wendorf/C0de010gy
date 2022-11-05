@@ -212,7 +212,7 @@ export default function ModifyEventDialog(props) {
             .then((response) => {
                 setIsVolunteerRoleConfOpen(false)
                 setAddRoleSuccessMessage(response.data.message)
-                addRole('Volunteer')
+                addRole(response.data.roles)
                 completeVolunteer()
                     .then(() =>
                         setIsAddRoleSuccessOpen(true))
@@ -280,6 +280,7 @@ export default function ModifyEventDialog(props) {
 
     // Handle volunteer and donation button presses
     const handleVolunteer = () => {
+        console.log(`userIsVolunteer: ${userIsVolunteer}`)
         if (!AuthService.isLoggedIn()) {
             setIsRegConfOpen(true)
         } else if (!userIsVolunteer) {

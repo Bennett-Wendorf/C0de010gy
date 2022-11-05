@@ -1,45 +1,21 @@
-const { sequelize } = require('../index.js');
 const { DataTypes } = require('sequelize');
 
-const Program = sequelize.define("program", {
+const sequelize = require('../sequelize_index');
+
+const Program = sequelize.define("Program", {
     ProgramID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
     },
     Summary: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     Description: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(500),
         allowNull: false
     },
-    EventID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "event",
-            key: "EventID"
-        }
-    },
-    UserIDCreatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    UserIDLastModifiedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    }
 })
 
-module.exports = { Program };
+module.exports = Program;

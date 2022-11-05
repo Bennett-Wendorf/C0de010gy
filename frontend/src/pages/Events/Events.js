@@ -28,11 +28,12 @@ export function Events() {
     const defaultNewSummary = ""
     const defaultNewDescription = ""
     const defaultNewNeededVolunteers = "0"
-    const defualtNewLocation = ""
+    const defaultNewLocation = ""
     const defaultNewVolunteerQualifications = ""
     const defaultNewStartDate = new Date()
-    const defaultNewEndDate = new Date()
-    defaultNewEndDate.setDate(defaultNewEndDate.getDate() + 1)
+    defaultNewStartDate.setHours(defaultNewStartDate.getHours() + 1)
+    const defaultNewEndDate = new Date(defaultNewStartDate.toISOString())
+    defaultNewEndDate.setHours(defaultNewStartDate.getHours() + 1)
     const maxSummaryLength = 100
     const maxDescriptionLength = 500
     const maxLocationLength = 100
@@ -44,7 +45,7 @@ export function Events() {
     const [newEventSummary, setNewEventSummary] = useState(defaultNewSummary)
     const [newEventDescription, setNewEventDescription] = useState(defaultNewDescription)
     const [newEventNeededVolunteers, setNewEventNeededVolunteers] = useState(defaultNewNeededVolunteers)
-    const [newEventLocation, setEventNewLocation] = useState(defualtNewLocation)
+    const [newEventLocation, setEventNewLocation] = useState(defaultNewLocation)
     const [newEventVolunteerQualifications, setNewEventVolunteerQualifications] = useState(defaultNewVolunteerQualifications)
     const [newEventStartDate, setNewEventStartDate] = useState(defaultNewStartDate)
     const [newEventEndDate, setNewEventEndDate] = useState(defaultNewEndDate)
@@ -110,7 +111,7 @@ export function Events() {
         setNewEventSummary(defaultNewSummary)
         setNewEventDescription(defaultNewDescription)
         setNewEventNeededVolunteers(defaultNewNeededVolunteers)
-        setEventNewLocation(defualtNewLocation)
+        setEventNewLocation(defaultNewLocation)
         setNewEventVolunteerQualifications(defaultNewVolunteerQualifications)
     }
 

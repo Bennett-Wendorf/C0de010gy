@@ -7,8 +7,8 @@ const useUserStore = create((set, get) => ({
     AccessToken: -1,
     Roles: [],
 
-    addRole: (role) => {
-        set(state => ({ Roles: [...state.Roles, role] }))
+    addRole: (updatedRoles) => {
+        set(state => ({ Roles: updatedRoles }))
     },
 
     setAuthenticatedUser: (userID, fullName, accessToken, roles) => set({ 

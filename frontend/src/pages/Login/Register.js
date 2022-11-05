@@ -278,7 +278,7 @@ export function Register() {
                 <DialogTitle>New Account Created Successfully</DialogTitle>
                 <DialogContent>Your new account has been created successfully. You will now be directed to login.</DialogContent>
                 <DialogActions>
-                    <Button onClick={handleConfirmationOK}>OK</Button>
+                    <Button autoFocus onClick={handleConfirmationOK}>OK</Button>
                 </DialogActions>
             </Dialog>
         </div>

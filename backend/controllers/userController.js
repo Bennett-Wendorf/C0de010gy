@@ -1,4 +1,4 @@
-const { User, UserRoleAssigned, UserRole } = require('../database/models')
+const { User, UserRole } = require('../database')
 const bcrypt = require('bcrypt')
 
 const saltRounds = 10;
@@ -23,7 +23,7 @@ const createUser = async (req, res) => {
 
         if (newUser) {
             res.body = newUser
-            createUserRoles(newUser, roles, 1)
+            createUserRoles(newUser, roles)
             res.status(201).send("New user created successfully")
         } else {
             res.sendStatus(500)
@@ -45,34 +45,19 @@ const addUserRoles = async (req, res) => {
     // TODO: Validate that the roles are valid
     // TODO: Ensure the user doesn't have these roles already before adding them
 
-    createUserRoles(user, roles, userID)
-    res.status(200).json({ field: 'general', message: "User roles added successfully" })
+    await createUserRoles(user, roles)
+    const userRoles = await user.getUserRoles()
+    console.log(userRoles)
+    res.status(200).json({ roles: userRoles, message: "User roles added successfully" })
 }
 
-// TODO: Improve this with better sequelize integration
-const getUserRoles = async (user) => {
-    const userRoleAssigneds = await UserRoleAssigned.findAll({ where: { UserID: user.UserID } })
-    let toReturn = []
-    
-    for (let i = 0; i < userRoleAssigneds.length; i++) {
-        const userRole = await UserRole.findOne({ where: { UserRoleID: userRoleAssigneds[i].UserRoleID }, attributes: ['DisplayName'] })
-        toReturn.push(userRole.DisplayName)
-    }
-
-    return toReturn
-}
-
-// TODO: Improve this with better sequelize integration
-const createUserRoles = async (user, roles, actionUserID) => {
-    roles.map(async (role) => {
+const createUserRoles = async (user, roles) => {
+    await Promise.all(roles.map(async (role) => {
+        const loggedInUser = await User.findOne({ where: { UserID: user.UserID } })
         const userRole = await UserRole.findOne({ where: { DisplayName: role } })
-        await UserRoleAssigned.create({ 
-            UserID: user.UserID, 
-            UserRoleID: userRole.UserRoleID,
-            UserIDCreatedBy: actionUserID,
-            UserIDLastModifiedBy: actionUserID,
-        })
-    })
+        await loggedInUser.addUserRole(userRole)
+        console.log(`Added role ${role} to user ${user.Username}`)
+    }))
 }
 
 const validateNewUser = async (req, res, next) => {
@@ -103,4 +88,4 @@ const validateNewUser = async (req, res, next) => {
     next()
 }
 
-module.exports = { createUser, getUserRoles, addUserRoles, validateNewUser }
+module.exports = { createUser, addUserRoles, validateNewUser }

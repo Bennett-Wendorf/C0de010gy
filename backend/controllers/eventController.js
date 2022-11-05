@@ -1,4 +1,4 @@
-const { Event } = require('../database/models')
+const { Event } = require('../database')
 const { Op } = require('sequelize')
 
 const getAllEvents = async (req, res) => {

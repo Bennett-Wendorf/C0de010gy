@@ -1,5 +1,4 @@
-const { Volunteer } = require('../database/models')
-const { Event } = require('../database/models')
+const { Volunteer, Event } = require('../database')
 const { Op } = require('sequelize')
 
 const volunteer = async (req, res) => {
@@ -101,6 +100,7 @@ const validateNewVolunteer = async (req, res, next) => {
         return res.status(400).json({ field: 'general', message: `You are already volunteering at this time for another event titled: ${overlappingEvent.Summary}` })
     }
 
+    // TODO: Update this with better sequelize integration
     // Ensure that there are open volunteer slots
     const volunteerCount = await Volunteer.count({ where: { EventID: id }})
     if (volunteerCount >= event.NeededVolunteers) {

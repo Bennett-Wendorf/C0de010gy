@@ -1,45 +1,13 @@
-const { sequelize } = require('../index.js');
 const { DataTypes } = require('sequelize');
 
-const UserRoleAssigned = sequelize.define("user_role_assigned", {
+const sequelize = require('../sequelize_index');
+
+const UserRoleAssigned = sequelize.define("UserRoleAssigned", {
     UserRoleAssignedID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
     },
-    UserID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    UserRoleID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user_role",
-            key: "UserRoleID"
-        }
-    },
-    UserIDCreatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    UserIDLastModifiedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
 })
 
-module.exports = { UserRoleAssigned };
+module.exports = UserRoleAssigned;

@@ -1,19 +1,19 @@
-const { sequelize } = require('../index.js');
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize")
 
-const Event = sequelize.define("event", {
+const sequelize = require("../sequelize_index")
+
+const Event = sequelize.define("Event", {
     EventID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
     },
     Summary: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     Description: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(500),
         allowNull: false
     },
     StartTime: {
@@ -29,29 +29,13 @@ const Event = sequelize.define("event", {
         allowNull: false
     },
     Location: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: true
     },
     VolunteerQualifications: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(250),
         allowNull: true
     },
-    UserIDCreatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    UserIDLastModifiedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    }
 })
 
-module.exports = { Event };
+module.exports = Event

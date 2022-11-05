@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
-const { User } = require('../database/models')
+const { User } = require('../database')
 const bcrypt = require('bcrypt')
-const { getUserRoles } = require('./userController')
 
 let refreshTokens = []
 
@@ -16,7 +15,7 @@ const login = async (req, res) => {
         return
     }
 
-    const userRoles = await getUserRoles(user)
+    const userRoles = await user.getUserRoles()
 
     bcrypt.compare(password, user.Password, (err, result) => {
         if (err) {
@@ -86,7 +85,11 @@ const hasPermissions = (allowedPermissions) => {
 
             const user = await User.findOne({ where: { UserID: usr.id } })
 
-            var userRoles = await getUserRoles(user)
+            if (user === null){
+                return res.status(401).json({ field: 'general', message: errorString, error: "No user found" })
+            }
+
+            var userRoles = await user.getUserRoles()
 
             // If no permissions are required, allow the user to continue
             if (allowedPermissions.length == 0) {
@@ -95,7 +98,7 @@ const hasPermissions = (allowedPermissions) => {
                 return
             }
 
-            if (allowedPermissions.some(permission => userRoles.includes(permission))) {
+            if (allowedPermissions.some(permission => userRoles.some(role => role.DisplayName === permission))) {
                 req.userID = usr.id
                 next()
             } else {
@@ -127,7 +130,7 @@ const getNewAccessToken = async (req, res) => {
             return
         }
 
-        const userRoles = await getUserRoles(user)
+        const userRoles = await user.getUserRoles()
 
         const accessToken = generateAccessToken(user)
         res.json({ 
