@@ -24,7 +24,7 @@ const rootStyle = {
     flexGrow: 1
 }
 
-const appBarStyle = { // TODO: Add that this style should only apply for sm screens and up
+const appBarStyle = {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
 }

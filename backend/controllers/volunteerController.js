@@ -76,7 +76,14 @@ const validateNewVolunteer = async (req, res, next) => {
     }
 
     // Ensure the event exists
-    const event = await Event.findOne({ where: { EventID: id }})
+    const event = await Event.findOne({ 
+        where: { EventID: id },
+        include: [
+            {
+                model: Volunteer,
+            }
+        ]
+    })
     if (!event) {
         return res.status(404).json({ field: 'general', message: 'Event not found' })
     }
@@ -100,10 +107,8 @@ const validateNewVolunteer = async (req, res, next) => {
         return res.status(400).json({ field: 'general', message: `You are already volunteering at this time for another event titled: ${overlappingEvent.Summary}` })
     }
 
-    // TODO: Update this with better sequelize integration
     // Ensure that there are open volunteer slots
-    const volunteerCount = await Volunteer.count({ where: { EventID: id }})
-    if (volunteerCount >= event.NeededVolunteers) {
+    if (event.Volunteers.length >= event.NeededVolunteers) {
         return res.status(400).json({ field: 'general', message: 'Event is not in need of more volunteers' })
     }
 

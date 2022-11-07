@@ -110,7 +110,8 @@ export function EventTable({ rows, eventUpdate }) {
                             <TableCell align="left">Start Time</TableCell>
                             <TableCell align="left">End Time</TableCell>
                             <TableCell align="right">Location</TableCell>
-                            <TableCell align="right">Needed Volunteers</TableCell>
+                            <TableCell align="right">Total Needed Volunteers</TableCell>
+                            <TableCell align="right">Remaining Needed Volunteers</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -131,6 +132,7 @@ export function EventTable({ rows, eventUpdate }) {
                                 </TableCell>
                                 <TableCell align="right" size="small">{row.Location}</TableCell>
                                 <TableCell align="right" size="small">{row.NeededVolunteers}</TableCell>
+                                <TableCell align="right" size="small">{row.NeededVolunteers - (row.Volunteers?.length ?? 0)}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

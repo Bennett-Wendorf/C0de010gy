@@ -62,7 +62,7 @@ export default function CarouselCard({ event, eventClick, eventClickView }) {
                 <Grid2 xs={3}><LocationOnIcon /></Grid2>
                 <Grid2 xs={13}><Typography noWrap>{event.Location}</Typography></Grid2>
                 <Grid2 xs={3}><PeopleIcon /></Grid2>
-                <Grid2 xs={5}><Typography>{event.NeededVolunteers}</Typography></Grid2>
+                <Grid2 xs={5}><Typography>{event.NeededVolunteers - (event.Volunteers?.length ?? 0)}</Typography></Grid2>
             </Grid2>
         </Card>
 

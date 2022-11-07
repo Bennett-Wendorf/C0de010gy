@@ -11,7 +11,6 @@ var AuthService = {
             .then((response) => {
                 if (response.data.accessToken) {
                     var authedUser = jwt(response.data.accessToken)
-                    console.log(response.data)
                     useUserStore.setState({ UserId: authedUser.id, FullName: response.data.fullName, AccessToken: response.data.accessToken, Roles: response.data.roles ?? [] })
                 }
             })
@@ -43,7 +42,6 @@ var AuthService = {
 
     useHasPermissions: (allowedRoles) => {
         const userRoles = useUserStore(state => state.Roles)
-        console.log(userRoles)
         return allowedRoles.some(permission => userRoles.some(role => role.DisplayName === permission))
     }
 }

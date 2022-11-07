@@ -1,5 +1,6 @@
 const { User, UserRole } = require('../database')
 const bcrypt = require('bcrypt')
+const { Op } = require('sequelize')
 
 const saltRounds = 10;
 
@@ -42,22 +43,36 @@ const addUserRoles = async (req, res) => {
         return
     }
 
-    // TODO: Validate that the roles are valid
-    // TODO: Ensure the user doesn't have these roles already before adding them
-
-    await createUserRoles(user, roles)
+    const createdRoles = await createUserRoles(user, roles)
+    if (!createdRoles) {
+        res.status(500).send({ field: 'general', message: "Roles could not be added successfully" })
+        return
+    }
     const userRoles = await user.getUserRoles()
-    console.log(userRoles)
     res.status(200).json({ roles: userRoles, message: "User roles added successfully" })
 }
 
 const createUserRoles = async (user, roles) => {
     await Promise.all(roles.map(async (role) => {
         const loggedInUser = await User.findOne({ where: { UserID: user.UserID } })
+        if (loggedInUser === null){
+            console.log("User not found")
+            return false
+        }
+
         const userRole = await UserRole.findOne({ where: { DisplayName: role } })
-        await loggedInUser.addUserRole(userRole)
-        console.log(`Added role ${role} to user ${user.Username}`)
+        if (userRole === null){
+            console.log("Role not found")
+            return false
+        }
+
+        if (await loggedInUser.hasUserRole(userRole)){
+            console.log(`User already has role: ${userRole.DisplayName}`)
+        } else {
+            await loggedInUser.addUserRole(userRole)
+        }
     }))
+    return true
 }
 
 const validateNewUser = async (req, res, next) => {
@@ -88,4 +103,36 @@ const validateNewUser = async (req, res, next) => {
     next()
 }
 
-module.exports = { createUser, addUserRoles, validateNewUser }
+const validateNewUserRoles = async (req, res, next) => {
+    const userID = req.userID
+    const { roles } = req.body
+
+    const user = await User.findOne({ where: { UserID: userID } })
+
+    if (!user) {
+        res.status(404).send({ field: 'general', message: "User not found" })
+        return
+    }
+
+    const validUserRoles = await UserRole.findAll({ 
+        where: { 
+            DisplayName: {
+                [Op.in]: roles
+            } 
+        } 
+    })
+
+    if (validUserRoles.length !== roles.length) {
+        res.status(400).send({ field: 'general', message: "One or more roles are invalid" })
+        return
+    }
+
+    if (roles.includes('Administrator')) {
+        res.status(403).json({ field: 'general', message: 'You do not have permission to assign admin roles' })
+        return
+    }
+
+    next()
+}
+
+module.exports = { createUser, addUserRoles, validateNewUser, validateNewUserRoles }

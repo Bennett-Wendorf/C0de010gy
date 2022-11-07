@@ -1,10 +1,15 @@
-const { Event } = require('../database')
+const { Event, Volunteer } = require('../database')
 const { Op } = require('sequelize')
 
 const getAllEvents = async (req, res) => {
     const events = await Event.findAll({
         order: [
             ['StartTime', 'ASC']
+        ],
+        include: [
+            {
+                model: Volunteer,
+            }
         ]
     })
     res.json({
@@ -21,6 +26,11 @@ const getAllFutureEvents = async (req, res) => {
         },
         order: [
             ['StartTime', 'ASC']
+        ],
+        include: [
+            {
+                model: Volunteer,
+            }
         ]
     })
     res.json({

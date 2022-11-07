@@ -61,9 +61,9 @@ const getAllDonations = async (req, res) => {
     const userID = req.userID
 
     try {
-        const donations = await Donation.findAll({ where: { UserID: userID }})
-        const donationsWithEvent = await Promise.all(donations.map(getDonationEvent))
-        res.status(200).json(donationsWithEvent)
+        const donations = await Donation.findAll({ where: { UserID: userID }, include: Event })
+        // const donationsWithEvent = await Promise.all(donations.map(getDonationEvent))
+        res.status(200).json(donations)
     }
     catch (err) {
         res.status(500).json({ field: 'general', message: 'Something went wrong' })

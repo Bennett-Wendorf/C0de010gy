@@ -41,7 +41,7 @@ export function Donations() {
     const [isActionSuccessOpen, setIsActionSuccessOpen] = useState(false)
 
     const [newDonationAmount, setNewDonationAmount] = useState(defaultNewAmount)
-    const {donateSuccessMessage, setDonateSuccessMessage} = useState("")
+    const [donateSuccessMessage, setDonateSuccessMessage] = useState("")
 
     // Error text state
     const [newDonationAmountError, setNewDonationAmountError] = useState(false)
@@ -156,7 +156,7 @@ export function Donations() {
                             <TableRow
                                 key={donation.DonationID}
                             >
-                                <TableCell>{donation.event?.Summary ?? "General Donation"}</TableCell>
+                                <TableCell>{donation.Event?.Summary ?? "General Donation"}</TableCell>
                                 <TableCell align="left" size="small">{new Date(donation.CreatedDateTime).toLocaleString("en-US", dateFormatOptions)}</TableCell>
                                 <TableCell align="right" size="small">$ {donation.Amount.toLocaleString(undefined, {
                                     minimumFractionDigits: 2,
@@ -190,6 +190,15 @@ export function Donations() {
                                 onChange={handleNewDonationAmountChange}
                                 error={newDonationAmountError}
                                 helperText={newDonationAmountErrorText}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Card Number"
+                                fullWidth
+                                variant="filled"
+                                margin="none"
+                                helperText="Note: This is a demo, so no real card numbers will be charged and no card information will be sent or stored."
                             />
                         </Grid>
                     </Grid>

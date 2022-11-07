@@ -5,6 +5,8 @@ import api from "../../utils/api"
 import useUserStore from "../../utils/Stores";
 import AuthService from '../../services/auth.service'
 
+import Programs from "../Program/Programs"
+
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material"
 import { Grid, TextField, Button, InputAdornment, Paper } from "@mui/material"
 import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material"
@@ -70,6 +72,7 @@ export default function ModifyEventDialog(props) {
     const [donationAmount, setDonationAmount] = useState(defaultDonationAmount)
 
     const [isViewDonationsDialogOpen, setIsViewDonationsDialogOpen] = useState(false)
+    const [isViewProgramsDialogOpen, setIsViewProgramsDialogOpen] = useState(false)
 
     const [selectedEventDonations, setSelectedEventDonations] = useState([])
 
@@ -295,6 +298,7 @@ export default function ModifyEventDialog(props) {
             .then(response => {
                 setActionSuccessMessage(response.data.message)
                 setIsActionSuccessOpen(true)
+                eventUpdate()
             })
             .catch(error => {
                 alertError(error)
@@ -306,6 +310,7 @@ export default function ModifyEventDialog(props) {
             .then(response => {
                 setActionSuccessMessage(response.data.message)
                 setIsActionSuccessOpen(true)
+                eventUpdate()
             })
             .catch(error => {
                 alertError(error)
@@ -349,6 +354,14 @@ export default function ModifyEventDialog(props) {
                 alertError(error)
                 setSelectedEventDonations([])
             })
+    }
+
+    const handleViewPrograms = () => {
+        setIsViewProgramsDialogOpen(true)
+    }
+
+    const handleViewProgramsDialogClose = () => {
+        setIsViewProgramsDialogOpen(false)
     }
 
     return (
@@ -475,7 +488,7 @@ export default function ModifyEventDialog(props) {
                                 color="primary"
                                 margin="none"
                                 fullWidth
-                                disabled
+                                onClick={handleViewPrograms}
                             >
                                 Edit Programs
                             </Button>
@@ -664,7 +677,7 @@ export default function ModifyEventDialog(props) {
                                 color="primary"
                                 margin="none"
                                 fullWidth
-                                disabled
+                                onClick={handleViewPrograms}
                             >
                                 View Programs
                             </Button>
@@ -719,6 +732,8 @@ export default function ModifyEventDialog(props) {
                 </DialogActions>
             </Dialog >
 
+            <Programs selectedEvent={selectedEvent} open={isViewProgramsDialogOpen} onClose={handleViewProgramsDialogClose} />
+
             {/* Popup dialog for editing donations to an event */}
             < Dialog open={isViewDonationsDialogOpen} onClose={handleViewDonationsClose} >
                 <DialogTitle>
@@ -756,7 +771,6 @@ export default function ModifyEventDialog(props) {
                     <Button onClick={handleViewDonationsClose}>Close</Button>
                 </DialogActions>
             </Dialog >
-
 
             {/* Popup dialog for prompting for registration */}
             < Dialog open={isRegConfOpen} onClose={handleRegistrationConfirmationClose} >
