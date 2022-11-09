@@ -115,59 +115,6 @@ export default function ModifyEventDialog(props) {
         setModifyStates(selectedEvent)
     }
 
-    // Functions to handle changes in values for modification dialog
-    const handleUpdateSummaryChange = (event) => {
-        setUpdateSummary(event.target.value)
-    }
-
-    const handleUpdateDescriptionChange = (event) => {
-        setUpdateDescription(event.target.value)
-    }
-
-    const handleUpdateNeededVolunteersChange = (event) => {
-        setUpdateNeededVolunteers(event.target.value)
-    }
-
-    const handleUpdateLocationChange = (event) => {
-        setUpdateLocation(event.target.value)
-    }
-
-    const handleUpdateVolunteerQualificationsChange = (event) => {
-        setUpdateVolunteerQualifications(event.target.value)
-    }
-
-    const handleUpdateStartTimeChange = (event) => {
-        setUpdateStartTime(event.target.value)
-    }
-
-    const handleUpdateEndTimeChange = (event) => {
-        setUpdateEndTime(event.target.value)
-    }
-
-    const handleViewClose = () => {
-        setIsViewDialogOpen(false)
-    }
-
-    const handleConfirmationClose = () => {
-        setIsDeleteConfOpen(false)
-    }
-
-    const handleDeleteConfirmation = () => {
-        setIsDeleteConfOpen(true)
-    }
-
-    const handleRegistrationConfirmationClose = () => {
-        setIsRegConfOpen(false)
-    }
-
-    const handleVolunteerRoleConfirmationClose = () => {
-        setIsVolunteerRoleConfOpen(false)
-    }
-
-    const handleDonorRoleConfirmationClose = () => {
-        setIsDonorRoleConfOpen(false)
-    }
-
     const handleActionSuccessClose = () => {
         setIsActionSuccessOpen(false)
         setIsViewDialogOpen(false)
@@ -176,34 +123,14 @@ export default function ModifyEventDialog(props) {
         setIsViewDonationsDialogOpen(false)
     }
 
-    const handleAddRoleSuccessClose = () => {
-        setIsAddRoleSuccessOpen(false)
-    }
-
-    const handleErrorDialogClose = () => {
-        setIsErrorDialogOpen(false)
-    }
-
     const handleDonateClose = () => {
         setIsDonateDialogOpen(false)
         setDonationAmount(defaultDonationAmount)
     }
 
-    const handleViewDonationsClose = () => {
-        setIsViewDonationsDialogOpen(false)
-    }
-
-    const handleDonationAmountChange = (amount) => {
-        setDonationAmount(amount.target.value)
-    }
-
     const alertError = (error) => {
         setErrorDialogText(error.response?.data?.message ? error.response.data.message : error.message)
         setIsErrorDialogOpen(true)
-    }
-
-    const handleRegistration = () => {
-        navigate('/register')
     }
 
     const addRole = useUserStore(state => state.addRole)
@@ -248,17 +175,26 @@ export default function ModifyEventDialog(props) {
 
         // Create the new updated event object
         const updatedEvent = {
-            eventID: selectedEvent.eventID,
+            eventID: selectedEvent.EventID,
             summary: updateSummary,
             description: updateDescription,
             startTime: updateStartTime,
-            endTime: updateEndTime
+            endTime: updateEndTime,
+            neededVolunteers: updateNeededVolunteers,
+            location: updateLocation,
+            volunteerQualifications: updateVolunteerQualifications
         }
 
         // Make a call to the backend api to update the event
-        api.put(`/api/events/${updatedEvent.eventID}`, updatedEvent)
+        api.put(`/api/events/${selectedEvent.EventID}`, updatedEvent)
             .then(response => {
                 eventUpdate()
+                setActionSuccessMessage(response.data.message)
+                setIsActionSuccessOpen(true)
+                setModifyStates(response.data.event)
+            })
+            .catch(error => {
+                alertError(error)
             })
     }
 
@@ -273,9 +209,15 @@ export default function ModifyEventDialog(props) {
         setIsDeleteConfOpen(false)
 
         // Make the call to the backend to delete the selected event
-        api.delete(`/api/events/${selectedEvent.eventID}`)
+        api.delete(`/api/events/${selectedEvent.EventID}`)
             .then(response => {
                 eventUpdate()
+                setIsDeleteConfOpen(false)
+                setActionSuccessMessage(response.data.message)
+                setIsActionSuccessOpen(true)
+            })
+            .catch(error => {
+                alertError(error)
             })
     }
 
@@ -356,14 +298,6 @@ export default function ModifyEventDialog(props) {
             })
     }
 
-    const handleViewPrograms = () => {
-        setIsViewProgramsDialogOpen(true)
-    }
-
-    const handleViewProgramsDialogClose = () => {
-        setIsViewProgramsDialogOpen(false)
-    }
-
     return (
         <>
             {/* The popup dialog for editing and deleting event */}
@@ -382,7 +316,7 @@ export default function ModifyEventDialog(props) {
                                 fullWidth
                                 variant="filled"
                                 margin="none"
-                                onChange={handleUpdateSummaryChange}
+                                onChange={(event) => setUpdateSummary(event.target.value)}
                                 value={updateSummary}
                                 inputProps={{ maxLength: maxSummaryLength }}
                                 error={updateSummaryError}
@@ -399,7 +333,7 @@ export default function ModifyEventDialog(props) {
                                 rows={4}
                                 variant="filled"
                                 margin="none"
-                                onChange={handleUpdateDescriptionChange}
+                                onChange={(event) => setUpdateDescription(event.target.value)}
                                 value={updateDescription}
                                 inputProps={{ maxLength: maxDescriptionLength }}
                                 error={updateDescriptionError}
@@ -415,7 +349,7 @@ export default function ModifyEventDialog(props) {
                                 fullWidth
                                 variant="filled"
                                 margin="none"
-                                onChange={handleUpdateNeededVolunteersChange}
+                                onChange={(event) => setUpdateNeededVolunteers(event.target.value)}
                                 value={updateNeededVolunteers}
                                 inputProps={{ maxLength: 5 }}
                                 error={updateNeededVolunteersError}
@@ -431,7 +365,7 @@ export default function ModifyEventDialog(props) {
                                 fullWidth
                                 variant="filled"
                                 margin="none"
-                                onChange={handleUpdateLocationChange}
+                                onChange={(event) => setUpdateLocation(event.target.value)}
                                 value={updateLocation}
                                 inputProps={{ maxLength: maxLocationLength }}
                                 error={updateLocationError}
@@ -449,7 +383,7 @@ export default function ModifyEventDialog(props) {
                                 rows={2}
                                 variant="filled"
                                 margin="none"
-                                onChange={handleUpdateVolunteerQualificationsChange}
+                                onChange={(event) => setUpdateVolunteerQualifications(event.target.value)}
                                 value={updateVolunteerQualifications}
                                 inputProps={{ maxLength: maxVolunteerQualificationsLength }}
                                 error={updateVolunteerQualificationsError}
@@ -464,7 +398,7 @@ export default function ModifyEventDialog(props) {
                                     variant="filled"
                                     margin="none"
                                     value={updateStartTime}
-                                    onChange={handleUpdateStartTimeChange}
+                                    onChange={(value) => setUpdateStartTime(value)}
                                     renderInput={(params) => <TextField margin="none" {...params} />}
                                 />
                             </LocalizationProvider>
@@ -477,7 +411,7 @@ export default function ModifyEventDialog(props) {
                                     variant="filled"
                                     margin="none"
                                     value={updateEndTime}
-                                    onChange={handleUpdateEndTimeChange}
+                                    onChange={(value) => setUpdateEndTime(value)}
                                     renderInput={(params) => <TextField margin="none" {...params} />}
                                 />
                             </LocalizationProvider>
@@ -488,7 +422,7 @@ export default function ModifyEventDialog(props) {
                                 color="primary"
                                 margin="none"
                                 fullWidth
-                                onClick={handleViewPrograms}
+                                onClick={() => setIsViewProgramsDialogOpen(true)}
                             >
                                 Edit Programs
                             </Button>
@@ -498,28 +432,29 @@ export default function ModifyEventDialog(props) {
 
                 {/* Generate the buttons to act as actions on the dialog popup */}
                 <DialogActions>
-                    <Button onClick={handleDeleteConfirmation} color="error">Delete Event</Button>
+                    <Button onClick={() => setIsDeleteConfOpen(true)} color="error">Cancel Event</Button>
                     <Button onClick={handleModifyClose}>Cancel</Button>
                     <Button onClick={handleSubmit}>Confirm</Button>
                 </DialogActions>
             </Dialog >
 
             {/* Popup dialog for confirming deletion of an event */}
-            < Dialog open={isDeleteConfOpen} onClose={handleConfirmationClose} >
+            < Dialog open={isDeleteConfOpen} onClose={() => setIsDeleteConfOpen(false)} >
                 <DialogTitle>
-                    Confirm
+                    Are you sure you want to cancel event: "{selectedEvent.Summary}"?
                 </DialogTitle>
                 <DialogContent>
-                    Are you sure you want to delete event: "{selectedEvent.Title}"?
+                    Note: This will also invalidate all programs associated with the event, 
+                    invalidate all volunteer assignments. Also, all donations associated with the event will become general donations.
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleConfirmationClose}>Cancel</Button>
-                    <Button onClick={handleDelete} color="error">Confirm Delete</Button>
+                    <Button onClick={() => setIsDeleteConfOpen(false)}>Cancel</Button>
+                    <Button onClick={handleDelete} color="error">Confirm Cancel</Button>
                 </DialogActions>
             </Dialog >
 
             {/* The popup dialog for viewing event details */}
-            < Dialog open={isViewDialogOpen} onClose={handleViewClose} >
+            < Dialog open={isViewDialogOpen} onClose={() => setIsViewDialogOpen(false)} >
                 <DialogTitle>
                     Event "{selectedEvent.Summary}"
                 </DialogTitle>
@@ -677,7 +612,7 @@ export default function ModifyEventDialog(props) {
                                 color="primary"
                                 margin="none"
                                 fullWidth
-                                onClick={handleViewPrograms}
+                                onClick={() => setIsViewProgramsDialogOpen(true)}
                             >
                                 View Programs
                             </Button>
@@ -687,7 +622,7 @@ export default function ModifyEventDialog(props) {
 
                 {/* Generate the buttons to act as actions on the dialog popup */}
                 <DialogActions>
-                    <Button onClick={handleViewClose}>OK</Button>
+                    <Button onClick={() => setIsViewDialogOpen(false)}>OK</Button>
                 </DialogActions>
             </Dialog >
 
@@ -710,7 +645,7 @@ export default function ModifyEventDialog(props) {
                                 variant="filled"
                                 margin="none"
                                 value={donationAmount}
-                                onChange={handleDonationAmountChange}
+                                onChange={(event) => setDonationAmount(event.target.value)}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -732,10 +667,10 @@ export default function ModifyEventDialog(props) {
                 </DialogActions>
             </Dialog >
 
-            <Programs selectedEvent={selectedEvent} open={isViewProgramsDialogOpen} onClose={handleViewProgramsDialogClose} />
+            <Programs selectedEvent={selectedEvent} open={isViewProgramsDialogOpen} onClose={() => setIsViewProgramsDialogOpen(false)} />
 
             {/* Popup dialog for editing donations to an event */}
-            < Dialog open={isViewDonationsDialogOpen} onClose={handleViewDonationsClose} >
+            < Dialog open={isViewDonationsDialogOpen} onClose={() => setIsViewDonationsDialogOpen(false)} >
                 <DialogTitle>
                     Viewing Donations for Event "{selectedEvent.Summary}"
                 </DialogTitle>
@@ -768,12 +703,12 @@ export default function ModifyEventDialog(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDonate} color="primary" variant="contained">Add Donation</Button>
-                    <Button onClick={handleViewDonationsClose}>Close</Button>
+                    <Button onClick={() => setIsViewDonationsDialogOpen(false)}>Close</Button>
                 </DialogActions>
             </Dialog >
 
             {/* Popup dialog for prompting for registration */}
-            < Dialog open={isRegConfOpen} onClose={handleRegistrationConfirmationClose} >
+            < Dialog open={isRegConfOpen} onClose={() => setIsRegConfOpen(false)} >
                 <DialogTitle>
                     Register Now?
                 </DialogTitle>
@@ -781,13 +716,13 @@ export default function ModifyEventDialog(props) {
                     You must have an account to perform this action. Would you like to register now?
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleRegistrationConfirmationClose}>Cancel</Button>
-                    <Button onClick={handleRegistration}>Register</Button>
+                    <Button onClick={() => setIsRegConfOpen(false)}>Cancel</Button>
+                    <Button onClick={() => navigate('/register')}>Register</Button>
                 </DialogActions>
             </Dialog >
 
             {/* Popup dialog for confirming addition of Volunteer role */}
-            < Dialog open={isVolunteerRoleConfOpen} onClose={handleVolunteerRoleConfirmationClose} >
+            < Dialog open={isVolunteerRoleConfOpen} onClose={() => setIsVolunteerRoleConfOpen(false)} >
                 <DialogTitle>
                     Become a Volunteer?
                 </DialogTitle>
@@ -795,13 +730,13 @@ export default function ModifyEventDialog(props) {
                     You must have the Volunteer role to volunteer for an event. Would you like to become a volunteer now?
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleVolunteerRoleConfirmationClose}>Cancel</Button>
+                    <Button onClick={() => setIsVolunteerRoleConfOpen(false)}>Cancel</Button>
                     <Button onClick={handleAddVolunteerRole}>OK</Button>
                 </DialogActions>
             </Dialog >
 
             {/* Popup dialog for confirming addition of Donor role */}
-            < Dialog open={isDonorRoleConfOpen} onClose={handleDonorRoleConfirmationClose} >
+            < Dialog open={isDonorRoleConfOpen} onClose={() => setIsDonorRoleConfOpen(false)} >
                 <DialogTitle>
                     Become a Donor?
                 </DialogTitle>
@@ -809,7 +744,7 @@ export default function ModifyEventDialog(props) {
                     You must have the Donor role to donate to an event. Would you like to become a donor now?
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleDonorRoleConfirmationClose}>Cancel</Button>
+                    <Button onClick={() => setIsDonorRoleConfOpen(false)}>Cancel</Button>
                     <Button onClick={handleAddDonorRole}>OK</Button>
                 </DialogActions>
             </Dialog >
@@ -829,7 +764,7 @@ export default function ModifyEventDialog(props) {
             </Dialog>
 
             {/* Popup dialog for indicating success of adding a role */}
-            <Dialog open={isAddRoleSuccessOpen} onClose={handleAddRoleSuccessClose}>
+            <Dialog open={isAddRoleSuccessOpen} onClose={() => setIsAddRoleSuccessOpen(false)}>
                 <DialogTitle>
                     Success!
                 </DialogTitle>
@@ -837,12 +772,12 @@ export default function ModifyEventDialog(props) {
                     {addRoleSuccessMessage}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleAddRoleSuccessClose}>OK</Button>
+                    <Button onClick={() => setIsAddRoleSuccessOpen(false)}>OK</Button>
                 </DialogActions>
             </Dialog>
 
             {/* Popup dialog for indicating error */}
-            <Dialog open={isErrorDialogOpen} onClose={handleErrorDialogClose}>
+            <Dialog open={isErrorDialogOpen} onClose={() => setIsErrorDialogOpen(false)}>
                 <DialogTitle>
                     Error!
                 </DialogTitle>
@@ -850,7 +785,7 @@ export default function ModifyEventDialog(props) {
                     {errorDialogText}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleErrorDialogClose}>OK</Button>
+                    <Button onClick={() => setIsErrorDialogOpen(false)}>OK</Button>
                 </DialogActions>
             </Dialog>
         </>

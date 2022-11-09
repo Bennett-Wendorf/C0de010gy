@@ -7,13 +7,15 @@ import Grid2 from '@mui/material/Unstable_Grid2'
 
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 
 import AuthService from "../../services/auth.service";
+import useUserStore from "../../utils/Stores";
 
 // Setup a general format for dates
 const dateFormatOptions = {
     year: 'numeric',
-    month: 'numeric',
+    month: 'short',
     day: 'numeric',
     hour12: true,
     hour: '2-digit',
@@ -30,39 +32,70 @@ const cardStyles = {
 }
 
 const summaryStyles = {
-    fontSize: 25
+    fontSize: 25,
 }
 
 const timeStyles = {
     fontSize: 13,
-    color: 'text.secondary'
+    color: 'text.secondary',
+}
+
+const timeLabelStyles = {
+    fontSize: 13,
+    color: 'text.secondary',
+    fontWeight: 'bold',
 }
 
 const dividerStyles = {
-    m: 0.75
+    mt: 1.4,
+    mb: 1.75
 }
 
 export default function CarouselCard({ event, eventClick, eventClickView }) {
 
     const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
 
+    const currentUserID = useUserStore(state => state.UserID)
+    const userHasVolunteered = event.Volunteers.some(volunteer => volunteer.UserID === currentUserID)
+
     return (
-        <Card sx={cardStyles} onClick={() => { userIsAdmin ? eventClick(event) : eventClickView(event) }}>
-            <Typography sx={summaryStyles}>
-                {event.Summary}
-            </Typography>
-            <Typography sx={timeStyles}>
-                Start: {new Date(event.StartTime).toLocaleString("en-US", dateFormatOptions)}
-            </Typography>
-            <Typography sx={timeStyles}>
-                End: {new Date(event.EndTime).toLocaleString("en-US", dateFormatOptions)}
-            </Typography>
+        <Card elevation={6} sx={cardStyles} onClick={() => { userIsAdmin ? eventClick(event) : eventClickView(event) }}>
+            <Grid2 container spacing={3}>
+                <Grid2 item xs={userHasVolunteered ? 10 : 12}>
+                    <Typography noWrap sx={summaryStyles}>{event.Summary}</Typography>
+                </Grid2>
+                {userHasVolunteered &&
+                    <Grid2 item xs={2}>
+                        <VolunteerActivismIcon color="primary"/>
+                    </Grid2>
+                }
+            </Grid2>
+            <Grid2 container>
+                <Grid2 item xs={2}>
+                    <Typography sx={timeLabelStyles}>Start: </Typography>
+                </Grid2>
+                <Grid2 item xs={10}>
+                    <Typography sx={timeStyles}>
+                        {new Date(event.StartTime).toLocaleString('en-US', dateFormatOptions)}
+                    </Typography>
+                </Grid2>
+            </Grid2>
+            <Grid2 container>
+                <Grid2 item xs={2}>
+                    <Typography sx={timeLabelStyles}>End: </Typography>
+                </Grid2>
+                <Grid2 item xs={10}>
+                    <Typography sx={timeStyles}>
+                        {new Date(event.EndTime).toLocaleString("en-US", dateFormatOptions)}
+                    </Typography>
+                </Grid2>
+            </Grid2>
             <Divider sx={dividerStyles} />
             <Grid2 container spacing={3} columns={24}>
-                <Grid2 xs={3}><LocationOnIcon /></Grid2>
+                <Grid2 xs={3}><LocationOnIcon color="primary" /></Grid2>
                 <Grid2 xs={13}><Typography noWrap>{event.Location}</Typography></Grid2>
-                <Grid2 xs={3}><PeopleIcon /></Grid2>
-                <Grid2 xs={5}><Typography>{event.NeededVolunteers - (event.Volunteers?.length ?? 0)}</Typography></Grid2>
+                <Grid2 xs={3}><PeopleIcon color="primary" /></Grid2>
+                <Grid2 xs={5}><Typography noWrap>{event.NeededVolunteers - (event.Volunteers?.length ?? 0)}</Typography></Grid2>
             </Grid2>
         </Card>
 

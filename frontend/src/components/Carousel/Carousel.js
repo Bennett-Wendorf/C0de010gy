@@ -44,7 +44,7 @@ export default function Carousel({ events, eventClick, eventClickView }) {
 
     return (
         <>
-            <Paper sx={{ width: `${paperWidth}px`, p: 0.5 }} elevation={0}>
+            <Paper sx={{ width: `${paperWidth}px`, p: 0.5, pr: 2, pl: 2 }} elevation={1}>
                 <Box component="h2" sx={{ ml: 3, mb: 0 }}>Upcoming Events</Box>
                 {events.length > 0 ?
                     <ImageList

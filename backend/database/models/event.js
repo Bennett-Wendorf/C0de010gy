@@ -36,6 +36,11 @@ const Event = sequelize.define("Event", {
         type: DataTypes.STRING(250),
         allowNull: true
     },
+    Cancelled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    }
 })
 
 module.exports = Event

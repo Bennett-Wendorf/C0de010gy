@@ -11,18 +11,8 @@ const Event = require('./models/event');
 Donation.belongsTo(Event, { foreignKey: 'EventID' });
 Event.hasMany(Donation, { foreignKey: 'EventID' })
 
-Donation.belongsTo(User, { 
-    foreignKey: {
-        name: 'UserID',
-        allowNull: false
-    }
-});
-User.hasMany(Donation, { 
-    foreignKey: {
-        name: 'UserID',
-        allowNull: false
-    }
-})
+Donation.belongsTo(User, { foreignKey: 'UserID' });
+User.hasMany(Donation, { foreignKey: 'UserID' });
 
 Donation.belongsTo(User, {
     foreignKey: {
@@ -67,13 +57,15 @@ Program.belongsTo(Event, {
     foreignKey: {
         name: 'EventID',
         allowNull: false
-    }
+    },
+    onDelete: 'CASCADE'
 });
 Event.hasMany(Program, { 
     foreignKey: {
         name: 'EventID',
         allowNull: false
-    }
+    },
+    onDelete: 'CASCADE'
 })
 
 // Volunteer relationships
@@ -81,29 +73,33 @@ Volunteer.belongsTo(Event, {
     foreignKey: {
         name: 'EventID',
         allowNull: false
-    }
+    },
+    onDelete: 'CASCADE'
 });
 Event.hasMany(Volunteer, { 
     foreignKey: {
         name: 'EventID',
         allowNull: false
-    }
+    },
+    onDelete: 'CASCADE'
 })
 
 Volunteer.belongsTo(User, { 
     foreignKey: {
         name: 'UserID',
         allowNull: false
-    }
+    },
+    onDelete: 'CASCADE'
 });
 User.hasMany(Volunteer, { 
     foreignKey: {
         name: 'UserID',
         allowNull: false
-    }
+    },
+    onDelete: 'CASCADE'
 })
 
-sequelize.sync()
+sequelize.sync({ alter: true })
     .then(() => console.log("Database configured successfully."))
     .catch((err) => console.log(err));
 

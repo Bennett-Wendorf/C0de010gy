@@ -3,20 +3,20 @@ const { getAllEvents, getAllFutureEvents, createEvent, updateEvent, deleteEvent 
 const { volunteer, hasVolunteered, cancelVolunteer, validateNewVolunteer } = require('../controllers/volunteerController')
 const { donateToEvent, hasDonated, getEventDonations, validateNewDonation } = require('../controllers/donateController')
 const { hasPermissions } = require('../controllers/authController')
-const { validateNewEvent, ensureEventExists } = require('../controllers/eventController')
-const { getEventPrograms, createProgram, updateProgram, validateNewProgram } = require('../controllers/programController')
+const { validateNewEvent, validateFutureStartTime, ensureEventExists } = require('../controllers/eventController')
+const { getEventPrograms, createProgram, updateProgram, deleteProgram, validateNewProgram } = require('../controllers/programController')
 
 const router = express.Router()
 
 // Get all event on get request or add a new task on post
 router.route('/')
     .get(getAllEvents)
-    .post(hasPermissions(['Administrator']), validateNewEvent, createEvent)
+    .post(hasPermissions(['Administrator']), validateNewEvent, validateFutureStartTime, createEvent)
 
 router.get('/future' , getAllFutureEvents)
 
 // Update the existing event with the specified id
-router.put('/:id', hasPermissions(['Administrator']), updateEvent)
+router.put('/:id', hasPermissions(['Administrator']), validateNewEvent, updateEvent)
 
 // Delete the event with the specified id
 router.delete('/:id', hasPermissions(['Administrator']), deleteEvent)
@@ -38,6 +38,8 @@ router.route('/:id/programs')
         .get(getEventPrograms)
         .post(hasPermissions(['Administrator']), validateNewProgram, createProgram)
         
-router.put('/:eventID/programs/:programID', hasPermissions(['Administrator']), validateNewProgram, updateProgram)
+router.route('/:eventID/programs/:programID')
+    .put(hasPermissions(['Administrator']), validateNewProgram, updateProgram)
+    .delete(hasPermissions(['Administrator']), deleteProgram)
 
 module.exports = router

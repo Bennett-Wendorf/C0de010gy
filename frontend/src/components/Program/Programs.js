@@ -14,6 +14,8 @@ export default function Programs({ selectedEvent, open, onClose }) {
 
     const [isAddProgramDialogOpen, setIsAddProgramDialogOpen] = useState(false);
     const [isUpdateProgramDialogOpen, setIsUpdateProgramDialogOpen] = useState(false);
+    const [isDeleteConfOpen, setIsDeleteConfOpen] = useState(false);
+
     const [isSuccessSnackbarOpen, setIsSuccessSnackbarOpen] = useState(false);
     const [successSnackbarMessage, setSuccessSnackbarMessage] = useState("");
     const [addProgramErrorMessage, setAddProgramErrorMessage] = useState("");
@@ -76,6 +78,7 @@ export default function Programs({ selectedEvent, open, onClose }) {
         setAddProgramError(false);
     }
 
+    // TODO: Handle errors better here if they are on certain fields
     const handleUpdateProgramSubmit = () => {
         api.put(`/api/events/${selectedEvent.EventID}/programs/${selectedProgram.ProgramID}`, {
             summary: updateProgramSummary,
@@ -114,6 +117,21 @@ export default function Programs({ selectedEvent, open, onClose }) {
         setUpdateProgramDescriptionErrorText("");
         setUpdateProgramErrorMessage("");
         setUpdateProgramError(false);
+    }
+
+    const handleDelete = () => {
+        api.delete(`/api/events/${selectedEvent.EventID}/programs/${selectedProgram.ProgramID}`)
+            .then(res => {
+                const updatedPrograms = programs.filter(program => program.ProgramID !== selectedProgram.ProgramID);
+                setPrograms(updatedPrograms);
+                setIsDeleteConfOpen(false);
+                setSuccessSnackbarMessage("Program deleted successfully");
+                setIsSuccessSnackbarOpen(true);
+            })
+            .catch(err => {
+                setUpdateProgramErrorMessage(err.response?.data?.message ? err.response.data.message : err.message)
+                setUpdateProgramError(true);
+            })
     }
 
     useEffect(() => {
@@ -280,8 +298,26 @@ export default function Programs({ selectedEvent, open, onClose }) {
                     </Grid>
                 </DialogContent>
                 <DialogActions>
+                    <Button onClick={() => setIsDeleteConfOpen(true)} color="error">Delete Program</Button>
                     <Button onClick={handleUpdateProgramCancel}>Close</Button>
                     <Button onClick={handleUpdateProgramSubmit}>Submit</Button>
+                </DialogActions>
+            </Dialog >
+
+            {/* Popup dialog for confirming deletion of a program */}
+            < Dialog open={isDeleteConfOpen} onClose={() => setIsDeleteConfOpen(false)} >
+                <DialogTitle>
+                    Confirm
+                </DialogTitle>
+                <DialogContent>
+                    Are you sure you want to delete program: "{selectedProgram.Summary}"?
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => {
+                        setIsDeleteConfOpen(false)
+                        setIsUpdateProgramDialogOpen(false)
+                    }}>Cancel</Button>
+                    <Button onClick={handleDelete} color="error">Confirm Delete</Button>
                 </DialogActions>
             </Dialog >
 

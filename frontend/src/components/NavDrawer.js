@@ -111,15 +111,6 @@ function NavDrawer() {
                         </Link>
                     }
 
-                    {userIsAdmin &&
-                        <Link to="/stats" style={linkStyle} onClick={e => e.preventDefault()}>
-                            <ListItem disabled button key="Statistics">
-                                <ListItemIcon>{<AnalyticsIcon />}</ListItemIcon>
-                                <ListItemText primary="Statistics" />
-                            </ListItem>
-                        </Link>
-                    }
-
                 </List>
             </Drawer>
         </Box>

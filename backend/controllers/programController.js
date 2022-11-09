@@ -67,6 +67,23 @@ const updateProgram = async (req, res) => {
     }
 }
 
+const deleteProgram = async (req, res) => {
+    const { eventID, programID } = req.params
+
+    try {
+        const program = await Program.findOne({ where: { ProgramID: programID, EventID: eventID }})
+        if (!program) {
+            return res.status(404).json({ field: 'general', message: 'Program not found' })
+        }
+
+        await Program.destroy({ where: { ProgramID: programID }})
+        res.status(200).json({ field: 'general', message: `Successfully deleted program: ${program.Summary}` })
+    }
+    catch (err) {
+        res.status(500).json({ field: 'general', message: 'Something went wrong', error: err.message })
+    }
+}
+
 
 const validateNewProgram = (req, res, next) => {
     const { summary, description } = req.body
@@ -80,4 +97,4 @@ const validateNewProgram = (req, res, next) => {
     next()
 }
 
-module.exports = { getEventPrograms, createProgram, updateProgram, validateNewProgram }
+module.exports = { getEventPrograms, createProgram, updateProgram, deleteProgram, validateNewProgram }

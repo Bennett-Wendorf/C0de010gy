@@ -4,6 +4,7 @@ import React, { useState } from "react";
 // Import utilities and components
 import api from "../../utils/api";
 import AuthService from '../../services/auth.service'
+import useUserStore from "../../utils/Stores";
 
 // Import general mui stuff
 import {
@@ -16,8 +17,12 @@ import {
     Paper,
     Typography,
 } from '@mui/material';
+import Grid2 from '@mui/material/Unstable_Grid2'
 
 import ModifyEventDialog from "../../components/Event/ModifyEventDialog";
+
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import PaidIcon from '@mui/icons-material/Paid';
 
 // Setup a general format for dates
 const dateFormatOptions = {
@@ -39,7 +44,7 @@ export function EventTable({ rows, eventUpdate }) {
 
     const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
     const [isModifyDialogOpen, setIsModifyDialogOpen] = useState(false)
-    
+
     const [selectedEvent, setSelectedEvent] = useState({})
 
     const [hasVolunteered, setHasVolunteered] = useState(false)
@@ -81,7 +86,7 @@ export function EventTable({ rows, eventUpdate }) {
             .catch(error => {
                 return false
             }
-        )
+            )
     }
 
     const checkIfDonated = async (event) => {
@@ -96,6 +101,8 @@ export function EventTable({ rows, eventUpdate }) {
 
     const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
 
+    const currentUserID = useUserStore(state => state.UserID)
+
     return (
         <>
             {/* Build the event table */}
@@ -106,6 +113,7 @@ export function EventTable({ rows, eventUpdate }) {
                     {/* Generate the headers of the rows */}
                     <TableHead>
                         <TableRow>
+                            <TableCell>Indicators</TableCell>
                             <TableCell>Summary</TableCell>
                             <TableCell align="left">Start Time</TableCell>
                             <TableCell align="left">End Time</TableCell>
@@ -123,11 +131,25 @@ export function EventTable({ rows, eventUpdate }) {
                                 onClick={(event) => { userIsAdmin ? handleRowClick(row) : handleRowClickView(row) }}
                                 hover
                             >
+                                <TableCell>
+                                    <Grid2 container spacing={1}>
+                                        {row.Volunteers.some(volunteer => volunteer.UserID === currentUserID) &&
+                                            <Grid2 item>
+                                                <VolunteerActivismIcon color="primary" />
+                                            </Grid2>
+                                        }
+                                        {row.Donations.some(donation => donation.UserID === currentUserID) &&
+                                            <Grid2 item>
+                                                <PaidIcon color="primary" />
+                                            </Grid2>
+                                        }
+                                    </Grid2>
+                                </TableCell>
                                 <TableCell>{row.Summary}</TableCell>
                                 <TableCell align="left" size="small" sx={dateColorStyles(row.StartTime)}>
                                     {new Date(row.StartTime).toLocaleString("en-US", dateFormatOptions)}
                                 </TableCell>
-                                <TableCell align="left" size="small"sx={dateColorStyles(row.EndTime)}>
+                                <TableCell align="left" size="small" sx={dateColorStyles(row.EndTime)}>
                                     {new Date(row.EndTime).toLocaleString("en-US", dateFormatOptions)}
                                 </TableCell>
                                 <TableCell align="right" size="small">{row.Location}</TableCell>
@@ -143,10 +165,10 @@ export function EventTable({ rows, eventUpdate }) {
                 <Typography variant="h6" align="center" sx={{ marginTop: "10px" }}>There are no events to display here. :(</Typography>
             }
 
-            <ModifyEventDialog 
-                selectedEvent={selectedEvent} 
-                hasDonated={hasDonated} 
-                hasVolunteered={hasVolunteered} 
+            <ModifyEventDialog
+                selectedEvent={selectedEvent}
+                hasDonated={hasDonated}
+                hasVolunteered={hasVolunteered}
                 isViewDialogOpen={isViewDialogOpen}
                 setIsViewDialogOpen={setIsViewDialogOpen}
                 isModifyDialogOpen={isModifyDialogOpen}

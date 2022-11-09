@@ -156,7 +156,7 @@ export function Donations() {
                             <TableRow
                                 key={donation.DonationID}
                             >
-                                <TableCell>{donation.Event?.Summary ?? "General Donation"}</TableCell>
+                                <TableCell>{!(donation.Event?.Cancelled ?? true) ? donation.Event?.Summary : "General Donation"}</TableCell>
                                 <TableCell align="left" size="small">{new Date(donation.CreatedDateTime).toLocaleString("en-US", dateFormatOptions)}</TableCell>
                                 <TableCell align="right" size="small">$ {donation.Amount.toLocaleString(undefined, {
                                     minimumFractionDigits: 2,
