@@ -80,6 +80,8 @@ const updateEvent = async (req, res) => {
             return res.status(404).json({ field: 'general', message: 'Event not found' })
         }
 
+        // TODO: Handle case where number of volunteers is less than number of volunteers already signed up
+
         await Event.update({
             Summary: summary,
             Description: description,
@@ -133,6 +135,11 @@ const validateNewEvent = (req, res, next) => {
 
     if (!req.body.endTime) {
         res.status(400).json({ field: 'endTime', message: 'End time is required' })
+        return
+    }
+
+    if (req.body.neededVolunteers && req.body.neededVolunteers < 0) {
+        res.status(400).json({ field: 'neededVolunteers', message: 'Number of volunteers cannot be negative' })
         return
     }
 

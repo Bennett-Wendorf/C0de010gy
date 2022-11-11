@@ -7,8 +7,6 @@ import Bar from "../../components/AppBar";
 import Carousel from "../../components/Carousel/Carousel";
 import ModifyEventDialog from "../../components/Event/ModifyEventDialog";
 
-import AuthService from "../../services/auth.service";
-
 export function Dashboard() {
 
     const [events, setEvents] = useState([]);
@@ -17,6 +15,7 @@ export function Dashboard() {
     const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
     const [isModifyDialogOpen, setIsModifyDialogOpen] = useState(false)
 
+    // TODO: These could be eliminated by checking the event that's stored alongside events
     const [hasVolunteered, setHasVolunteered] = useState(false)
     const [hasDonated, setHasDonated] = useState(false)
 

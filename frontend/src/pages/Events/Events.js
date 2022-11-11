@@ -11,7 +11,7 @@ import AuthService from '../../services/auth.service'
 import AddIcon from '@mui/icons-material/AddCircle';
 
 // Import general mui stuff
-import { Button, IconButton, Tooltip, Grid } from "@mui/material";
+import { Button, IconButton, Tooltip, Grid, Alert } from "@mui/material";
 
 // Import dialog stuff from mui
 import { TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
@@ -75,6 +75,7 @@ export function Events() {
     const handleClose = () => {
         setIsDialogOpen(false)
         resetNewEventValues()
+        resetErrors()
     }
 
     // Handle state changes for the new event dialog
@@ -126,6 +127,9 @@ export function Events() {
         setNewNeededVolunteersErrorText("")
         setNewEventLocationErrorText("")
         setNewEventVolunteerQualificationsErrorText("")
+
+        setIsErrorDialogOpen(false)
+        setErrorDialogText("")
     }
 
     // Create a new event in the database and ensure data on the frontend is up to date
@@ -178,9 +182,6 @@ export function Events() {
                 setNewEventVolunteerQualificationsError(true)
                 setNewEventVolunteerQualificationsErrorText(message)
                 break
-            case 'general':
-                alert(message)
-                break
             default:
                 alertError(error)
                 break
@@ -190,9 +191,6 @@ export function Events() {
     const alertError = (error) => {
         setErrorDialogText(error.response?.data?.message ? error.response.data.message : error.message)
         setIsErrorDialogOpen(true)
-    }
-    const handleErrorDialogClose = () => {
-        setIsErrorDialogOpen(false)
     }
 
     // Make an api call to the backend to update the list of events
@@ -234,6 +232,11 @@ export function Events() {
                 <DialogTitle>Create an Event</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
+                        {isErrorDialogOpen &&
+                            <Grid item xs={12}>
+                                <Alert severity="error" variant='outlined'>{errorDialogText}</Alert>
+                            </Grid>
+                        }
                         <Grid item xs={12}>
                             <TextField
                                 autoFocus
@@ -347,20 +350,6 @@ export function Events() {
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={handleSubmit}>Submit</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* TODO: Set this up to use a different error method, such as banner */}
-            {/* Popup dialog for indicating error */}
-            <Dialog open={isErrorDialogOpen} onClose={handleErrorDialogClose}>
-                <DialogTitle>
-                    Error!
-                </DialogTitle>
-                <DialogContent>
-                    {errorDialogText}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleErrorDialogClose}>OK</Button>
                 </DialogActions>
             </Dialog>
         </div>

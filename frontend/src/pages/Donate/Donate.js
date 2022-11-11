@@ -9,7 +9,7 @@ import Bar from "../../components/AppBar";
 import AddIcon from '@mui/icons-material/AddCircle';
 
 // Import general mui stuff
-import { Button, IconButton, Tooltip, Grid, Paper, InputAdornment } from "@mui/material";
+import { Button, IconButton, Tooltip, Grid, Paper, InputAdornment, Snackbar, Alert } from "@mui/material";
 
 // Import table stuff
 import { Table, TableContainer, TableHead, TableCell, TableRow, TableBody } from "@mui/material";
@@ -211,17 +211,11 @@ export function Donations() {
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={isActionSuccessOpen} onClose={handleActionSuccessClose}>
-                <DialogTitle>
-                    Success!
-                </DialogTitle>
-                <DialogContent>
+            <Snackbar open={isActionSuccessOpen} autoHideDuration={6000} onClose={handleActionSuccessClose}>
+                <Alert onClose={handleActionSuccessClose} severity="success" sx={{ width: '100%' }} variant="outlined">
                     {donateSuccessMessage}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleActionSuccessClose}>Close</Button>
-                </DialogActions>
-            </Dialog>
+                </Alert>
+            </Snackbar>
         </div >
     );
 }

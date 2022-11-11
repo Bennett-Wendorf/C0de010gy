@@ -10,6 +10,7 @@ import Programs from "../Program/Programs"
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material"
 import { Grid, TextField, Button, InputAdornment, Paper } from "@mui/material"
 import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material"
+import { Snackbar, Alert } from "@mui/material"
 
 // Import date picker and localization
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -113,10 +114,26 @@ export default function ModifyEventDialog(props) {
     const handleModifyClose = () => {
         setIsModifyDialogOpen(false)
         setModifyStates(selectedEvent)
+        resetErrors()
     }
 
-    const handleActionSuccessClose = () => {
-        setIsActionSuccessOpen(false)
+    const resetErrors = () => {
+        setUpdateSummaryError(false)
+        setUpdateDescriptionError(false)
+        setUpdateNeededVolunteersError(false)
+        setUpdateLocationError(false)
+        setUpdateVolunteerQualificationsError(false)
+        setUpdateSummaryErrorText("")
+        setUpdateDescriptionErrorText("")
+        setUpdateNeededVolunteersErrorText("")
+        setUpdateLocationErrorText("")
+        setUpdateVolunteerQualificationsErrorText("")
+
+        setIsErrorDialogOpen(false)
+        setErrorDialogText("")
+    }
+
+    const handleActionSuccess = () => {
         setIsViewDialogOpen(false)
         setIsModifyDialogOpen(false)
         setIsDonateDialogOpen(false)
@@ -141,11 +158,12 @@ export default function ModifyEventDialog(props) {
         })
             .then((response) => {
                 setIsVolunteerRoleConfOpen(false)
-                setAddRoleSuccessMessage(response.data.message)
+                setActionSuccessMessage(response.data.message)
                 addRole(response.data.roles)
                 completeVolunteer()
-                    .then(() =>
-                        setIsAddRoleSuccessOpen(true))
+                    .then(() => {
+                        setIsActionSuccessOpen(true)
+                    })
             })
             .catch((error) => {
                 alertError(error)
@@ -158,11 +176,9 @@ export default function ModifyEventDialog(props) {
         })
             .then((response) => {
                 setIsDonorRoleConfOpen(false)
-                setAddRoleSuccessMessage(response.data.message)
-                addRole('Donor')
-                completeDonate()
-                    .then(() =>
-                        setIsAddRoleSuccessOpen(true))
+                setActionSuccessMessage(response.data.message)
+                addRole(response.data.roles)
+                setIsDonateDialogOpen(true)
             })
             .catch((error) => {
                 alertError(error)
@@ -171,8 +187,6 @@ export default function ModifyEventDialog(props) {
 
     // Handle database update on submission of the dialog
     const handleSubmit = () => {
-        setIsModifyDialogOpen(false)
-
         // Create the new updated event object
         const updatedEvent = {
             eventID: selectedEvent.EventID,
@@ -191,10 +205,13 @@ export default function ModifyEventDialog(props) {
                 eventUpdate()
                 setActionSuccessMessage(response.data.message)
                 setIsActionSuccessOpen(true)
+                handleActionSuccess()
+                setIsModifyDialogOpen(false)
                 setModifyStates(response.data.event)
+                resetErrors()
             })
             .catch(error => {
-                alertError(error)
+                handleUpdateResponseError(error)
             })
     }
 
@@ -215,6 +232,7 @@ export default function ModifyEventDialog(props) {
                 setIsDeleteConfOpen(false)
                 setActionSuccessMessage(response.data.message)
                 setIsActionSuccessOpen(true)
+                handleActionSuccess()
             })
             .catch(error => {
                 alertError(error)
@@ -240,6 +258,7 @@ export default function ModifyEventDialog(props) {
             .then(response => {
                 setActionSuccessMessage(response.data.message)
                 setIsActionSuccessOpen(true)
+                handleActionSuccess()
                 eventUpdate()
             })
             .catch(error => {
@@ -252,6 +271,7 @@ export default function ModifyEventDialog(props) {
             .then(response => {
                 setActionSuccessMessage(response.data.message)
                 setIsActionSuccessOpen(true)
+                handleActionSuccess()
                 eventUpdate()
             })
             .catch(error => {
@@ -280,6 +300,7 @@ export default function ModifyEventDialog(props) {
             .then(response => {
                 setActionSuccessMessage(response.data.message)
                 setIsActionSuccessOpen(true)
+                handleActionSuccess()
                 updateEventDonations(selectedEvent)
             })
             .catch(error => {
@@ -298,6 +319,36 @@ export default function ModifyEventDialog(props) {
             })
     }
 
+    const handleUpdateResponseError = (error) => {
+        let fieldName = error.response.data.field
+        let message = error.response.data.message
+        switch(fieldName) {
+            case 'summary':
+                setUpdateSummaryError(true)
+                setUpdateSummaryErrorText(message)
+                break
+            case 'description':
+                setUpdateDescriptionError(true)
+                setUpdateDescriptionErrorText(message)
+                break
+            case 'neededVolunteers':
+                setUpdateNeededVolunteersError(true)
+                setUpdateNeededVolunteersErrorText(message)
+                break
+            case 'location':
+                setUpdateLocationError(true)
+                setUpdateLocationErrorText(message)
+                break
+            case 'volunteerQualifications':
+                setUpdateVolunteerQualificationsError(true)
+                setUpdateVolunteerQualificationsErrorText(message)
+                break
+            default:
+                alertError(error)
+                break
+        }
+    }
+
     return (
         <>
             {/* The popup dialog for editing and deleting event */}
@@ -307,6 +358,11 @@ export default function ModifyEventDialog(props) {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
+                        {isErrorDialogOpen &&
+                            <Grid item xs={12}>
+                                <Alert severity="error" variant='outlined'>{errorDialogText}</Alert>
+                            </Grid>
+                        }
                         <Grid item xs={12}>
                             <TextField
                                 autoFocus
@@ -444,7 +500,7 @@ export default function ModifyEventDialog(props) {
                     Are you sure you want to cancel event: "{selectedEvent.Summary}"?
                 </DialogTitle>
                 <DialogContent>
-                    Note: This will also invalidate all programs associated with the event, 
+                    Note: This will also invalidate all programs associated with the event,
                     invalidate all volunteer assignments. Also, all donations associated with the event will become general donations.
                 </DialogContent>
                 <DialogActions>
@@ -749,45 +805,11 @@ export default function ModifyEventDialog(props) {
                 </DialogActions>
             </Dialog >
 
-            {/* TODO: Convert this and other dialogs to use the Alert component with Snackbar */}
-            {/* Popup dialog for indicating success of volunteering or donating */}
-            <Dialog open={isActionSuccessOpen} onClose={handleActionSuccessClose}>
-                <DialogTitle>
-                    Success!
-                </DialogTitle>
-                <DialogContent>
+            <Snackbar open={isActionSuccessOpen} autoHideDuration={6000} onClose={() => setIsActionSuccessOpen(false)}>
+                <Alert onClose={() => setIsActionSuccessOpen(false)} severity="success" sx={{ width: '100%' }} variant="outlined">
                     {actionSuccessMessage}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleActionSuccessClose}>OK</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Popup dialog for indicating success of adding a role */}
-            <Dialog open={isAddRoleSuccessOpen} onClose={() => setIsAddRoleSuccessOpen(false)}>
-                <DialogTitle>
-                    Success!
-                </DialogTitle>
-                <DialogContent>
-                    {addRoleSuccessMessage}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsAddRoleSuccessOpen(false)}>OK</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Popup dialog for indicating error */}
-            <Dialog open={isErrorDialogOpen} onClose={() => setIsErrorDialogOpen(false)}>
-                <DialogTitle>
-                    Error!
-                </DialogTitle>
-                <DialogContent>
-                    {errorDialogText}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsErrorDialogOpen(false)}>OK</Button>
-                </DialogActions>
-            </Dialog>
+                </Alert>
+            </Snackbar>
         </>
     )
 }

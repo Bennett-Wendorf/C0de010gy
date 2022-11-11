@@ -41,7 +41,6 @@ export default function Carousel({ events, eventClick, eventClickView }) {
         };
     }, [])
 
-
     return (
         <>
             <Paper sx={{ width: `${paperWidth}px`, p: 0.5, pr: 2, pl: 2 }} elevation={1}>

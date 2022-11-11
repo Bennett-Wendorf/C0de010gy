@@ -1,5 +1,5 @@
 // Import React stuff
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Import utilities and components
 import api from "../../utils/api";
@@ -34,6 +34,9 @@ const dateFormatOptions = {
     hour: '2-digit',
     minute: '2-digit',
 }
+
+const barHeight = 62
+const margin = 40
 
 const dateColorStyles = (value) => (theme) => {
     return new Date(value) < new Date() ? { color: theme.palette.text.disabled } : { color: theme.palette.text.primary }
@@ -99,6 +102,21 @@ export function EventTable({ rows, eventUpdate }) {
             })
     }
 
+    const [containerHeight, setContainerHeight] = useState(window.innerHeight - barHeight - margin)
+
+    useEffect(() => {
+        function handleWindowResize() {
+            setContainerHeight(window.innerHeight - barHeight - margin)
+            console.log(`Updating container height based on window resize: ${window.innerHeight - barHeight - margin}`)
+        }
+
+        window.addEventListener('resize', handleWindowResize);
+
+        return () => {
+            window.removeEventListener('resize', handleWindowResize);
+        };
+    }, [])
+
     const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
 
     const currentUserID = useUserStore(state => state.UserID)
@@ -106,10 +124,9 @@ export function EventTable({ rows, eventUpdate }) {
     return (
         <>
             {/* Build the event table */}
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} sx={{ height: `${containerHeight}px` }}>
                 {/* Make this responsive */}
-                <Table sx={{ minWidth: 650 }} aria-label="Events">
-
+                <Table stickyHeader sx={{ minWidth: 650 }} aria-label="Events">
                     {/* Generate the headers of the rows */}
                     <TableHead>
                         <TableRow>
