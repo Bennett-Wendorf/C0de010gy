@@ -1,5 +1,6 @@
 // Import React stuff
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Import utilities and components
 import api from "../../utils/api";
@@ -42,19 +43,10 @@ const margin = 45
 
 export default function UserTable({ rows, updateUsers, userHasPermissions }) {
 
-    const handleRowClick = (user) => {
-    }
+    const navigate = useNavigate()
 
-    // TODO: Add confirmation dialog
-    const handleDelete = (user) => {
-        api.delete(`/api/users/${user.UserID}`)
-            .then(res => {
-                updateUsers();
-            })
-            .catch(err => {
-                console.log(err);
-                updateUsers()
-            })
+    const handleRowClick = (user) => {
+        navigate(`/users/${user.UserID}`)
     }
 
     const [containerHeight, setContainerHeight] = useState(window.innerHeight - barHeight - margin)

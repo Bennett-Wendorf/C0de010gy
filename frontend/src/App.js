@@ -7,10 +7,9 @@ import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 
 import { Box } from '@mui/material';
 
-import { Login, Register, Events, Donations, Dashboard } from "./pages";
+import { Login, Register, Events, Donations, Dashboard, Users, UserAdvanced } from "./pages";
 import NavDrawer from "./components/NavDrawer";
 import AuthService from './services/auth.service';
-import { Users } from './pages/Users/Users';
 
 const rootStyle = {
     display: "flex"
@@ -56,6 +55,7 @@ function App() {
                 <Route path="/events" element={getBasePageLayout(true, <Events />)} />
                 <Route path='/donation' element={getBasePageLayout(true, <Donations />)} />
                 <Route path="/users" element={getBasePageLayout(true, <Users />)} />
+                <Route path="/users/:id" element={getBasePageLayout(true, <UserAdvanced/>)} />
             </Routes>
         </Router>
     );

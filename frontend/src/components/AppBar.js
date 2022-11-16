@@ -70,7 +70,7 @@ function AccountMenu() {
     }
 
     const handleAccountClick = () => {
-        console.log("Account clicked")
+        navigate(`/users/${userID}`)
         handleMenuClose()
     }
 
@@ -95,10 +95,10 @@ function AccountMenu() {
 
     const accessToken = useUserStore(state => state.AccessToken)
     const fullName = useUserStore(state => state.FullName)
+    const userID = useUserStore(state => state.UserID)
 
     return (
         <>
-            {/* TODO: Use the Badge component here for number of notifications */}
             <Tooltip title="Account" sx={rightButtonFloat}>
                 <IconButton aria-label="account" size="large" onClick={openMenu}>
                     <AccountIcon />
@@ -109,11 +109,11 @@ function AccountMenu() {
                 <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
                     <Typography sx={userNameStyles}>{fullName}</Typography>
                     <Divider />
-                    <MenuItem disabled onClick={handleAccountClick}>My Account</MenuItem>
+                    <MenuItem onClick={handleAccountClick}>My Account</MenuItem>
                     <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
                 </Menu>
             }
-            
+
             {accessToken === -1 &&
                 <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
                     <MenuItem onClick={handleLoginClick}>Login</MenuItem>
@@ -153,6 +153,7 @@ function Bar(props) {
                     </Typography>
                     <Box sx={buttonStyle}>
                         <AccountMenu />
+                        {/* TODO: Use the Badge component here for number of notifications */}
                         <Tooltip title="Notifications" sx={rightButtonFloat}>
                             <IconButton disabled aria-label="notifications" size="large" onClick={handleNotificationsOpen}>
                                 <NotificationIcon />

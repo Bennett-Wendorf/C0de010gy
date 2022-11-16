@@ -1,4 +1,4 @@
-const { User, UserRole } = require('../database')
+const { User, UserRole, Volunteer, Donation, Event } = require('../database')
 const bcrypt = require('bcrypt')
 const { Op } = require('sequelize')
 
@@ -7,6 +7,7 @@ const saltRounds = 10;
 const getUsers = async (req, res) => {
     try {
         const users = await User.findAll({
+            attributes: { exclude: ['Password']},
             order: [
                 ['Active', 'DESC']
             ],
@@ -37,6 +38,66 @@ const deleteUser = async (req, res) => {
         await user.update({ Active: false })
 
         res.status(200).json({ field: 'general', message: 'User deleted successfully' })
+    } catch (error) {
+        res.status(500).json({ field: 'general', message: 'Something went wrong!', error: error.message })
+    }
+}
+
+const reactivateUser = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const user = await User.findOne({ where: { UserID: id } })
+
+        if (!user) {
+            res.status(404).json({ field: 'general', message: 'User not found' })
+            return
+        }
+
+        await user.update({ Active: true })
+
+        res.status(200).json({ field: 'general', message: 'User reactivated successfully' })
+    } catch (error) {
+        res.status(500).json({ field: 'general', message: 'Something went wrong!', error: error.message })
+    }
+}
+
+const getUserDetails = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const user = await User.findOne({
+            attributes: { exclude: ['Password']},
+            where: { UserID: id },
+            include: [
+                {
+                    model: UserRole,
+                },
+                {
+                    model: Volunteer,
+                    include: [
+                        {
+                            model: Event
+                        }
+                    ]
+                },
+                {
+                    model: Donation,
+                    include: [
+                        {
+                            model: Event
+                        }
+                    ]
+                }
+            ]
+        })
+
+        if (!user) {
+            res.status(404).json({ field: 'general', message: 'User not found' })
+            return
+        }
+
+        res.status(200).json(user)
     } catch (error) {
         res.status(500).json({ field: 'general', message: 'Something went wrong!', error: error.message })
     }
@@ -173,4 +234,4 @@ const validateNewUserRoles = async (req, res, next) => {
     next()
 }
 
-module.exports = { getUsers, deleteUser, createUser, addUserRoles, validateNewUser, validateNewUserRoles }
+module.exports = { getUsers, deleteUser, reactivateUser, getUserDetails, createUser, addUserRoles, validateNewUser, validateNewUserRoles }
