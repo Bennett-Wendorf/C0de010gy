@@ -36,7 +36,7 @@ const dateFormatOptions = {
 }
 
 const barHeight = 62
-const margin = 40
+const margin = 45
 
 const dateColorStyles = (value) => (theme) => {
     return new Date(value) < new Date() ? { color: theme.palette.text.disabled } : { color: theme.palette.text.primary }
@@ -124,8 +124,8 @@ export function EventTable({ rows, eventUpdate }) {
     return (
         <>
             {/* Build the event table */}
-            <TableContainer component={Paper} sx={{ height: `${containerHeight}px` }}>
-                {/* Make this responsive */}
+            <TableContainer component={Paper} sx={{ height: rows.length > 0 ? `${containerHeight}px` : `auto` }}>
+                {/* TODO: Make this responsive */}
                 <Table stickyHeader sx={{ minWidth: 650 }} aria-label="Events">
                     {/* Generate the headers of the rows */}
                     <TableHead>

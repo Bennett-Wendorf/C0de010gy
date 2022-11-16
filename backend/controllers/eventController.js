@@ -116,6 +116,7 @@ const deleteEvent = async (req, res) => {
         }
 
         await Event.update({Cancelled: true}, { where: { EventID: id } })
+        
         res.status(200).send({ field: 'general', message: "Event cancelled successfully" })
     } catch (err) {
         res.status(500).json({ field: 'general', message: 'Something went wrong', error: err.message })

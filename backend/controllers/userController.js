@@ -4,6 +4,44 @@ const { Op } = require('sequelize')
 
 const saltRounds = 10;
 
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            order: [
+                ['Active', 'DESC']
+            ],
+            include: [
+                {
+                    model: UserRole,
+                }
+            ]
+        })
+
+        res.status(200).json(users)
+    } catch (error) {
+        res.status(500).json({ field: 'general', message: 'Something went wrong!', error: error.message })
+    }
+}
+
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const user = await User.findOne({ where: { UserID: id } })
+
+        if (!user) {
+            res.status(404).json({ field: 'general', message: 'User not found' })
+            return
+        }
+
+        await user.update({ Active: false })
+
+        res.status(200).json({ field: 'general', message: 'User deleted successfully' })
+    } catch (error) {
+        res.status(500).json({ field: 'general', message: 'Something went wrong!', error: error.message })
+    }
+}
+
 const createUser = async (req, res) => {
     const { firstName, lastName, username, email, password, roles } = req.body
 
@@ -12,9 +50,9 @@ const createUser = async (req, res) => {
             res.status(500).send("An unknown error occurred")
         }
 
-        const newUser = await User.create({ 
-            FirstName: firstName == "" ? null : firstName, 
-            LastName: lastName == "" ? null : lastName, 
+        const newUser = await User.create({
+            FirstName: firstName == "" ? null : firstName,
+            LastName: lastName == "" ? null : lastName,
             Username: username,
             Email: email,
             Password: hashedPassword,
@@ -55,18 +93,18 @@ const addUserRoles = async (req, res) => {
 const createUserRoles = async (user, roles) => {
     await Promise.all(roles.map(async (role) => {
         const loggedInUser = await User.findOne({ where: { UserID: user.UserID } })
-        if (loggedInUser === null){
+        if (loggedInUser === null) {
             console.log("User not found")
             return false
         }
 
         const userRole = await UserRole.findOne({ where: { DisplayName: role } })
-        if (userRole === null){
+        if (userRole === null) {
             console.log("Role not found")
             return false
         }
 
-        if (await loggedInUser.hasUserRole(userRole)){
+        if (await loggedInUser.hasUserRole(userRole)) {
             console.log(`User already has role: ${userRole.DisplayName}`)
         } else {
             await loggedInUser.addUserRole(userRole)
@@ -88,7 +126,7 @@ const validateNewUser = async (req, res, next) => {
         return
     }
 
-    if (!password.match( /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/g)) {
+    if (!password.match(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/g)) {
         res.status(400).json({ field: 'password', message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number' })
         return
     }
@@ -114,12 +152,12 @@ const validateNewUserRoles = async (req, res, next) => {
         return
     }
 
-    const validUserRoles = await UserRole.findAll({ 
-        where: { 
+    const validUserRoles = await UserRole.findAll({
+        where: {
             DisplayName: {
                 [Op.in]: roles
-            } 
-        } 
+            }
+        }
     })
 
     if (validUserRoles.length !== roles.length) {
@@ -135,4 +173,4 @@ const validateNewUserRoles = async (req, res, next) => {
     next()
 }
 
-module.exports = { createUser, addUserRoles, validateNewUser, validateNewUserRoles }
+module.exports = { getUsers, deleteUser, createUser, addUserRoles, validateNewUser, validateNewUserRoles }

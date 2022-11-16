@@ -10,6 +10,7 @@ import { Box } from '@mui/material';
 import { Login, Register, Events, Donations, Dashboard } from "./pages";
 import NavDrawer from "./components/NavDrawer";
 import AuthService from './services/auth.service';
+import { Users } from './pages/Users/Users';
 
 const rootStyle = {
     display: "flex"
@@ -54,6 +55,7 @@ function App() {
                 <Route path="/dashboard" element={getBasePageLayout(true, <Dashboard />)} />
                 <Route path="/events" element={getBasePageLayout(true, <Events />)} />
                 <Route path='/donation' element={getBasePageLayout(true, <Donations />)} />
+                <Route path="/users" element={getBasePageLayout(true, <Users />)} />
             </Routes>
         </Router>
     );

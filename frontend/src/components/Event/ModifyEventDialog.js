@@ -153,7 +153,7 @@ export default function ModifyEventDialog(props) {
     const addRole = useUserStore(state => state.addRole)
 
     const handleAddVolunteerRole = () => {
-        api.post('/api/user/role', {
+        api.post('/api/users/role', {
             roles: ["Volunteer"]
         })
             .then((response) => {
@@ -171,7 +171,7 @@ export default function ModifyEventDialog(props) {
     }
 
     const handleAddDonorRole = () => {
-        api.post('/api/user/role', {
+        api.post('/api/users/role', {
             roles: ["Donor"]
         })
             .then((response) => {

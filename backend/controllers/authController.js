@@ -15,6 +15,11 @@ const login = async (req, res) => {
         return
     }
 
+    if (user.Active === false){
+        res.status(401).send({field: 'general', message: 'User is not active. Please contact an admin if you think this is a mistake.'})
+        return
+    }
+
     const userRoles = await user.getUserRoles()
 
     bcrypt.compare(password, user.Password, (err, result) => {

@@ -103,8 +103,8 @@ function NavDrawer() {
                     }
 
                     {userIsAdmin &&
-                        <Link to="/users" style={linkStyle} onClick={e => e.preventDefault()}>
-                            <ListItem disabled button key="Users">
+                        <Link to="/users" style={linkStyle}>
+                            <ListItem button key="Users">
                                 <ListItemIcon>{<PeopleIcon />}</ListItemIcon>
                                 <ListItemText primary="Users" />
                             </ListItem>

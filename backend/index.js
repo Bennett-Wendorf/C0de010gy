@@ -36,7 +36,7 @@ app.use(cookieParser())
 // Set up routes
 app.use('/api/auth', authRoute)
 app.use('/api/events', eventRoute)
-app.use('/api/user', userRoute)
+app.use('/api/users', userRoute)
 app.use('/api/donations', donationRoute)
 
 // Error handlers
