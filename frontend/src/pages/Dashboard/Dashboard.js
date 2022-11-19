@@ -1,11 +1,14 @@
 // Import React stuff
 import React, { useState, useEffect } from "react";
 
+import AuthService from "../../services/auth.service";
+
 // Import utilities and components
 import api from "../../utils/api";
 import Bar from "../../components/AppBar";
 import Carousel from "../../components/Carousel/Carousel";
 import ModifyEventDialog from "../../components/Event/ModifyEventDialog";
+import DateRangeDonationsGraph from "../../components/Statistics/DateRangeDonationsGraph";
 
 export function Dashboard() {
 
@@ -83,10 +86,13 @@ export function Dashboard() {
             })
     }
 
+    const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
+
     return (
         <div>
             {/* Define the bar for the top of the screen, with its buttons */}
             <Bar title="Dashboard" />
+            {userIsAdmin && <DateRangeDonationsGraph />}
             <Carousel events={events} eventClick={handleEventClick} eventClickView={handleEventClickView}/>
             <ModifyEventDialog
                 selectedEvent={selectedEvent}

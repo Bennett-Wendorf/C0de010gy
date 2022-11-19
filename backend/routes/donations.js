@@ -1,12 +1,14 @@
 const express = require('express')
-const { getAllDonations, donateGeneral, validateNewDonation } = require('../controllers/donateController')
+const { getAllDonations, getAllDonationsForUser, donateGeneral, validateNewDonation } = require('../controllers/donateController')
 const { hasPermissions } = require('../controllers/authController')
 
 const router = express.Router()
 
 // Get all donations on get request
 router.route('/')
-    .get(hasPermissions([]), getAllDonations)
+    .get(hasPermissions(['Administrator']), getAllDonations)
     .post(hasPermissions(['Donor']), validateNewDonation, donateGeneral)
+
+router.get('/me', hasPermissions([]), getAllDonationsForUser)
 
 module.exports = router

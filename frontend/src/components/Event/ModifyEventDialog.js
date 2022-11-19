@@ -63,9 +63,7 @@ export default function ModifyEventDialog(props) {
     const [isVolunteerRoleConfOpen, setIsVolunteerRoleConfOpen] = useState(false)
     const [isDonorRoleConfOpen, setIsDonorRoleConfOpen] = useState(false)
     const [isActionSuccessOpen, setIsActionSuccessOpen] = useState(false)
-    const [isAddRoleSuccessOpen, setIsAddRoleSuccessOpen] = useState(false)
     const [actionSuccessMessage, setActionSuccessMessage] = useState("")
-    const [addRoleSuccessMessage, setAddRoleSuccessMessage] = useState("")
     const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false)
     const [errorDialogText, setErrorDialogText] = useState("")
 

@@ -115,7 +115,7 @@ export function Donations() {
 
     // Make an api call to the backend to update the list of events
     const updateDonations = () => {
-        api.get(`/api/donations`)
+        api.get(`/api/donations/me`)
             .then(response => {
                 setDonations(response.data ? response.data : [])
                 console.log("Updating donations");

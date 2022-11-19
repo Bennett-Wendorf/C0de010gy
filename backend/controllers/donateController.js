@@ -1,12 +1,13 @@
 const { Donation, Event } = require('../database')
+const { Op } = require('sequelize')
 
 const donateToEvent = async (req, res) => {
     const { id } = req.params
-    const userID  = req.userID
+    const userID = req.userID
     const { amount } = req.body
 
     try {
-        const event = await Event.findOne({ where: { EventID: id }})
+        const event = await Event.findOne({ where: { EventID: id } })
         if (!event) {
             return res.status(404).json({ field: 'general', message: 'Event not found' })
         }
@@ -28,10 +29,10 @@ const donateToEvent = async (req, res) => {
 
 const hasDonated = async (req, res) => {
     const { id } = req.params
-    const userID  = req.userID
+    const userID = req.userID
 
     try {
-        const donation = await Donation.findOne({ where: { UserID: userID, EventID: id }})
+        const donation = await Donation.findOne({ where: { UserID: userID, EventID: id } })
         if (!donation) {
             return res.status(200).send(false)
         }
@@ -48,7 +49,7 @@ const getEventDonations = async (req, res) => {
     const userID = req.userID
 
     try {
-        const donations = await Donation.findAll({ where: { EventID: id, UserID: userID }})
+        const donations = await Donation.findAll({ where: { EventID: id, UserID: userID } })
 
         res.status(200).json(donations)
     }
@@ -58,11 +59,31 @@ const getEventDonations = async (req, res) => {
 }
 
 const getAllDonations = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query
+
+        const donations = await Donation.findAll({
+            where:
+            {
+                CreatedDateTime: {
+                    [Op.between]: [startDate, endDate]
+                }
+            }
+        })
+
+        res.status(200).json(donations)
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).json({ field: 'general', message: 'Something went wrong', error: err })
+    }
+}
+
+const getAllDonationsForUser = async (req, res) => {
     const userID = req.userID
 
     try {
         const donations = await Donation.findAll({ where: { UserID: userID }, include: Event })
-        // const donationsWithEvent = await Promise.all(donations.map(getDonationEvent))
         res.status(200).json(donations)
     }
     catch (err) {
@@ -74,8 +95,8 @@ const getDonationEvent = async (donation) => {
     const { EventID } = donation
 
     try {
-        const event = await Event.findOne({ where: { EventID }})
-        if(event) {
+        const event = await Event.findOne({ where: { EventID } })
+        if (event) {
             return { ...donation.dataValues, event }
         } else {
             return donation
@@ -106,7 +127,7 @@ const donateGeneral = async (req, res) => {
 }
 
 const validateNewDonation = async (req, res, next) => {
-    const userID  = req.userID
+    const userID = req.userID
     const { amount } = req.body
 
     let numericAmount = parseFloat(amount)
@@ -136,4 +157,4 @@ const validateNewDonation = async (req, res, next) => {
     next()
 }
 
-module.exports = { donateToEvent, hasDonated, getEventDonations, getAllDonations, donateGeneral, validateNewDonation }
+module.exports = { donateToEvent, hasDonated, getAllDonations, getEventDonations, getAllDonationsForUser, donateGeneral, validateNewDonation }

@@ -173,17 +173,23 @@ export function UserAdvanced() {
                                 <Grid2 container spacing={1}>
                                     {user?.UserRoles?.some(role => role.DisplayName === "Administrator") &&
                                         <Grid2 item>
-                                            <AdminPanelSettingsIcon color="primary" />
+                                            <Tooltip title="Administrator" arrow>
+                                                <AdminPanelSettingsIcon color="primary" />
+                                            </Tooltip>
                                         </Grid2>
                                     }
                                     {user?.UserRoles?.some(role => role.DisplayName === "Volunteer") &&
                                         <Grid2 item>
-                                            <VolunteerActivismIcon color="primary" />
+                                            <Tooltip title="Volunteer" arrow>
+                                                <VolunteerActivismIcon color="primary" />
+                                            </Tooltip>
                                         </Grid2>
                                     }
                                     {user?.UserRoles?.some(role => role.DisplayName === "Donor") &&
                                         <Grid2 item>
-                                            <PaidIcon color="primary" />
+                                            <Tooltip title="Donor" arrow>
+                                                <PaidIcon color="primary" />
+                                            </Tooltip>
                                         </Grid2>
                                     }
                                 </Grid2>

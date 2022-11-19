@@ -11,7 +11,6 @@ import { Drawer, CssBaseline, List, Divider, ListItem, ListItemIcon, ListItemTex
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import EventIcon from '@mui/icons-material/Event'
 import PeopleIcon from '@mui/icons-material/People'
-import AnalyticsIcon from '@mui/icons-material/Analytics'
 import PaidIcon from '@mui/icons-material/Paid'
 
 import AuthService from "../services/auth.service";

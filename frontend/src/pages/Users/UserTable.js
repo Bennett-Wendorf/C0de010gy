@@ -94,22 +94,37 @@ export default function UserTable({ rows, updateUsers, userHasPermissions }) {
                                 onClick={() => { handleRowClick(row) }}
                                 hover
                             >
-                                <TableCell align="left">{row.Active ? <CheckCircleOutlineIcon color="success" /> : <DoNotDisturbIcon color="error" />}</TableCell>
+                                <TableCell align="left">
+                                    {row.Active ?
+                                        <Tooltip title="Active" arrow>
+                                            <CheckCircleOutlineIcon color="success" />
+                                        </Tooltip> :
+                                        <Tooltip title="Inactive" arrow>
+                                            <DoNotDisturbIcon color="error" />
+                                        </Tooltip>
+                                    }
+                                </TableCell>
                                 <TableCell align="left">
                                     <Grid2 container spacing={1}>
                                         {row.UserRoles.some(role => role.DisplayName === "Administrator") &&
                                             <Grid2 item>
-                                                <AdminPanelSettingsIcon color="primary" />
+                                                <Tooltip title="Administrator" arrow>
+                                                    <AdminPanelSettingsIcon color="primary" />
+                                                </Tooltip>
                                             </Grid2>
                                         }
                                         {row.UserRoles.some(role => role.DisplayName === "Volunteer") &&
                                             <Grid2 item>
-                                                <VolunteerActivismIcon color="primary" />
+                                                <Tooltip title="Volunteer" arrow>
+                                                    <VolunteerActivismIcon color="primary" />
+                                                </Tooltip>
                                             </Grid2>
                                         }
                                         {row.UserRoles.some(role => role.DisplayName === "Donor") &&
                                             <Grid2 item>
-                                                <PaidIcon color="primary" />
+                                                <Tooltip title="Donor" arrow>
+                                                    <PaidIcon color="primary" />
+                                                </Tooltip>
                                             </Grid2>
                                         }
                                     </Grid2>
