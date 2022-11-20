@@ -1,5 +1,6 @@
 const { Volunteer, Event } = require('../database')
 const { Op } = require('sequelize')
+const { addMessage } = require('./messageController')
 
 const volunteer = async (req, res) => {
     const { id } = req.params
@@ -65,6 +66,15 @@ const cancelVolunteer = async (req, res) => {
     }
 }
 
+const notifyAllEventVolunteers = async (eventID, fromUserID, messageTitle, messageContent) => {
+    const volunteers = await Volunteer.findAll({ where: { EventID: eventID }})
+    if (volunteers) {
+        volunteers.forEach(async (volunteer) => {
+            await addMessage(fromUserID, volunteer.UserID, messageTitle, messageContent)
+        })
+    }
+}
+
 const validateNewVolunteer = async (req, res, next) => {
     const { id } = req.params
     const userID  = req.userID
@@ -115,4 +125,4 @@ const validateNewVolunteer = async (req, res, next) => {
     next()
 }
 
-module.exports = { volunteer, hasVolunteered, cancelVolunteer, validateNewVolunteer }
+module.exports = { volunteer, hasVolunteered, cancelVolunteer, notifyAllEventVolunteers, validateNewVolunteer }

@@ -6,6 +6,7 @@ const User = require('./models/user');
 const UserRoleAssigned = require('./models/userRoleAssigned');
 const Volunteer = require('./models/volunteer');
 const Event = require('./models/event');
+const Message = require('./models/message');
 
 // Donation relationships
 Donation.belongsTo(Event, { foreignKey: 'EventID' });
@@ -99,8 +100,39 @@ User.hasMany(Volunteer, {
     onDelete: 'CASCADE'
 })
 
+// Message relationships
+Message.belongsTo(User, {
+    foreignKey: {
+        name: 'UserIDCreatedBy',
+        allowNull: true
+    },
+    onDelete: 'SET NULL'
+});
+User.hasMany(Message, {
+    foreignKey: {
+        name: 'UserIDCreatedBy',
+        allowNull: true
+    },
+    onDelete: 'SET NULL'
+})
+
+Message.belongsTo(User, {
+    foreignKey: {
+        name: 'UserIDSentTo',
+        allowNull: false
+    },
+    onDelete: 'CASCADE'
+});
+User.hasMany(Message, {
+    foreignKey: {
+        name: 'UserIDSentTo',
+        allowNull: false
+    },
+    onDelete: 'CASCADE'
+})
+
 sequelize.sync({ alter: true })
     .then(() => console.log("Database configured successfully."))
     .catch((err) => console.log(err));
 
-module.exports = { Donation, Event, Program, User, UserRole, Volunteer };
+module.exports = { Donation, Event, Program, User, UserRole, Volunteer, Message };
