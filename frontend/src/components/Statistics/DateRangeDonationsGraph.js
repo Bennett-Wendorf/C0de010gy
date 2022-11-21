@@ -11,6 +11,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
+import HelpDialog from "../HelpDialog";
+
 // Setup a general format for dates
 const dateFormatOptions = {
     weekday: 'short',
@@ -158,7 +160,7 @@ export default function DateRangeDonationsGraph() {
                     <Grid2 item xs={2}>
                         <Box component="h2">Donations</Box>
                     </Grid2>
-                    <Grid2 item xs={4} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'}}>
+                    <Grid2 item xs={3} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
                         <Box component="h4" color="text.secondary"> Total: ${totalDonations}</Box>
                     </Grid2>
                     <Grid2 item xs={3} sx={verticalAlignStyles}>
@@ -184,6 +186,14 @@ export default function DateRangeDonationsGraph() {
                                 renderInput={(params) => <TextField {...params} />}
                             />
                         </LocalizationProvider>
+                    </Grid2>
+                    <Grid2 item xs={1} sx={verticalAlignStyles}>
+                        <HelpDialog usedInDialog={false} messages={[
+                            `This graph shows the total donations made between the start and end dates by day.`,
+                            `Changing the start and end dates will update the graph automatically to show the new information.`,
+                            `Hovering over the graph will list exact values of total donations on the given day.`,
+                            `The graph also shows the total dollar amount of donations withing the specified date range.`,
+                        ]} />
                     </Grid2>
                 </Grid2>
                 {!dataUnauthorized ?

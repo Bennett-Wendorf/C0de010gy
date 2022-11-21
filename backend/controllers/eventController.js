@@ -1,6 +1,6 @@
 const { Event, Volunteer, Donation } = require('../database')
 const { Op } = require('sequelize')
-const { notifyAllEventVolunteers } = require('./volunteerController')
+const { notifyAllEventVolunteers, removeAllEventVolunteers } = require('./volunteerController')
 
 const getAllEvents = async (req, res) => {
     const events = await Event.findAll({
@@ -122,6 +122,12 @@ const deleteEvent = async (req, res) => {
         await Event.update({Cancelled: true}, { where: { EventID: id } })
 
         notifyAllEventVolunteers(id, userID, "Event Cancelled", `The event titled "${event.Summary}" that you signed up for has been cancelled`)
+        
+        const removed = removeAllEventVolunteers(id)
+        if (!removed) {
+            res.status(500).json({ field: 'general', message: 'Something went wrong', error: "Unable to remove all volunteers from event" })
+            return
+        }
         
         res.status(200).send({ field: 'general', message: "Event cancelled successfully" })
     } catch (err) {

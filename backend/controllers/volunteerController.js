@@ -4,10 +4,10 @@ const { addMessage } = require('./messageController')
 
 const volunteer = async (req, res) => {
     const { id } = req.params
-    const userID  = req.userID
+    const userID = req.userID
 
     try {
-        const event = await Event.findOne({ where: { EventID: id }})
+        const event = await Event.findOne({ where: { EventID: id } })
         if (!event) {
             return res.status(404).json({ field: 'general', message: 'Event not found' })
         }
@@ -30,10 +30,10 @@ const volunteer = async (req, res) => {
 
 const hasVolunteered = async (req, res) => {
     const { id } = req.params
-    const userID  = req.userID
+    const userID = req.userID
 
     try {
-        const volunteer = await Volunteer.findOne({ where: { UserID: userID, EventID: id }})
+        const volunteer = await Volunteer.findOne({ where: { UserID: userID, EventID: id } })
         if (!volunteer) {
             return res.status(200).send(false)
         }
@@ -47,15 +47,15 @@ const hasVolunteered = async (req, res) => {
 
 const cancelVolunteer = async (req, res) => {
     const { id } = req.params
-    const userID  = req.userID
+    const userID = req.userID
 
     try {
-        const volunteer = await Volunteer.findOne({ where: { UserID: userID, EventID: id }})
+        const volunteer = await Volunteer.findOne({ where: { UserID: userID, EventID: id } })
         if (!volunteer) {
             return res.status(404).json({ field: 'general', message: 'Volunteer not found' })
         }
 
-        const event = await Event.findOne({ where: { EventID: id }})
+        const event = await Event.findOne({ where: { EventID: id } })
 
         await volunteer.destroy()
 
@@ -67,7 +67,7 @@ const cancelVolunteer = async (req, res) => {
 }
 
 const notifyAllEventVolunteers = async (eventID, fromUserID, messageTitle, messageContent) => {
-    const volunteers = await Volunteer.findAll({ where: { EventID: eventID }})
+    const volunteers = await Volunteer.findAll({ where: { EventID: eventID } })
     if (volunteers) {
         volunteers.forEach(async (volunteer) => {
             await addMessage(fromUserID, volunteer.UserID, messageTitle, messageContent)
@@ -75,18 +75,33 @@ const notifyAllEventVolunteers = async (eventID, fromUserID, messageTitle, messa
     }
 }
 
+const removeAllEventVolunteers = async (eventID) => {
+    try {
+        const volunteers = await Volunteer.findAll({ where: { EventID: eventID } })
+        if (volunteers) {
+            volunteers.forEach(async (volunteer) => {
+                await volunteer.destroy()
+            })
+        }
+        return true
+    } catch (err) {
+        console.log(err)
+        return false
+    }
+}
+
 const validateNewVolunteer = async (req, res, next) => {
     const { id } = req.params
-    const userID  = req.userID
+    const userID = req.userID
 
     // Check for duplicate volunteer entries
-    const duplicateVolunteer = await Volunteer.findOne({ where: {UserID: userID, EventID: id }})
+    const duplicateVolunteer = await Volunteer.findOne({ where: { UserID: userID, EventID: id } })
     if (duplicateVolunteer) {
         return res.status(400).json({ field: 'general', message: 'Already volunteered for this event' })
     }
 
     // Ensure the event exists
-    const event = await Event.findOne({ 
+    const event = await Event.findOne({
         where: { EventID: id },
         include: [
             {
@@ -99,21 +114,25 @@ const validateNewVolunteer = async (req, res, next) => {
     }
 
     // Check for overlapping volunteer times
-    const overlappingVolunteer = await Volunteer.findOne({ 
+    const overlappingVolunteer = await Volunteer.findOne({
         where: {
-            UserID: userID, 
+            UserID: userID,
             [Op.or]: [
-                {StartTime: {
-                    [Op.between]: [event.StartTime, event.EndTime]
-                }},
-                {EndTime: {
-                    [Op.between]: [event.StartTime, event.EndTime]
-                }}
+                {
+                    StartTime: {
+                        [Op.between]: [event.StartTime, event.EndTime]
+                    }
+                },
+                {
+                    EndTime: {
+                        [Op.between]: [event.StartTime, event.EndTime]
+                    }
+                }
             ]
         }
     })
     if (overlappingVolunteer) {
-        const overlappingEvent = await Event.findOne({ where: { EventID: overlappingVolunteer.EventID }})
+        const overlappingEvent = await Event.findOne({ where: { EventID: overlappingVolunteer.EventID } })
         return res.status(400).json({ field: 'general', message: `You are already volunteering at this time for another event titled: ${overlappingEvent.Summary}` })
     }
 
@@ -125,4 +144,4 @@ const validateNewVolunteer = async (req, res, next) => {
     next()
 }
 
-module.exports = { volunteer, hasVolunteered, cancelVolunteer, notifyAllEventVolunteers, validateNewVolunteer }
+module.exports = { volunteer, hasVolunteered, cancelVolunteer, notifyAllEventVolunteers, removeAllEventVolunteers, validateNewVolunteer }

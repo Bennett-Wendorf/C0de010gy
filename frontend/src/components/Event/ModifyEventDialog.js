@@ -16,6 +16,7 @@ import { Snackbar, Alert } from "@mui/material"
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import HelpDialog from "../HelpDialog";
 
 // Setup a general format for dates
 const dateFormatOptions = {
@@ -320,7 +321,7 @@ export default function ModifyEventDialog(props) {
     const handleUpdateResponseError = (error) => {
         let fieldName = error.response.data.field
         let message = error.response.data.message
-        switch(fieldName) {
+        switch (fieldName) {
             case 'summary':
                 setUpdateSummaryError(true)
                 setUpdateSummaryErrorText(message)
@@ -353,6 +354,12 @@ export default function ModifyEventDialog(props) {
             < Dialog open={isModifyDialogOpen} onClose={handleModifyClose} >
                 <DialogTitle>
                     Modify event "{selectedEvent.Summary}"
+                    <HelpDialog usedInDialog={true} messages={[
+                        `This dialog is used for modifying events, including deleting them, editing them, etc.`,
+                        `From this page, editing any field and clicking the "Confirm" button will update the event.`,
+                        `Clicking the "Cancel Event" button will cancel the event and notify all volunteers.`,
+                        `You can also click the "Edit Programs" button to edit the programs associated with this event.`
+                    ]} />
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
@@ -496,10 +503,15 @@ export default function ModifyEventDialog(props) {
             < Dialog open={isDeleteConfOpen} onClose={() => setIsDeleteConfOpen(false)} >
                 <DialogTitle>
                     Are you sure you want to cancel event: "{selectedEvent.Summary}"?
+                    <HelpDialog usedInDialog={true} messages={[
+                        `This dialog is used for confirming the cancellation of an event.`,
+                        `Click "Confirm Cancel" to cancel the event and notify all volunteers.`,
+                        `Click "Cancel" to return to the event details.`
+                    ]} />
                 </DialogTitle>
                 <DialogContent>
-                    Note: This will also invalidate all programs associated with the event,
-                    invalidate all volunteer assignments. Also, all donations associated with the event will become general donations.
+                    Note: This will also invalidate all programs associated with the event, and
+                    remove all volunteer assignments. Also, all donations associated with the event will become general donations.
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setIsDeleteConfOpen(false)}>Cancel</Button>
@@ -511,6 +523,14 @@ export default function ModifyEventDialog(props) {
             < Dialog open={isViewDialogOpen} onClose={() => setIsViewDialogOpen(false)} >
                 <DialogTitle>
                     Event "{selectedEvent.Summary}"
+                    <HelpDialog usedInDialog={true} messages={[
+                        `This dialog is used for viewing events, donating to them, volunteering for them, and viewing associated programs.`,
+                        `Click "Volunteer for this Event" to volunteer, or "Cancel Event" if you've already volunteered and can't make it anymore.`,
+                        `If you're not already a volunteer with the organization, this will prompt you to sign up or add the volunteer role`,
+                        `Click "Donate to this Event" to donate, or "View My Donations" if you've already donated and and would like to view donations or donate again.`,
+                        `If you're not already a donor with the organization, this will prompt you to sign up or add the donor role`,
+                        `Note that donations cannot be rescinded once made. Contact the organization if you need to cancel a donation.`,
+                    ]} />
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
@@ -726,7 +746,17 @@ export default function ModifyEventDialog(props) {
             {/* Popup dialog for editing donations to an event */}
             < Dialog open={isViewDonationsDialogOpen} onClose={() => setIsViewDonationsDialogOpen(false)} >
                 <DialogTitle>
-                    Viewing Donations for Event "{selectedEvent.Summary}"
+                    <Grid container spacing={2}>
+                        <Grid item xs={10}>
+                            Viewing Donations for Event "{selectedEvent.Summary}"
+                        </Grid>
+                        <Grid item xs={2}>
+                            <HelpDialog usedInDialog={true} messages={[
+                                `This dialog is used for donating to an event and viewing donations that you've already made.`,
+                                `Click "Add Donation" to create another donation, or you can close the dialog and go back to the event screen with the "Close" button.`
+                            ]} />
+                        </Grid>
+                    </Grid>
                 </DialogTitle>
                 <DialogContent>
                     <TableContainer component={Paper}>

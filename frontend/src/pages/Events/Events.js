@@ -21,6 +21,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
+import HelpDialog from "../../components/HelpDialog";
+
 // Create a component for the Events page
 export function Events() {
 
@@ -229,7 +231,14 @@ export function Events() {
 
             {/* Create the dialog box that will pop up when the Add button is pressed. This will add a new event to the database */}
             <Dialog open={isDialogOpen} onClose={handleClose}>
-                <DialogTitle>Create an Event</DialogTitle>
+                <DialogTitle>
+                    Create an Event
+                    <HelpDialog usedInDialog={true} messages={[
+                        `This dialog is used for creating new events.`,
+                        `Click "Submit" once you are ready, or "Cancel" if you decide you don't want to create a new event.`,
+                        `Make sure that you fill out the "Summary" field as it is required.`,
+                    ]} />    
+                </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
                         {isErrorDialogOpen &&

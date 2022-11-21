@@ -7,6 +7,8 @@ import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material"
 import { Button, Paper, Grid, TextField, Snackbar, Alert } from "@mui/material"
 
+import HelpDialog from "../HelpDialog";
+
 export default function Programs({ selectedEvent, open, onClose }) {
 
     const maxSummaryLength = 100
@@ -153,7 +155,16 @@ export default function Programs({ selectedEvent, open, onClose }) {
             {/* Popup dialog for editing programs that are part of an event */}
             <Dialog open={open} onClose={onClose} >
                 <DialogTitle>
-                    {userIsAdmin ? "Editing" : "Viewing"} Programs for Event "{selectedEvent.Summary}"
+                    <Grid container spacing={1}>
+                        <Grid item xs={10}>
+                            {userIsAdmin ? "Editing" : "Viewing"} Programs for Event "{selectedEvent.Summary}"
+                        </Grid>
+                        <Grid item xs={2}>
+                            <HelpDialog usedInDialog={true} messages={[
+                                `This dialog is used for viewing and editing programs that are part of the event "${selectedEvent.Summary}".`,
+                            ]} />
+                        </Grid>
+                    </Grid>
                 </DialogTitle>
                 <DialogContent>
                     <TableContainer component={Paper}>
@@ -251,7 +262,17 @@ export default function Programs({ selectedEvent, open, onClose }) {
             {/* Popup dialog for editing a program */}
             < Dialog open={isUpdateProgramDialogOpen} onClose={() => setIsUpdateProgramDialogOpen(false)} >
                 <DialogTitle>
-                    Edit Program "{selectedProgram.Summary}"
+                    <Grid container spacing={2}>
+                        <Grid item xs={10}>
+                            Edit Program "{selectedProgram.Summary}"
+                        </Grid>
+                        <Grid item xs={2}>
+                            <HelpDialog usedInDialog={true} messages={[
+                                `This dialog is for editing a program.`,
+                                `From here you can edit and delete the program.`,
+                            ]} />
+                        </Grid>
+                    </Grid>
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>

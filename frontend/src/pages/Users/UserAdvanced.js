@@ -12,6 +12,8 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from
 
 import Grid2 from '@mui/material/Unstable_Grid2'
 
+import HelpDialog from "../../components/HelpDialog";
+
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -221,7 +223,20 @@ export function UserAdvanced() {
                         <TableContainer component={Paper} sx={{ height: `${containerHeight}px` }}>
                             <Grid2 container spacing={1} sx={tableHeaderStyles}>
                                 <Grid2 item xs={12} textAlign="center">
-                                    <Typography variant="h5">Volunteer Slots</Typography>
+                                    <Grid2 container spacing={0}>
+                                        <Grid2 item xs={1} />
+                                        <Grid2 item xs={10}>
+                                            <Typography variant="h5">
+                                                Volunteer Slots
+                                            </Typography>
+                                        </Grid2>
+                                        <Grid2 item xs={1}>
+                                            <HelpDialog usedInDialog={false} messages={[
+                                                `This list shows all volunteer slots taken by this user.`,
+                                                `In addition, you can see the approximate time spent volunteering, rounded down to the nearest hour.`,
+                                            ]} />
+                                        </Grid2>
+                                    </Grid2>
                                 </Grid2>
                                 <Grid2 item xs={6}>
                                     <Typography variant="body2" color="text.secondary">
@@ -263,7 +278,20 @@ export function UserAdvanced() {
                         <TableContainer component={Paper} sx={{ height: `${containerHeight}px` }}>
                             <Grid2 container spacing={1} sx={tableHeaderStyles}>
                                 <Grid2 item xs={12} textAlign='center'>
-                                    <Typography variant="h5">Donations</Typography>
+                                    <Grid2 container spacing={0}>
+                                        <Grid2 item xs={1} />
+                                        <Grid2 item xs={10}>
+                                            <Typography variant="h5">
+                                                Donations
+                                            </Typography>
+                                        </Grid2>
+                                        <Grid2 item xs={1}>
+                                            <HelpDialog usedInDialog={false} messages={[
+                                                `This list shows all donations made by this user.`,
+                                                `In addition, you can see the total amount donated.`,
+                                            ]} />
+                                        </Grid2>
+                                    </Grid2>
                                 </Grid2>
                                 <Grid2 item xs={6}>
                                     <Typography variant="body2" color="text.secondary">

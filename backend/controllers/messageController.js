@@ -31,35 +31,39 @@ const addMessage = async (fromUserID, toUserID, messageTitle, messageContent) =>
     return newMessage
 }
 
-const markMessageAsRead = async (req, res) => {
+const toggleMessageRead = async (req, res) => {
     const messageID = req.params.id
     try {
-        console.log("Marking message as read")
-        await Message.update({
-            Read: true,
-            ReadDateTime: new Date()
-        }, { where: { MessageID: messageID } })
-        console.log("Marked message as read")
+        const message = await Message.findOne({ where: { MessageID: messageID } })
 
-        res.json({ field: 'general', message: "Message marked as read" })
+        if (!message) {
+            return res.status(404).json({field: 'general', message: "Message not found"})
+        }
+
+        message.Read = !message.Read
+
+        await message.save()
+
+        res.json({ field: 'general', message: `Message marked as ${message.Read ? 'read' : 'unread'}` })
     } catch (err) {
         res.status(500).json({ field: 'general', message: "Error updating message.", error: err.message })
     }
 }
 
-const markMessageAsUnread = async (req, res) => {
+const deleteMessage = async (req, res) => {
     const messageID = req.params.id
     try {
-        console.log("Marking message as unread")
-        await Message.update({
-            Read: false,
-            ReadDateTime: null
-        }, { where: { MessageID: messageID } })
-        console.log("Marked message as unread")
+        const message = await Message.findOne({ where: { MessageID: messageID } })
 
-        res.json({ field: 'general', message: "Message marked as unread" })
+        if (!message) {
+            return res.status(404).json({field: 'general', message: "Message not found"})
+        }
+
+        await message.destroy()
+
+        res.json({ field: 'general', message: "Message deleted" })
     } catch (err) {
-        res.status(500).json({ field: 'general', message: "Error updating message.", error: err.message })
+        res.status(500).json({ field: 'general', message: "Error deleting message.", error: err.message })
     }
 }
 
@@ -82,4 +86,4 @@ const ensureMessageIsOwn = async (req, res, next) => {
     next()
 }
 
-module.exports = { getMyMessages, addMessage, markMessageAsRead, markMessageAsUnread, ensureMessageIsOwn }
+module.exports = { getMyMessages, addMessage, toggleMessageRead, deleteMessage, ensureMessageIsOwn }
