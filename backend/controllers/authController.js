@@ -113,6 +113,55 @@ const hasPermissions = (allowedPermissions) => {
     }
 }
 
+// NOTE: This method expects that the request contains an id parameter corresponding to the user whose 
+// information is being requested or updated
+const hasPermissionsOrIsCurrentUser = (allowedPermissions) => {
+    return async (req, res, next) => {
+        const errorString = "You do not have permission to perform this action"
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(":")[1]
+
+        const { id } = req.params
+
+        if (token == null) {
+            return res.status(401).json({ field: 'general', message: errorString, error: "No token provided" })
+        }
+
+        await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, usr) => {
+            if (err) {
+                return res.status(401).json({ field: 'general', message: errorString, error: "Invalid token" })
+            }
+
+            const user = await User.findOne({ where: { UserID: usr.id } })
+
+            if (user === null){
+                return res.status(401).json({ field: 'general', message: errorString, error: "No user found" })
+            }
+
+            req.userID = usr.id
+
+            if (usr.id == id) {
+                next()
+                return
+            }
+
+            var userRoles = await user.getUserRoles()
+
+            // If no permissions are required, allow the user to continue
+            if (allowedPermissions.length == 0) {
+                next()
+                return
+            }
+
+            if (allowedPermissions.some(permission => userRoles.some(role => role.DisplayName === permission))) {
+                next()
+            } else {
+                return res.status(401).json({ field: 'general', message: errorString, error: "Bad permissions" })
+            }
+        })
+    }
+}
+
 const getNewAccessToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken
 
@@ -146,4 +195,4 @@ const getNewAccessToken = async (req, res) => {
     })
 }
 
-module.exports = { login, logout, hasPermissions, getNewAccessToken }
+module.exports = { login, logout, hasPermissions, hasPermissionsOrIsCurrentUser, getNewAccessToken }

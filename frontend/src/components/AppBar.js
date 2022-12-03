@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 
 // MUI components
-import { AppBar, Toolbar, Typography, Box, CssBaseline, Tooltip, IconButton, Divider, Badge, Snackbar, Alert, Portal, Grid } from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, CssBaseline, Tooltip, IconButton, Divider, Badge, Snackbar, Alert, Portal } from "@mui/material";
 
 // Menu stuff
 import { Menu, MenuItem } from "@mui/material";
@@ -107,6 +107,8 @@ function AccountMenu() {
         setMenuAnchorEl(null)
     }
 
+    const userID = useUserStore(state => state.UserID)
+
     const handleAccountClick = () => {
         navigate(`/users/${userID}`)
         handleMenuClose()
@@ -133,7 +135,6 @@ function AccountMenu() {
 
     const accessToken = useUserStore(state => state.AccessToken)
     const fullName = useUserStore(state => state.FullName)
-    const userID = useUserStore(state => state.UserID)
 
     return (
         <>
@@ -146,6 +147,7 @@ function AccountMenu() {
             {accessToken !== -1 &&
                 <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
                     <Typography sx={[userNameStyles, popupMenuMarginStyles]}>{fullName}</Typography>
+                    <Typography sx={[userNameStyles, popupMenuMarginStyles]}>{userID}</Typography>
                     <Divider />
                     <MenuItem onClick={handleAccountClick}>My Account</MenuItem>
                     <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
@@ -388,7 +390,6 @@ function MessagesMenu() {
         </>
     )
 }
-
 
 // Create the bar component to be used on every page
 function Bar(props) {

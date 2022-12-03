@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import api from '../../utils/api';
 import Bar from '../../components/AppBar';
+import AuthService from "../../services/auth.service";
 
 import { Tooltip, IconButton, Typography, Dialog, Button, DialogTitle, DialogActions, DialogContent, Paper, Snackbar, Alert } from '@mui/material';
 
@@ -67,10 +68,17 @@ export function UserAdvanced() {
 
     const navigate = useNavigate()
 
+    const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
+
     const handleDelete = (user) => {
         api.delete(`/api/users/${user.UserID}`)
             .then(res => {
-                navigate('/users')
+                if (!userIsAdmin) {
+                    AuthService.logout()
+                    navigate('/')
+                } else {
+                    navigate('/users')
+                }
                 setIsDeleteConfirmationDialogOpen(false)
                 setIsSnackbarOpen(true)
                 setSnackbarError(false)
@@ -145,7 +153,7 @@ export function UserAdvanced() {
 
     useEffect(() => {
         updateUser()
-    }, [])
+    }, [id])
 
     return (
         <>
@@ -346,6 +354,11 @@ export function UserAdvanced() {
                     <Typography variant="body1">
                         This will disable the user's account and they will not be able to log in.
                     </Typography>
+                    {!userIsAdmin &&
+                        <Typography variant="body1">
+                            This action will also log you out.
+                        </Typography>
+                    }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setIsDeleteConfirmationDialogOpen(false)}>Cancel</Button>

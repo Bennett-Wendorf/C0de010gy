@@ -11,7 +11,7 @@ var AuthService = {
             .then((response) => {
                 if (response.data.accessToken) {
                     var authedUser = jwt(response.data.accessToken)
-                    useUserStore.setState({ UserId: authedUser.id, FullName: response.data.fullName, AccessToken: response.data.accessToken, Roles: response.data.roles ?? [] })
+                    useUserStore.setState({ UserID: authedUser.id, FullName: response.data.fullName, AccessToken: response.data.accessToken, Roles: response.data.roles ?? [] })
                 }
             })
     },
