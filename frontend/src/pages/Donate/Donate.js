@@ -47,6 +47,9 @@ export function Donations() {
     const [newDonationAmountError, setNewDonationAmountError] = useState(false)
     const [newDonationAmountErrorText, setNewDonationAmountErrorText] = useState("")
 
+    const [addDonationError, setAddDonationError] = useState(false)
+    const [addDonationErrorMessage, setAddDonationErrorMessage] = useState("")
+
     // Handle opening and closing of the dialog for new donation
     const handleClickOpen = () => {
         resetErrors()
@@ -106,7 +109,8 @@ export function Donations() {
                 setNewDonationAmountErrorText(message)
                 break
             case 'general':
-                alert(message)
+                setAddDonationErrorMessage(message ?? "An unknown error occurred")
+                setAddDonationError(true)
                 break
             default:
                 break
@@ -175,6 +179,11 @@ export function Donations() {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
+                        {addDonationError &&
+                            <Grid item xs={12}>
+                                <Alert severity="error" variant='outlined'>{addDonationErrorMessage}</Alert>
+                            </Grid>
+                        }
                         <Grid item xs={12}>
                             <TextField
                                 InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}

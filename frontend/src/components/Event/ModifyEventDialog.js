@@ -116,6 +116,11 @@ export default function ModifyEventDialog(props) {
         resetErrors()
     }
 
+    const handleViewClose = () => {
+        setIsViewDialogOpen(false)
+        resetErrors()
+    }
+
     const resetErrors = () => {
         setUpdateSummaryError(false)
         setUpdateDescriptionError(false)
@@ -127,6 +132,9 @@ export default function ModifyEventDialog(props) {
         setUpdateNeededVolunteersErrorText("")
         setUpdateLocationErrorText("")
         setUpdateVolunteerQualificationsErrorText("")
+
+        setIsErrorDialogOpen(false)
+        setErrorDialogText("")
 
         setIsErrorDialogOpen(false)
         setErrorDialogText("")
@@ -520,7 +528,7 @@ export default function ModifyEventDialog(props) {
             </Dialog >
 
             {/* The popup dialog for viewing event details */}
-            < Dialog open={isViewDialogOpen} onClose={() => setIsViewDialogOpen(false)} >
+            < Dialog open={isViewDialogOpen} onClose={handleViewClose} >
                 <DialogTitle>
                     Event "{selectedEvent.Summary}"
                     <HelpDialog usedInDialog={true} messages={[
@@ -534,6 +542,11 @@ export default function ModifyEventDialog(props) {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
+                        {isErrorDialogOpen &&
+                            <Grid item xs={12}>
+                                <Alert severity="error" variant='outlined'>{errorDialogText}</Alert>
+                            </Grid>
+                        }
                         <Grid item xs={12}>
                             <TextField
                                 autoFocus
@@ -696,7 +709,7 @@ export default function ModifyEventDialog(props) {
 
                 {/* Generate the buttons to act as actions on the dialog popup */}
                 <DialogActions>
-                    <Button onClick={() => setIsViewDialogOpen(false)}>OK</Button>
+                    <Button onClick={handleViewClose}>OK</Button>
                 </DialogActions>
             </Dialog >
 

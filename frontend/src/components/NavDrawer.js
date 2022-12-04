@@ -57,6 +57,7 @@ function NavDrawer() {
     };
 
     const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
+    const userIsDonor = AuthService.useHasPermissions(["Donor"])
 
     // TODO: Make this drawer responsive. See https://github.com/mui/material-ui/blob/v5.10.8/docs/data/material/getting-started/templates/dashboard/Dashboard.js
     // Build the actual JSX to build the nav drawer
@@ -92,7 +93,7 @@ function NavDrawer() {
                         </ListItem>
                     </Link>
 
-                    {AuthService.isLoggedIn() &&
+                    {userIsDonor &&
                         <Link to="/donation" style={linkStyle}>
                             <ListItem button key="Donate">
                                 <ListItemIcon>{<PaidIcon />}</ListItemIcon>

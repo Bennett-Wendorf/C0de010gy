@@ -147,7 +147,6 @@ function AccountMenu() {
             {accessToken !== -1 &&
                 <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
                     <Typography sx={[userNameStyles, popupMenuMarginStyles]}>{fullName}</Typography>
-                    <Typography sx={[userNameStyles, popupMenuMarginStyles]}>{userID}</Typography>
                     <Divider />
                     <MenuItem onClick={handleAccountClick}>My Account</MenuItem>
                     <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>

@@ -72,16 +72,26 @@ const createEvent = async (req, res) => {
 }
 
 const updateEvent = async (req, res) => {
+    console.log("Updating event")
     const { id } = req.params
     const { summary, description, neededVolunteers, location, volunteerQualifications, startTime, endTime } = req.body
 
     try {
-        const event = await Event.findOne({ where: { EventID: id }})
+        const event = await Event.findOne({ 
+            where: { EventID: id },
+            include: [
+                {
+                    model: Volunteer,
+                },
+            ]
+        })
         if (!event) {
             return res.status(404).json({ field: 'general', message: 'Event not found' })
         }
 
-        // TODO: Handle case where number of volunteers is less than number of volunteers already signed up
+        if (neededVolunteers < event.Volunteers.length) {
+            return res.status(400).json({ field: 'general', message: 'Cannot reduce number of volunteers below number of volunteers already signed up' })
+        }
 
         await Event.update({
             Summary: summary,
@@ -91,12 +101,12 @@ const updateEvent = async (req, res) => {
             VolunteerQualifications: volunteerQualifications,
             StartTime: startTime,
             EndTime: endTime,
-            UserIDLastModifiedBy: req.UserID,
+            UserIDLastModifiedBy: req.userID,
         }, { where: { EventID: id }})
 
         const updatedEvent = await Event.findOne({ where: { EventID: id }})
 
-        notifyAllEventVolunteers(id, userID, "Event Updated", `The event titled "${event.Summary}" that you signed up for has been updated. Please check for conflicts`)
+        notifyAllEventVolunteers(id, req.userID, "Event Updated", `The event titled "${event.Summary}" that you signed up for has been updated. Please check for conflicts`)
 
         if (updatedEvent) {
             res.status(200).json({ field: 'general', message: `Successfully updated event: ${summary}`, event: updatedEvent })
@@ -136,6 +146,7 @@ const deleteEvent = async (req, res) => {
 }
 
 const validateNewEvent = (req, res, next) => {
+    console.log("Validating new event")
     if (!req.body.summary || req.body.summary.length == 0) {
         res.status(400).json({ field: 'summary', message: 'Summary is required' })
         return

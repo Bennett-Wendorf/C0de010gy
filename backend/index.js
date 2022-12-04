@@ -11,8 +11,8 @@ const donationRoute = require('./routes/donations')
 const messageRoute = require('./routes/messages')
 const cookieParser = require('cookie-parser')
 
-// Define the port to run the backend on as the environment variable for port, or 8080 if that variable is not defined
-const PORT = process.env.PORT || 8080;
+// Define the port to run the backend on as the environment variable for port, or 8082 if that variable is not defined
+const PORT = process.env.PORT || 8082;
 
 dotenv.config()
 
