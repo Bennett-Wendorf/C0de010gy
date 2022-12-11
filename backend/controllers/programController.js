@@ -1,5 +1,10 @@
 const { Program, Event } = require('../database')
 
+/**
+ * Get programs for the current event
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 const getEventPrograms = async (req, res) => {
     const { id } = req.params
 
@@ -12,6 +17,11 @@ const getEventPrograms = async (req, res) => {
     }
 }
 
+/**
+ * Create a new program
+ * @param {Request} req
+ * @param {Response} res
+ */
 const createProgram = async (req, res) => {
     const { id } = req.params
     const { summary, description } = req.body
@@ -39,6 +49,11 @@ const createProgram = async (req, res) => {
     }
 }
 
+/**
+ * Update a program
+ * @param {Request} req
+ * @param {Response} res
+ */
 const updateProgram = async (req, res) => {
     const { eventID, programID } = req.params
     const { summary, description } = req.body
@@ -67,6 +82,11 @@ const updateProgram = async (req, res) => {
     }
 }
 
+/**
+ * Delete a program
+ * @param {Request} req
+ * @param {Response} res
+ */
 const deleteProgram = async (req, res) => {
     const { eventID, programID } = req.params
 
@@ -85,6 +105,12 @@ const deleteProgram = async (req, res) => {
 }
 
 
+/**
+ * Express middleware to validate a new program
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Function} next
+ */
 const validateNewProgram = (req, res, next) => {
     const { summary, description } = req.body
 

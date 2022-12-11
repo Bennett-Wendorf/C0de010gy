@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 
 const sequelize = require('../sequelize_index');
 
+// The model to represent the User table in the database
 const User = sequelize.define("User", {
     UserID: {
         type: DataTypes.INTEGER,

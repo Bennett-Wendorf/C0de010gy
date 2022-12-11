@@ -1,5 +1,10 @@
 const { Message, User } = require('../database');
 
+/**
+ * Get all the messages for the current user
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 const getMyMessages = async (req, res) => {
     const userID = req.userID
     const messages = await Message.findAll({
@@ -20,6 +25,14 @@ const getMyMessages = async (req, res) => {
     })
 }
 
+/**
+ * Add a new message
+ * @param {Number} fromUserID
+ * @param {Number} toUserID
+ * @param {String} messageTitle
+ * @param {String} messageContent
+ * @returns {Message} The new message
+ */
 const addMessage = async (fromUserID, toUserID, messageTitle, messageContent) => {
     const newMessage = await Message.create({
         UserIDCreatedBy: fromUserID,
@@ -31,6 +44,11 @@ const addMessage = async (fromUserID, toUserID, messageTitle, messageContent) =>
     return newMessage
 }
 
+/**
+ * Mark a message as read or unread
+ * @param {Request} req
+ * @param {Response} res
+ */
 const toggleMessageRead = async (req, res) => {
     const messageID = req.params.id
     try {
@@ -50,6 +68,11 @@ const toggleMessageRead = async (req, res) => {
     }
 }
 
+/**
+ * Delete a message
+ * @param {Request} req
+ * @param {Response} res
+ */
 const deleteMessage = async (req, res) => {
     const messageID = req.params.id
     try {
@@ -67,6 +90,11 @@ const deleteMessage = async (req, res) => {
     }
 }
 
+/**
+ * Express middleware to ensure the message belongs to the current user
+ * @param {Request} req
+ * @param {Response} res
+ */
 const ensureMessageIsOwn = async (req, res, next) => {
     const messageID = req.params.id
     const userID = req.userID

@@ -1,6 +1,11 @@
 const { Donation, Event } = require('../database')
 const { Op } = require('sequelize')
 
+/**
+ * Donate to an event
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 const donateToEvent = async (req, res) => {
     const { id } = req.params
     const userID = req.userID
@@ -27,6 +32,11 @@ const donateToEvent = async (req, res) => {
     }
 }
 
+/**
+ * Check if the current user has donated to the given event
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 const hasDonated = async (req, res) => {
     const { id } = req.params
     const userID = req.userID
@@ -44,6 +54,11 @@ const hasDonated = async (req, res) => {
     }
 }
 
+/**
+ * Get all donations for an event
+ * @param {Request} req
+ * @param {Response} res
+ */
 const getEventDonations = async (req, res) => {
     const { id } = req.params
     const userID = req.userID
@@ -58,6 +73,11 @@ const getEventDonations = async (req, res) => {
     }
 }
 
+/**
+ * Get all donations in a time range
+ * @param {Request} req
+ * @param {Response} res
+ */
 const getAllDonations = async (req, res) => {
     try {
         const { startDate, endDate } = req.query
@@ -79,6 +99,11 @@ const getAllDonations = async (req, res) => {
     }
 }
 
+/**
+ * Get all donations for the given user
+ * @param {Request} req
+ * @param {Response} res
+ */
 const getAllDonationsForUser = async (req, res) => {
     const userID = req.userID
 
@@ -91,22 +116,11 @@ const getAllDonationsForUser = async (req, res) => {
     }
 }
 
-const getDonationEvent = async (donation) => {
-    const { EventID } = donation
-
-    try {
-        const event = await Event.findOne({ where: { EventID } })
-        if (event) {
-            return { ...donation.dataValues, event }
-        } else {
-            return donation
-        }
-    }
-    catch (err) {
-        return donation
-    }
-}
-
+/**
+ * Donate to the general fund
+ * @param {Request} req
+ * @param {Response} res
+ */
 const donateGeneral = async (req, res) => {
     const userID = req.userID
     const { amount } = req.body
@@ -126,6 +140,12 @@ const donateGeneral = async (req, res) => {
     }
 }
 
+/**
+ * Express middleware  to validate a new donation
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Function} next
+ */
 const validateNewDonation = async (req, res, next) => {
     const userID = req.userID
     const { amount } = req.body

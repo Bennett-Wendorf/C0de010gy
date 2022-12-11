@@ -4,6 +4,11 @@ const { Op } = require('sequelize')
 
 const saltRounds = 10;
 
+/**
+ * Get all users
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 const getUsers = async (req, res) => {
     try {
         const users = await User.findAll({
@@ -24,6 +29,11 @@ const getUsers = async (req, res) => {
     }
 }
 
+/**
+ * Delete a user
+ * @param {Request} req
+ * @param {Response} res
+ */
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params
@@ -43,6 +53,11 @@ const deleteUser = async (req, res) => {
     }
 }
 
+/**
+ * Reactivate a user
+ * @param {Request} req
+ * @param {Response} res
+ */
 const reactivateUser = async (req, res) => {
     try {
         const { id } = req.params
@@ -62,6 +77,11 @@ const reactivateUser = async (req, res) => {
     }
 }
 
+/**
+ * Get a user's details including roles, volunteer events, and donation events
+ * @param {Request} req
+ * @param {Response} res
+ */
 const getUserDetails = async (req, res) => {
     try {
         const { id } = req.params
@@ -103,6 +123,11 @@ const getUserDetails = async (req, res) => {
     }
 }
 
+/**
+ * Create a new user
+ * @param {Request} req
+ * @param {Response} res
+ */
 const createUser = async (req, res) => {
     const { firstName, lastName, username, email, password, roles } = req.body
 
@@ -131,6 +156,11 @@ const createUser = async (req, res) => {
     })
 }
 
+/**
+ * Add new roles for a user
+ * @param {Request} req
+ * @param {Response} res
+ */
 const addUserRoles = async (req, res) => {
     const userID = req.userID
     const { roles } = req.body
@@ -151,6 +181,12 @@ const addUserRoles = async (req, res) => {
     res.status(200).json({ roles: userRoles, message: "User roles added successfully" })
 }
 
+/**
+ * Add all the user roles to the user
+ * @param {User} user
+ * @param {Array} roles
+ * @returns {Boolean}
+ */
 const createUserRoles = async (user, roles) => {
     await Promise.all(roles.map(async (role) => {
         const loggedInUser = await User.findOne({ where: { UserID: user.UserID } })
@@ -174,6 +210,12 @@ const createUserRoles = async (user, roles) => {
     return true
 }
 
+/**
+ * Express middleware to validate a new user
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Function} next
+ */
 const validateNewUser = async (req, res, next) => {
     const { firstName, lastName, username, email, password, roles } = req.body
 
@@ -202,6 +244,12 @@ const validateNewUser = async (req, res, next) => {
     next()
 }
 
+/**
+ * Express middleware to validate a new user role
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Function} next
+ */
 const validateNewUserRoles = async (req, res, next) => {
     const userID = req.userID
     const { roles } = req.body

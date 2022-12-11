@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 
 const sequelize = require('../sequelize_index');
 
+// The model to represent the Donation table in the database
 const Donation = sequelize.define("Donation", {
     DonationID: {
         type: DataTypes.INTEGER,

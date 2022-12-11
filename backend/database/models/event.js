@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize")
 
 const sequelize = require("../sequelize_index")
 
+// The model to represent the Event table in the database
 const Event = sequelize.define("Event", {
     EventID: {
         type: DataTypes.INTEGER,

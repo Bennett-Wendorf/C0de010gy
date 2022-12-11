@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 
 const sequelize = require('../sequelize_index');
 
+// The model to represent the Message table in the database
 const Message = sequelize.define("Message", {
     MessageID: {
         type: DataTypes.INTEGER,

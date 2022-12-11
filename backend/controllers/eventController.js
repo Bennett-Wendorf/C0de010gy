@@ -2,6 +2,11 @@ const { Event, Volunteer, Donation } = require('../database')
 const { Op } = require('sequelize')
 const { notifyAllEventVolunteers, removeAllEventVolunteers } = require('./volunteerController')
 
+/**
+ * Get all events
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 const getAllEvents = async (req, res) => {
     const events = await Event.findAll({
         where: {
@@ -24,6 +29,11 @@ const getAllEvents = async (req, res) => {
     })
 }
 
+/**
+ * Get all events that have not started yet
+ * @param {Request} req
+ * @param {Response} res
+ */
 const getAllFutureEvents = async (req, res) => {
     const events = await Event.findAll({
         where: {
@@ -49,6 +59,11 @@ const getAllFutureEvents = async (req, res) => {
     })
 }
 
+/**
+ * Create a new event
+ * @param {Request} req
+ * @param {Response} res
+ */
 const createEvent = async (req, res) => {
     const { summary, description, neededVolunteers, location, volunteerQualifications, startTime, endTime } = req.body
 
@@ -71,6 +86,11 @@ const createEvent = async (req, res) => {
     }
 }
 
+/**
+ * Update an event
+ * @param {Request} req
+ * @param {Response} res
+ */
 const updateEvent = async (req, res) => {
     console.log("Updating event")
     const { id } = req.params
@@ -118,6 +138,11 @@ const updateEvent = async (req, res) => {
     }
 }
 
+/**
+ * Delete an event
+ * @param {Request} req
+ * @param {Response} res
+ */
 const deleteEvent = async (req, res) => {
     const { id } = req.params
     const userID = req.userID
@@ -145,6 +170,11 @@ const deleteEvent = async (req, res) => {
     }
 }
 
+/**
+ * Express middleware to validate new event
+ * @param {Request} req
+ * @param {Response} res
+ */
 const validateNewEvent = (req, res, next) => {
     console.log("Validating new event")
     if (!req.body.summary || req.body.summary.length == 0) {
@@ -179,6 +209,11 @@ const validateNewEvent = (req, res, next) => {
     next()
 }
 
+/**
+ * Express middleware to validate future start time
+ * @param {Request} req
+ * @param {Response} res
+ */
 const validateFutureStartTime = async (req, res, next) => {
     let startTime = new Date(req.body.startTime)
     let currentTime = new Date()
@@ -191,6 +226,11 @@ const validateFutureStartTime = async (req, res, next) => {
     next()
 }
 
+/**
+ * Express middleware to ensure event exists
+ * @param {Request} req
+ * @param {Response} res
+ */
 const ensureEventExists = async (req, res, next) => {
     const { id } = req.params
 

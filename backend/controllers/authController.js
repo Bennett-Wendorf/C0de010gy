@@ -4,6 +4,12 @@ const bcrypt = require('bcrypt')
 
 let refreshTokens = []
 
+/**
+ * Handle the login request and generate tokens as needed
+ * @param {Request} req 
+ * @param {Response} res 
+ * @returns User's full name, roles, and an access token on success, or error message on failure
+ */
 const login = async (req, res) => {     
     let { username, password } = req.body
 
@@ -22,6 +28,7 @@ const login = async (req, res) => {
 
     const userRoles = await user.getUserRoles()
 
+    // Compare the password to the hashed password in the database
     bcrypt.compare(password, user.Password, (err, result) => {
         if (err) {
             res.status(500).send({field: 'general', message: 'An unknown error occurred'})
@@ -47,6 +54,11 @@ const login = async (req, res) => {
     })
 }
 
+/**
+ * Generate a jwt access token
+ * @param {*} user 
+ * @returns  jwt access token
+ */
 const generateAccessToken = (user) => {
     return jwt.sign(
         { username: user.Username, id: user.UserID },
@@ -57,6 +69,11 @@ const generateAccessToken = (user) => {
     )
 }
 
+/**
+ * Generate a jwt refresh token
+ * @param {*} user 
+ * @returns  jwt refresh token
+ */
 const generateRefreshToken = (user) => {
     return jwt.sign(
         { username: user.Username, id: user.UserID },
@@ -67,12 +84,21 @@ const generateRefreshToken = (user) => {
     )
 }
 
+/**
+ * Log the user out and delete their refresh token
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 const logout = async (req, res) => {
     refreshTokens = refreshTokens.filter((token) => token !== req.cookies.refreshToken)
     res.sendStatus(204)
 }
 
-// Check if the current user has a valid access token, and if so, also check if they have the allowed permissions
+/**
+ * Express middleware to check if the current user has a valid access token, and if so, also check if they have the allowed permissions
+ * @param {Array} allowedPermissions
+ * @returns 401 if the user is not logged in, 403 if the user does not have the required permissions, or 200 if the user is logged in and has the required permissions
+ */
 const hasPermissions = (allowedPermissions) => {
     return async (req, res, next) => {
         const errorString = "You do not have permission to perform this action"
@@ -113,8 +139,12 @@ const hasPermissions = (allowedPermissions) => {
     }
 }
 
-// NOTE: This method expects that the request contains an id parameter corresponding to the user whose 
-// information is being requested or updated
+/** 
+ * NOTE: This method expects that the request contains an id parameter corresponding to the user whose 
+ * information is being requested or updated
+ * @param {Array} allowedPermissions
+ * @returns 401 if the user is not logged in, 403 if the user does not have the required permissions, or 200 if the user is logged in and has the required permissions
+ */
 const hasPermissionsOrIsCurrentUser = (allowedPermissions) => {
     return async (req, res, next) => {
         const errorString = "You do not have permission to perform this action"
@@ -162,6 +192,12 @@ const hasPermissionsOrIsCurrentUser = (allowedPermissions) => {
     }
 }
 
+/**
+ * Get a new access token using a refresh token
+ * @param {Request} req
+ * @param {Response} res
+ * @returns 401 if the refresh token is invalid, or 200 if the refresh token is valid
+ */
 const getNewAccessToken = async (req, res) => {
     const refreshToken = req.cookies.refreshToken
 

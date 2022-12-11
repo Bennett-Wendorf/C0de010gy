@@ -2,6 +2,11 @@ const { Volunteer, Event } = require('../database')
 const { Op } = require('sequelize')
 const { addMessage } = require('./messageController')
 
+/**
+ * Create a volunteer record for an event
+ * @param {Request} req
+ * @param {Response} res
+ */
 const volunteer = async (req, res) => {
     const { id } = req.params
     const userID = req.userID
@@ -28,6 +33,11 @@ const volunteer = async (req, res) => {
     }
 }
 
+/**
+ * Check if the user has volunteered for an event
+ * @param {Request} req
+ * @param {Response} res
+ */
 const hasVolunteered = async (req, res) => {
     const { id } = req.params
     const userID = req.userID
@@ -45,6 +55,11 @@ const hasVolunteered = async (req, res) => {
     }
 }
 
+/**
+ * Cancel a volunteer slot
+ * @param {Request} req
+ * @param {Response} res
+ */
 const cancelVolunteer = async (req, res) => {
     const { id } = req.params
     const userID = req.userID
@@ -66,6 +81,13 @@ const cancelVolunteer = async (req, res) => {
     }
 }
 
+/**
+ * Notify all volunteers of an event change
+ * @param {Number} eventID
+ * @param {Number} fromUserID
+ * @param {String} messageTitle
+ * @param {String} messageContent
+ */
 const notifyAllEventVolunteers = async (eventID, fromUserID, messageTitle, messageContent) => {
     const volunteers = await Volunteer.findAll({ where: { EventID: eventID } })
     if (volunteers) {
@@ -75,6 +97,11 @@ const notifyAllEventVolunteers = async (eventID, fromUserID, messageTitle, messa
     }
 }
 
+/**
+ * Remove all volunteers for an event
+ * @param {Number} eventID
+ * @returns {Boolean}
+ */
 const removeAllEventVolunteers = async (eventID) => {
     try {
         const volunteers = await Volunteer.findAll({ where: { EventID: eventID } })
@@ -90,6 +117,12 @@ const removeAllEventVolunteers = async (eventID) => {
     }
 }
 
+/**
+ * Express middleware to validate a new volunteer slot
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Function} next
+ */
 const validateNewVolunteer = async (req, res, next) => {
     const { id } = req.params
     const userID = req.userID
