@@ -92,6 +92,7 @@ const readMessageStyles = (theme) => ({
     color: theme.palette.text.disabled,
 })
 
+// Build the account menu component
 function AccountMenu() {
     const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
     const menuOpen = Boolean(menuAnchorEl);
@@ -171,8 +172,10 @@ function AccountMenu() {
     )
 }
 
+// Build the message component
 function Message({ message, updateMessages, setErrorSnackbarMessage, setIsErrorSnackbarOpen, setSelectedMessage, setIsMessageDetailsDialogOpen }) {
 
+    // Toggle if a message is read or unread
     const toggleMessageRead = () => {
         api.put(`api/messages/${message.MessageID}`)
             .then(() => {
@@ -227,6 +230,7 @@ function Message({ message, updateMessages, setErrorSnackbarMessage, setIsErrorS
     )
 }
 
+// Build the messages menu
 function MessagesMenu() {
     const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
     const menuOpen = Boolean(menuAnchorEl);
@@ -250,6 +254,7 @@ function MessagesMenu() {
         setMenuAnchorEl(null)
     }
 
+    // Delete the currently selected message
     const deleteSelectedMessage = () => {
         api.delete(`api/messages/${selectedMessage.MessageID}`)
             .then(() => {
@@ -268,6 +273,7 @@ function MessagesMenu() {
         setUnreadMessagesCount(messages.filter(m => !m.Read).length)
     }, [messages])
 
+    // Obtain an updated list of messages from the API
     const updateMessages = () => {
         api.get("/api/messages/me")
             .then((response) => {
@@ -334,6 +340,7 @@ function MessagesMenu() {
                 }
             </Menu>
 
+            {/* The message details dialog */}
             <Dialog open={isMessageDetailsDialogOpen} onClose={() => setIsMessageDetailsDialogOpen(false)} maxWidth={'xs'} fullWidth>
                 <DialogTitle>
                     Viewing Message
@@ -366,6 +373,7 @@ function MessagesMenu() {
                 </DialogActions>
             </Dialog>
 
+            {/* The delete confirmation dialog */}
             <Dialog open={isDeleteConfirmationDialogOpen} onClose={() => setIsDeleteConfirmationDialogOpen(false)}>
                 <DialogTitle>
                     Delete?
@@ -379,6 +387,7 @@ function MessagesMenu() {
                 </DialogActions>
             </Dialog>
 
+            {/* The error snackbar */}
             <Portal> {/* This shouldn't be needed, but it prevents the snackbar from rendering behind the nav drawer */}
                 <Snackbar open={isErrorSnackbarOpen} autoHideDuration={6000} onClose={() => setIsErrorSnackbarOpen(false)}>
                     <Alert onClose={() => setIsErrorSnackbarOpen(false)} severity="error" sx={{ width: '100%' }} variant="outlined">

@@ -22,6 +22,7 @@ export function Login() {
 
     const navigate = useNavigate()
 
+    // Handle the submission of a login form
     const handleSubmit = (event) => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)

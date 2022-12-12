@@ -7,7 +7,15 @@ import CarouselCard from "./CarouselCard"
 const drawerWidth = 220
 const eventListMargin = 40
 
+/**
+ * The card carousel component
+ * @param {Object} props 
+ */
 export default function Carousel({ events, eventClick, eventClickView }) {
+
+    /**
+     * A callback function that is used to add a wheel event listener to the image list
+     */
     const scrollRef = useCallback(node => {
         if (node !== null) {
             const onWheel = (e) => {
@@ -29,6 +37,7 @@ export default function Carousel({ events, eventClick, eventClickView }) {
 
     const [paperWidth, setPaperWidth] = useState(window.innerWidth - drawerWidth - eventListMargin)
 
+    // Update the paper width when the window is resized
     useEffect(() => {
         function handleWindowResize() {
             setPaperWidth(window.innerWidth - drawerWidth - eventListMargin)

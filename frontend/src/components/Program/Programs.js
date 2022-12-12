@@ -45,6 +45,7 @@ export default function Programs({ selectedEvent, open, onClose }) {
 
     const [selectedProgram, setSelectedProgram] = useState({});
 
+    // Handle the submission of the add program form
     const handleAddProgramSubmit = () => {
         api.post(`/api/events/${selectedEvent.EventID}/programs`, {
             summary: newProgramSummary,
@@ -81,6 +82,7 @@ export default function Programs({ selectedEvent, open, onClose }) {
     }
 
     // TODO: Handle errors better here if they are on certain fields
+    // Handle the submission of the update program form
     const handleUpdateProgramSubmit = () => {
         api.put(`/api/events/${selectedEvent.EventID}/programs/${selectedProgram.ProgramID}`, {
             summary: updateProgramSummary,
@@ -121,6 +123,7 @@ export default function Programs({ selectedEvent, open, onClose }) {
         setUpdateProgramError(false);
     }
 
+    // Handle the deletion of a program
     const handleDelete = () => {
         api.delete(`/api/events/${selectedEvent.EventID}/programs/${selectedProgram.ProgramID}`)
             .then(res => {
@@ -342,6 +345,7 @@ export default function Programs({ selectedEvent, open, onClose }) {
                 </DialogActions>
             </Dialog >
 
+            {/* Snackbar for success */}
             <Snackbar open={isSuccessSnackbarOpen} autoHideDuration={6000} onClose={() => setIsSuccessSnackbarOpen(false)}>
                 <Alert onClose={() => setIsSuccessSnackbarOpen(false)} severity="success" sx={{ width: '100%' }} variant='outlined'>
                     {successSnackbarMessage}

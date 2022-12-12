@@ -43,6 +43,7 @@ export function Dashboard() {
         setIsModifyDialogOpen(true)
     }
 
+    // Handle opening the view dialog when an event is selected
     const handleEventClickView = async (event) => {
         setSelectedEvent(event)
         checkIfVolunteered(event)
@@ -65,6 +66,7 @@ export function Dashboard() {
             })
     }
 
+    // Check if the user has volunteered for the event
     const checkIfVolunteered = async (event) => {
         return api.get(`/api/events/${event.EventID}/volunteer`)
             .then(response => {
@@ -76,6 +78,7 @@ export function Dashboard() {
         )
     }
 
+    // Check if the user has donated to the event
     const checkIfDonated = async (event) => {
         return api.get(`/api/events/${event.EventID}/donate`)
             .then(response => {

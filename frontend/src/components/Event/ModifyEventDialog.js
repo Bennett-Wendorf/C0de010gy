@@ -100,6 +100,7 @@ export default function ModifyEventDialog(props) {
         setModifyStates(selectedEvent)
     }, [selectedEvent])
 
+    // Set up pieces of state for modifying an event
     const setModifyStates = (event) => {
         setUpdateSummary(event.Summary ?? defaultUpdateSummary)
         setUpdateDescription(event.Description ?? defaultUpdateDescription)
@@ -159,6 +160,7 @@ export default function ModifyEventDialog(props) {
 
     const addRole = useUserStore(state => state.addRole)
 
+    // Handle adding a volunteer role to the user if they attempt to volunteer for an event without being a volunteer
     const handleAddVolunteerRole = () => {
         api.post('/api/users/role', {
             roles: ["Volunteer"]
@@ -177,6 +179,7 @@ export default function ModifyEventDialog(props) {
             })
     }
 
+    // Handle adding a donor role to the user if they attempt to donate to an event without being a donor
     const handleAddDonorRole = () => {
         api.post('/api/users/role', {
             roles: ["Donor"]
@@ -260,6 +263,7 @@ export default function ModifyEventDialog(props) {
         }
     }
 
+    // Complete the volunteer process
     const completeVolunteer = async () => {
         await api.post(`/api/events/${selectedEvent.EventID}/volunteer`)
             .then(response => {
@@ -273,6 +277,7 @@ export default function ModifyEventDialog(props) {
             })
     }
 
+    // Handle canceling a volunteer slot
     const handleCancelVolunteer = () => {
         api.delete(`/api/events/${selectedEvent.EventID}/volunteer`)
             .then(response => {
@@ -298,6 +303,7 @@ export default function ModifyEventDialog(props) {
         }
     }
 
+    // Complete the donation process
     const completeDonate = async () => {
         let newDonation = {
             amount: donationAmount
@@ -315,6 +321,7 @@ export default function ModifyEventDialog(props) {
             })
     }
 
+    // Update the list of donations for the selected event
     const updateEventDonations = async (event) => {
         return api.get(`/api/events/${event.EventID}/donations`)
             .then(response => {
@@ -846,6 +853,7 @@ export default function ModifyEventDialog(props) {
                 </DialogActions>
             </Dialog >
 
+            {/* The success snackbar */}
             <Snackbar open={isActionSuccessOpen} autoHideDuration={6000} onClose={() => setIsActionSuccessOpen(false)}>
                 <Alert onClose={() => setIsActionSuccessOpen(false)} severity="success" sx={{ width: '100%' }} variant="outlined">
                     {actionSuccessMessage}

@@ -70,6 +70,7 @@ export function UserAdvanced() {
 
     const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
 
+    // Handle the deletion of a user
     const handleDelete = (user) => {
         api.delete(`/api/users/${user.UserID}`)
             .then(res => {
@@ -92,6 +93,7 @@ export function UserAdvanced() {
             })
     }
 
+    // Handle the restoration of a user
     const handleRestore = (user) => {
         api.put(`/api/users/${user.UserID}`)
             .then(res => {
@@ -109,6 +111,7 @@ export function UserAdvanced() {
             })
     }
 
+    // Update the user data 
     const updateUser = async () => {
         api.get(`/api/users/${id}`)
             .then((res) => {
@@ -141,6 +144,7 @@ export function UserAdvanced() {
 
     const [containerHeight, setContainerHeight] = useState(window.innerHeight - barHeight - margin - userInfoCardHeight)
 
+    // Update the container height when the window is resized
     useEffect(() => {
         function handleWindowResize() {
             setContainerHeight(window.innerHeight - barHeight - margin - userInfoCardHeight)
@@ -157,6 +161,7 @@ export function UserAdvanced() {
 
     return (
         <>
+            {/* Generate the bar for this page */}
             <Bar title={`User: ${user.FullName ?? "N/A"}`}>
                 {user?.Active ?
                     <Tooltip title="Delete User">
@@ -344,6 +349,7 @@ export function UserAdvanced() {
                 </Grid2>
             </>}
 
+            {/* Create the dialog for confirming user deletion */}
             <Dialog open={isDeleteConfirmationDialogOpen} onClose={() => setIsDeleteConfirmationDialogOpen(false)}>
                 <DialogTitle>
                     <Typography variant="h6" component="h2">
@@ -366,6 +372,7 @@ export function UserAdvanced() {
                 </DialogActions>
             </Dialog>
 
+            {/* Create the dialog for confirming user restoration */}
             <Dialog open={isRestoreConfirmationDialogOpen} onClose={() => setIsRestoreConfirmationDialogOpen(false)}>
                 <DialogTitle>
                     <Typography variant="h6" component="h2">
@@ -383,6 +390,7 @@ export function UserAdvanced() {
                 </DialogActions>
             </Dialog>
 
+            {/* Create the alert snackbar */}
             <Snackbar open={isSnackbarOpen} autoHideDuration={6000} onClose={() => setIsSnackbarOpen(false)}>
                 <Alert onClose={() => setIsSnackbarOpen(false)} severity={snackbarError ? "error" : "success"} sx={{ width: '100%' }} variant='outlined'>
                     {snackbarMessage}

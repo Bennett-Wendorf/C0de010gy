@@ -89,6 +89,7 @@ export default function DateRangeDonationsGraph() {
 
     const [paperWidth, setPaperWidth] = useState(window.innerWidth - drawerWidth - eventListMargin)
 
+    // Update the paper width when the window is resized
     useEffect(() => {
         function handleWindowResize() {
             setPaperWidth(window.innerWidth - drawerWidth - eventListMargin)
@@ -101,6 +102,7 @@ export default function DateRangeDonationsGraph() {
         };
     }, [])
 
+    // Convert the data retrieved from the api into useable data for the graph by grouping totals for each day
     const convertToDailyAmounts = (data, startDate, endDate) => {
         const dailyAmounts = []
 
@@ -132,6 +134,7 @@ export default function DateRangeDonationsGraph() {
         return dailyAmounts
     }
 
+    // Update the graph data when the start or end date is changed
     const updateDonations = () => {
         api.get('/api/donations', { params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() } })
             .then(response => {

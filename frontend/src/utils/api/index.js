@@ -14,6 +14,7 @@ const api = axios.create({
     }
 });
 
+// Add a request interceptor to add the access token to the header
 api.interceptors.request.use(
     config => {
         const token = useUserStore.getState().AccessToken;
@@ -27,6 +28,7 @@ api.interceptors.request.use(
     }
 );
 
+// Add a response interceptor to refresh the access token if it has expired
 api.interceptors.response.use(
     response => {
         return response

@@ -55,6 +55,7 @@ export function Register() {
 
     const navigate = useNavigate()
 
+    // Handle the submission of a registration form
     const handleSubmit = (event) => {
         event.preventDefault()
         resetErrors()

@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Import utilities and components
-import api from "../../utils/api";
 import AuthService from '../../services/auth.service'
 
 // Import general mui stuff
@@ -17,7 +16,6 @@ import {
     Paper,
     Typography,
     Tooltip,
-    IconButton,
 } from '@mui/material';
 import Grid2 from '@mui/material/Unstable_Grid2'
 

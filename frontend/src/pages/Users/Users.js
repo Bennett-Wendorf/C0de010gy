@@ -9,13 +9,10 @@ import AuthService from '../../services/auth.service';
 import UserTable from './UserTable';
 
 // Import general mui stuff
-import { Button, IconButton, Tooltip, Grid, Alert } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 
 // Import icons from mui
 import AddIcon from '@mui/icons-material/AddCircle'
-
-// Import dialog stuff from mui
-import { TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 export function Users() {
     const [users, setUsers] = useState([]);

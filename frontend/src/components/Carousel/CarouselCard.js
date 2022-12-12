@@ -51,6 +51,7 @@ const dividerStyles = {
     mb: 1.75
 }
 
+// A card component for the carousel
 export default function CarouselCard({ event, eventClick, eventClickView }) {
 
     const userIsAdmin = AuthService.useHasPermissions(["Administrator"])

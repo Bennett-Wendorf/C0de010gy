@@ -26,6 +26,7 @@ const themeDependentContextStyle = (theme) => ({
 
 const toolbarStyle = (theme) => theme.mixins.toolbar
 
+// Generate the base page layout with the navdrawer
 const getBasePageLayout = (useNavElements, element) => {
     return (
         <Box sx={rootStyle}>

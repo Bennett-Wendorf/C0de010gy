@@ -59,6 +59,7 @@ export function EventTable({ rows, eventUpdate }) {
         setIsModifyDialogOpen(true)
     }
 
+    // Handle a row click by setting state as needed
     const handleRowClickView = async (event) => {
         setSelectedEvent(event)
         checkIfVolunteered(event)
@@ -81,6 +82,7 @@ export function EventTable({ rows, eventUpdate }) {
             })
     }
 
+    // Check if the current user has volunteered
     const checkIfVolunteered = async (event) => {
         return api.get(`/api/events/${event.EventID}/volunteer`)
             .then(response => {
@@ -92,6 +94,7 @@ export function EventTable({ rows, eventUpdate }) {
             )
     }
 
+    // Check if the current user has donated
     const checkIfDonated = async (event) => {
         return api.get(`/api/events/${event.EventID}/donate`)
             .then(response => {
@@ -104,6 +107,7 @@ export function EventTable({ rows, eventUpdate }) {
 
     const [containerHeight, setContainerHeight] = useState(window.innerHeight - barHeight - margin)
 
+    // Update the container height when the window is resized
     useEffect(() => {
         function handleWindowResize() {
             setContainerHeight(window.innerHeight - barHeight - margin)
