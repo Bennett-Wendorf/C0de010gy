@@ -1,11 +1,10 @@
 const express = require('express')
 const { login, logout, getNewAccessToken } = require('../controllers/authController')
-const { createUser, validateNewUser } = require('../controllers/userController')
+const { createUser, validateUser, validateNewUser, validateNewUserRoles } = require('../controllers/userController')
 
 const router = express.Router()
 
-// TODO: Add additional registration middleware validation for things like email format
-router.post('/register', validateNewUser, createUser)
+router.post('/register', validateUser, validateNewUser, validateNewUserRoles, createUser)
 
 router.post('/login', login)
 

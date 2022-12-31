@@ -94,7 +94,6 @@ const getAllDonations = async (req, res) => {
         res.status(200).json(donations)
     }
     catch (err) {
-        console.log(err)
         res.status(500).json({ field: 'general', message: 'Something went wrong', error: err })
     }
 }

@@ -20,6 +20,8 @@ import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import PaidIcon from '@mui/icons-material/Paid';
+import EditIcon from '@mui/icons-material/Edit';
+import EditUserDialog from '../../components/User/EditUserDialog';
 
 // Setup a general format for dates
 const dateFormatOptions = {
@@ -53,6 +55,8 @@ export function UserAdvanced() {
     const [user, setUser] = useState({})
     const [userFetchError, setUserFetchError] = useState(false)
     const [userFetchErrorMessage, setUserFetchErrorMessage] = useState("")
+
+    const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false)
 
     const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] = useState(false)
     const [isRestoreConfirmationDialogOpen, setIsRestoreConfirmationDialogOpen] = useState(false)
@@ -209,7 +213,7 @@ export function UserAdvanced() {
                                     }
                                 </Grid2>
                             </Grid2>
-                            <Grid2 item xs={5} sx={verticalAlignStyles}>
+                            <Grid2 item xs={4} sx={verticalAlignStyles}>
                                 <Typography variant="h5" component="h2">
                                     {user.FullName}
                                 </Typography>
@@ -226,6 +230,11 @@ export function UserAdvanced() {
                                 <Typography>
                                     {new Date(user.CreatedDateTime).toLocaleDateString("en-US", dateFormatOptions)}
                                 </Typography>
+                            </Grid2>
+                            <Grid2 item xs={1} textAlign="right" sx={verticalAlignStyles}>
+                                <IconButton sx={{ width: '3ch' }} aria-label="edit" size="medium" onClick={() => setIsEditUserDialogOpen(true)}>
+                                    <EditIcon color="primary" />
+                                </IconButton>
                             </Grid2>
                         </Grid2>
                     </CardContent>
@@ -389,6 +398,8 @@ export function UserAdvanced() {
                     <Button onClick={() => handleRestore(user)} color="success">Confirm</Button>
                 </DialogActions>
             </Dialog>
+
+            <EditUserDialog open={isEditUserDialogOpen} setOpen={setIsEditUserDialogOpen} user={user} setUser={setUser}/>
 
             {/* Create the alert snackbar */}
             <Snackbar open={isSnackbarOpen} autoHideDuration={6000} onClose={() => setIsSnackbarOpen(false)}>

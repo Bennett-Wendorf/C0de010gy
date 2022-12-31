@@ -1,6 +1,7 @@
 const { User, UserRole, Volunteer, Donation, Event } = require('../database')
 const bcrypt = require('bcrypt')
 const { Op } = require('sequelize')
+const { currentUserIsAdmin } = require('./authController')
 
 const saltRounds = 10;
 
@@ -157,6 +158,104 @@ const createUser = async (req, res) => {
 }
 
 /**
+ * Update a user's details
+ * @param {Request} req
+ * @param {Response} res
+ */
+const updateUser = async (req, res) => {
+    const { id } = req.params
+    const { firstName, lastName, username, email, roles } = req.body
+
+    try {
+        const user = await User.findOne({ where: { UserID: id }, include: [{ model: UserRole }] })
+
+        if (!user) {
+            res.status(404).send({ field: 'general', message: "User not found" })
+            return
+        }
+    
+        await User.update({
+            FirstName: firstName,
+            LastName: lastName,
+            Username: username,
+            Email: email,
+        }, { where: { UserID: id }})
+
+        await createUserRoles(user, getAllNewUserRoles(user.UserRoles, roles))
+        await removeOldRoles(user, user.UserRoles, roles)
+
+        const updatedUser = await User.findOne({
+            attributes: { exclude: ['Password']},
+            where: { UserID: id },
+            include: [
+                {
+                    model: UserRole,
+                },
+                {
+                    model: Volunteer,
+                    include: [
+                        {
+                            model: Event
+                        }
+                    ]
+                },
+                {
+                    model: Donation,
+                    include: [
+                        {
+                            model: Event
+                        }
+                    ]
+                }
+            ]
+        })
+
+        if (updatedUser) {
+            res.status(200).json({ field: 'general', message: `Successfully updated user: ${firstName} ${lastName}`, user: updatedUser })
+        } else {
+            res.status(500).json({ field: 'general', message: 'Something went wrong', error: "Updated user can no longer be found!" })
+        }
+
+    } catch (error) {
+        res.status(500).json({ field: 'general', message: 'Something went wrong!', error: error.message })
+    }
+}
+
+const getAllNewUserRoles = (oldRoles, newRoles) => {
+    const oldRoleNames = oldRoles.map(role => role.DisplayName)
+
+    const newRoleNamesToAdd = newRoles.filter(name => !oldRoleNames.includes(name))
+
+    return newRoleNamesToAdd
+}
+
+const removeOldRoles = async (user, oldRoles, newRoles) => {
+    const oldRoleNames = oldRoles.map(role => role.DisplayName)
+
+    const oldRoleNamesToRemove = oldRoleNames.filter(name => !newRoles.includes(name))
+
+    for (let roleName of oldRoleNamesToRemove) {
+        let role = await UserRole.findOne({ where: { DisplayName: roleName }})
+        user.removeUserRole(role)
+    }
+}
+
+/**
+ * Get a list of all user roles
+ * @param {Request} req
+ * @param {Response} res
+ */
+const getAllUserRoles = async (req, res) => {
+    try {
+        const userRoles = await UserRole.findAll()
+
+        res.status(200).json(userRoles)
+    } catch (error) {
+        res.status(500).json({ field: 'general', message: 'Something went wrong!', error: error.message })
+    }
+}
+
+/**
  * Add new roles for a user
  * @param {Request} req
  * @param {Response} res
@@ -217,20 +316,10 @@ const createUserRoles = async (user, roles) => {
  * @param {Function} next
  */
 const validateNewUser = async (req, res, next) => {
-    const { firstName, lastName, username, email, password, roles } = req.body
-
-    if (!email.includes('@')) {
-        res.status(400).json({ field: 'email', message: 'Email is invalid' })
-        return
-    }
-
-    if (roles.includes('Administrator')) {
-        res.status(403).json({ field: 'general', message: 'You do not have permission to assign admin roles' })
-        return
-    }
+    const { username, password } = req.body
 
     if (!password.match(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/g)) {
-        res.status(400).json({ field: 'password', message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number' })
+        res.status(400).json({ field: 'password', message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter and one number' })
         return
     }
 
@@ -245,21 +334,30 @@ const validateNewUser = async (req, res, next) => {
 }
 
 /**
+ * Express middleware to validate a new user
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Function} next
+ */
+const validateUser = async (req, res, next) => {
+    const {email, roles } = req.body
+
+    if (!email.includes('@')) {
+        res.status(400).json({ field: 'email', message: 'Email is invalid' })
+        return
+    }
+
+    next()
+}
+
+/**
  * Express middleware to validate a new user role
  * @param {Request} req
  * @param {Response} res
  * @param {Function} next
  */
 const validateNewUserRoles = async (req, res, next) => {
-    const userID = req.userID
     const { roles } = req.body
-
-    const user = await User.findOne({ where: { UserID: userID } })
-
-    if (!user) {
-        res.status(404).send({ field: 'general', message: "User not found" })
-        return
-    }
 
     const validUserRoles = await UserRole.findAll({
         where: {
@@ -274,7 +372,8 @@ const validateNewUserRoles = async (req, res, next) => {
         return
     }
 
-    if (roles.includes('Administrator')) {
+    let adminUser = await currentUserIsAdmin(req)
+    if (roles.includes('Administrator') && !adminUser) {
         res.status(403).json({ field: 'general', message: 'You do not have permission to assign admin roles' })
         return
     }
@@ -282,4 +381,4 @@ const validateNewUserRoles = async (req, res, next) => {
     next()
 }
 
-module.exports = { getUsers, deleteUser, reactivateUser, getUserDetails, createUser, addUserRoles, validateNewUser, validateNewUserRoles }
+module.exports = { getUsers, deleteUser, reactivateUser, getUserDetails, getAllUserRoles, createUser, updateUser, addUserRoles, validateUser, validateNewUser, validateNewUserRoles }

@@ -139,6 +139,41 @@ const hasPermissions = (allowedPermissions) => {
     }
 }
 
+const currentUserIsAdmin = async (req) => {
+
+    console.log("Checking if current user is admin")
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(":")[1]
+
+    if (token == null) {
+        return false
+    }
+
+    await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, usr) => {
+        if (err) {
+            return false
+        }
+
+        const user = await User.findOne({ where: { UserID: usr.id } })
+        console.log("Authed user is: " + user.FullName)
+
+        if (user === null){
+            return false
+        }
+
+        var userRoles = await user.getUserRoles()
+        console.log("Authed user has roles: " + userRoles)
+
+        if (userRoles.some(role => role.DisplayName === "Administrator")) {
+            console.log("Authed user is admin")
+            return true
+        } else {
+            console.log("Authed user is not admin")
+            return false
+        }
+    })
+}
+
 /** 
  * NOTE: This method expects that the request contains an id parameter corresponding to the user whose 
  * information is being requested or updated
@@ -231,4 +266,4 @@ const getNewAccessToken = async (req, res) => {
     })
 }
 
-module.exports = { login, logout, hasPermissions, hasPermissionsOrIsCurrentUser, getNewAccessToken }
+module.exports = { login, logout, hasPermissions, hasPermissionsOrIsCurrentUser, getNewAccessToken, currentUserIsAdmin }
