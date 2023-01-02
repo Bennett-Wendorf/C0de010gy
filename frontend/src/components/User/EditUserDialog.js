@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import { Dialog, Button, DialogTitle, DialogActions, DialogContent, Snackbar, Alert, TextField, MenuItem } from '@mui/material';
+import { Dialog, Button, DialogTitle, DialogActions, DialogContent, Snackbar, Alert, TextField, MenuItem, Link } from '@mui/material';
 import HelpDialog from '../HelpDialog';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import api from '../../utils/api';
 import AuthService from '../../services/auth.service';
 import useUserStore from '../../utils/Stores'
+import ChangePassword from './ChangePassword';
 
 export default function EditUserDialog({ open, setOpen, user, setUser }) {
 
@@ -16,11 +17,12 @@ export default function EditUserDialog({ open, setOpen, user, setUser }) {
 
     const [possibleRoles, setPossibleRoles] = useState([])
 
+    const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false);
+
     const [updateFirstName, setUpdateFirstName] = useState(user.FirstName);
     const [updateLastName, setUpdateLastName] = useState(user.LastName);
     const [updateEmail, setUpdateEmail] = useState(user.Email);
     const [updateUsername, setUpdateUsername] = useState(user.Username);
-    const [updatePassword, setUpdatePassword] = useState('');
     const [updateRoles, setUpdateRoles] = useState([]);
 
     const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -102,7 +104,7 @@ export default function EditUserDialog({ open, setOpen, user, setUser }) {
     const handleResponseError = (error) => {
         let fieldName = error.response?.data?.field ?? ""
         let message = error.response?.data?.message ?? error.message
-        switch(fieldName) {
+        switch (fieldName) {
             case 'username':
                 setUsernameError(true)
                 setUsernameErrorText(message)
@@ -118,6 +120,10 @@ export default function EditUserDialog({ open, setOpen, user, setUser }) {
             case 'lastName':
                 setLastNameError(true)
                 setLastNameErrorText(message)
+                break
+            case 'roles':
+                setRolesError(true)
+                setRolesErrorText(message)
                 break
             default:
                 setSnackbarError(true)
@@ -250,6 +256,13 @@ export default function EditUserDialog({ open, setOpen, user, setUser }) {
                                 ))}
                             </TextField>
                         </Grid2>
+                        {AuthService.isCurrentUser(user.UserID) &&
+                            <Grid2 item xs={12}>
+                                <Link variant="body2" component="button" onClick={() => setChangePasswordDialogOpen(true)}>
+                                    Change Your Password
+                                </Link>
+                            </Grid2>
+                        }
                     </Grid2>
                 </DialogContent>
                 <DialogActions>
@@ -257,6 +270,8 @@ export default function EditUserDialog({ open, setOpen, user, setUser }) {
                     <Button onClick={handleSave} color="primary">Save</Button>
                 </DialogActions>
             </Dialog>
+
+            <ChangePassword open={changePasswordDialogOpen} setOpen={setChangePasswordDialogOpen} user={user} />
 
             {/* Create the alert snackbar */}
             <Snackbar open={isSnackbarOpen} autoHideDuration={6000} onClose={() => setIsSnackbarOpen(false)}>

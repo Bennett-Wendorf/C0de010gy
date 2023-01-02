@@ -62,7 +62,11 @@ var AuthService = {
     useHasPermissions: (allowedRoles) => {
         const userRoles = useUserStore(state => state.Roles)
         return allowedRoles.some(permission => userRoles.some(role => role.DisplayName === permission))
-    }
+    },
+
+    isCurrentUser: (userID) => {
+        return useUserStore.getState().UserID === userID
+    },
 }
 
 export default AuthService

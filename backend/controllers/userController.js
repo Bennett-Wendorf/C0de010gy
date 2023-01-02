@@ -309,6 +309,47 @@ const createUserRoles = async (user, roles) => {
     return true
 }
 
+const changeUserPassword = async (req, res) => {
+    const { id } = req.params
+    const { newPassword } = req.body
+
+    bcrypt.hash(newPassword, saltRounds, async (err, hashedPassword) => {
+        if (err) {
+            res.status(500).send("An unknown error occurred")
+        }
+
+        const user = await User.findOne({ where: { UserID: id } })
+
+        if (!user) {
+            res.status(404).send({ field: 'general', message: "User not found" })
+            return
+        }
+
+        try {
+            await User.update({
+                Password: hashedPassword,
+            }, { where: { UserID: id }})
+            console.log("Finished updating password")
+
+            res.status(200).json({ field: 'general', message: `Successfully updated user password` })
+        }
+        catch (error) {
+            res.status(500).json({ field: 'general', message: 'Something went wrong!', error: error.message })
+        }
+    })
+}
+
+const validatePassword = async (req, res, next) => {
+    const { password } = req.body
+
+    if (!password.match(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/g)) {
+        res.status(400).json({ field: 'password', message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter and one number' })
+        return
+    }
+
+    next()
+}
+
 /**
  * Express middleware to validate a new user
  * @param {Request} req
@@ -316,12 +357,7 @@ const createUserRoles = async (user, roles) => {
  * @param {Function} next
  */
 const validateNewUser = async (req, res, next) => {
-    const { username, password } = req.body
-
-    if (!password.match(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/g)) {
-        res.status(400).json({ field: 'password', message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter and one number' })
-        return
-    }
+    const { username } = req.body
 
     const user = await User.findOne({ where: { Username: username } })
 
@@ -381,4 +417,4 @@ const validateNewUserRoles = async (req, res, next) => {
     next()
 }
 
-module.exports = { getUsers, deleteUser, reactivateUser, getUserDetails, getAllUserRoles, createUser, updateUser, addUserRoles, validateUser, validateNewUser, validateNewUserRoles }
+module.exports = { getUsers, deleteUser, reactivateUser, getUserDetails, getAllUserRoles, createUser, updateUser, addUserRoles, changeUserPassword, validateUser, validateNewUser, validatePassword, validateNewUserRoles }

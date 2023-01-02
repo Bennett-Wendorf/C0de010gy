@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { Grid, Link, Card, TextField, Container, CssBaseline, Box, Avatar, Typography, Button } from "@mui/material";
+import { Grid, Link, Card, TextField, Container, CssBaseline, 
+    Box, Avatar, Typography, Button, InputAdornment, Tooltip, IconButton } from "@mui/material";
 
 import Person from '@mui/icons-material/Person';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 import AuthService from '../../services/auth.service'
 const { useNavigate } = require('react-router-dom')
@@ -15,6 +18,8 @@ const cardStyles = {
 }
 
 export function Login() {
+    const [passwordVisible, setPasswordVisible] = useState(false)
+
     const [usernameError, setUsernameError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [usernameErrorText, setUsernameErrorText] = useState("");
@@ -91,9 +96,34 @@ export function Login() {
                         required
                         fullWidth
                         label="Password"
-                        type="password"
+                        type={passwordVisible ? "text" : "password"}
                         variant="filled"
                         autoComplete="current-password"
+                        InputProps={{
+                            endAdornment:
+                                <InputAdornment position="end">
+                                    {passwordVisible ?
+                                        <Tooltip title="Hide Password">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setPasswordVisible(false)}
+                                            >
+                                                <VisibilityOffIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                        :
+                                        <Tooltip title="Show Password">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setPasswordVisible(true)}
+                                            >
+                                                <VisibilityIcon />
+                                            </IconButton>
+                                        </Tooltip>
+
+                                    }
+                                </InputAdornment>
+                        }}
                     />
                     <Button
                         type="submit"

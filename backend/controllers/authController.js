@@ -140,8 +140,7 @@ const hasPermissions = (allowedPermissions) => {
 }
 
 const currentUserIsAdmin = async (req) => {
-
-    console.log("Checking if current user is admin")
+    let toReturn = false
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(":")[1]
 
@@ -151,27 +150,29 @@ const currentUserIsAdmin = async (req) => {
 
     await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, usr) => {
         if (err) {
-            return false
+            toReturn = false
+            return
         }
 
         const user = await User.findOne({ where: { UserID: usr.id } })
-        console.log("Authed user is: " + user.FullName)
 
         if (user === null){
-            return false
+            toReturn = false
+            return
         }
 
         var userRoles = await user.getUserRoles()
-        console.log("Authed user has roles: " + userRoles)
 
         if (userRoles.some(role => role.DisplayName === "Administrator")) {
-            console.log("Authed user is admin")
-            return true
+            toReturn = true
+            return
         } else {
-            console.log("Authed user is not admin")
-            return false
+            toReturn = false
+            return
         }
     })
+
+    return toReturn
 }
 
 /** 
@@ -227,6 +228,63 @@ const hasPermissionsOrIsCurrentUser = (allowedPermissions) => {
     }
 }
 
+const isCurrentUser = (req, res, next) => {
+    const errorString = "You do not have permission to perform this action"
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(":")[1]
+
+    const { id } = req.params
+
+    if (token == null) {
+        return res.status(401).json({ field: 'general', message: errorString, error: "No token provided" })
+
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, usr) => {
+        if (err) {
+            return res.status(401).json({ field: 'general', message: errorString, error: "Invalid token" })
+        }
+
+        const user = await User.findOne({ where: { UserID: usr.id } })
+
+        if (user === null){
+            return res.status(401).json({ field: 'general', message: errorString, error: "No user found" })
+        }
+
+        req.userID = usr.id
+
+        if (usr.id == id) {
+            next()
+        } else {
+            return res.status(401).json({ field: 'general', message: errorString })
+        }
+    })
+}
+
+const validateLoginInfo = async (req, res, next) => {
+    const errorString = "Incorrect password"
+    const { password } = req.body
+    const { id } = req.params
+
+    if (id == null || password == null) {
+        return res.status(400).json({ field: 'password', message: errorString, error: "Missing UserID or password" })
+    }
+
+    const user = await User.findOne({ where: { UserID: id } })
+
+    // Compare the password to the hashed password in the database
+    bcrypt.compare(password, user.Password, (err, result) => {
+        if (err) {
+            res.status(500).send({field: 'general', message: 'An unknown error occurred', error: err})
+        }
+        if (result) {
+            next()
+        } else {
+            return res.status(400).send({field: 'password', message: errorString});
+        }
+    })
+}
+
 /**
  * Get a new access token using a refresh token
  * @param {Request} req
@@ -266,4 +324,4 @@ const getNewAccessToken = async (req, res) => {
     })
 }
 
-module.exports = { login, logout, hasPermissions, hasPermissionsOrIsCurrentUser, getNewAccessToken, currentUserIsAdmin }
+module.exports = { login, logout, hasPermissions, hasPermissionsOrIsCurrentUser, isCurrentUser, getNewAccessToken, currentUserIsAdmin, validateLoginInfo }

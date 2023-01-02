@@ -232,9 +232,11 @@ export function UserAdvanced() {
                                 </Typography>
                             </Grid2>
                             <Grid2 item xs={1} textAlign="right" sx={verticalAlignStyles}>
-                                <IconButton sx={{ width: '3ch' }} aria-label="edit" size="medium" onClick={() => setIsEditUserDialogOpen(true)}>
-                                    <EditIcon color="primary" />
-                                </IconButton>
+                                <Tooltip title="Edit User">
+                                    <IconButton sx={{ width: '3ch' }} aria-label="edit" size="medium" onClick={() => setIsEditUserDialogOpen(true)}>
+                                        <EditIcon color="primary" />
+                                    </IconButton>
+                                </Tooltip>
                             </Grid2>
                         </Grid2>
                     </CardContent>
@@ -399,7 +401,7 @@ export function UserAdvanced() {
                 </DialogActions>
             </Dialog>
 
-            <EditUserDialog open={isEditUserDialogOpen} setOpen={setIsEditUserDialogOpen} user={user} setUser={setUser}/>
+            <EditUserDialog open={isEditUserDialogOpen} setOpen={setIsEditUserDialogOpen} user={user} setUser={setUser} />
 
             {/* Create the alert snackbar */}
             <Snackbar open={isSnackbarOpen} autoHideDuration={6000} onClose={() => setIsSnackbarOpen(false)}>

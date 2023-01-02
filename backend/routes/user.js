@@ -1,6 +1,6 @@
 const express = require('express')
-const { getUsers, deleteUser, reactivateUser, updateUser, getUserDetails, getAllUserRoles, addUserRoles, validateNewUserRoles, validateUser } = require('../controllers/userController')
-const { hasPermissions, hasPermissionsOrIsCurrentUser } = require('../controllers/authController')
+const { getUsers, deleteUser, reactivateUser, updateUser, getUserDetails, getAllUserRoles, addUserRoles, validatePassword, validateNewUserRoles, validateUser, changeUserPassword } = require('../controllers/userController')
+const { hasPermissions, hasPermissionsOrIsCurrentUser, isCurrentUser, validateLoginInfo } = require('../controllers/authController')
 
 const router = express.Router()
 
@@ -17,5 +17,8 @@ router.route('/:id')
     .put(hasPermissions(['Administrator']), reactivateUser)
     .post(hasPermissionsOrIsCurrentUser(['Administrator']), validateUser, validateNewUserRoles, updateUser)
     .get(hasPermissionsOrIsCurrentUser(['Administrator']), getUserDetails)
+
+router.route('/:id/changePassword')
+    .post(isCurrentUser, validateLoginInfo, validatePassword, changeUserPassword)
 
 module.exports = router

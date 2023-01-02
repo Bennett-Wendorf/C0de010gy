@@ -16,13 +16,19 @@ import {
     DialogActions, 
     formControlClasses, 
     Checkbox, 
-    FormControlLabel
+    FormControlLabel,
+    InputAdornment,
+    IconButton,
+    Tooltip
 } from "@mui/material";
 
 // Import general mui stuff
 import { Avatar, Typography, Card, Box, Button, Link } from "@mui/material";
 
 import Person from '@mui/icons-material/Person';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+
 import { useNavigate } from "react-router-dom";
 
 const cardStyles = {
@@ -38,6 +44,9 @@ const checkboxStyles = {
 }
 
 export function Register() {
+    const [passwordVisible, setPasswordVisible] = useState(false)
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
+
     const [firstNameError, setFirstNameError] = useState(false)
     const [LastNameError, setLastNameError] = useState(false)
     const [usernameError, setUsernameError] = useState(false)
@@ -220,9 +229,34 @@ export function Register() {
                                     id="password"
                                     label="Password"
                                     variant="filled"
-                                    type="password"
+                                    type={passwordVisible ? "text" : "password"}
                                     error={passwordError}
                                     helperText={passwordErrorText}
+                                    InputProps={{
+                                        endAdornment:
+                                            <InputAdornment position="end">
+                                                {passwordVisible ?
+                                                    <Tooltip title="Hide Password">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={() => setPasswordVisible(false)}
+                                                        >
+                                                            <VisibilityOffIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    :
+                                                    <Tooltip title="Show Password">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={() => setPasswordVisible(true)}
+                                                        >
+                                                            <VisibilityIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+    
+                                                }
+                                            </InputAdornment>
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -234,9 +268,34 @@ export function Register() {
                                     id="passwordConfirm"
                                     label="Confirm Password"
                                     variant="filled"
-                                    type="password"
+                                    type={confirmPasswordVisible ? "text" : "password"}
                                     error={passwordConfirmError}
                                     helperText={passwordConfirmErrorText}
+                                    InputProps={{
+                                        endAdornment:
+                                            <InputAdornment position="end">
+                                                {confirmPasswordVisible ?
+                                                    <Tooltip title="Hide Password">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={() => setConfirmPasswordVisible(false)}
+                                                        >
+                                                            <VisibilityOffIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    :
+                                                    <Tooltip title="Show Password">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={() => setConfirmPasswordVisible(true)}
+                                                        >
+                                                            <VisibilityIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+    
+                                                }
+                                            </InputAdornment>
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={12} sx={checkboxStyles}>
