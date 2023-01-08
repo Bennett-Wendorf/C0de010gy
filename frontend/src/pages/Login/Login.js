@@ -125,6 +125,9 @@ export function Login() {
                                 </InputAdornment>
                         }}
                     />
+                    <Typography variant="body2" color="text.secondary" align="center">
+                        You can sign in as the demo user with username "demouser" and password "Password1"
+                    </Typography>
                     <Button
                         type="submit"
                         sx={[{ mt: 3, mb: 2 }]}

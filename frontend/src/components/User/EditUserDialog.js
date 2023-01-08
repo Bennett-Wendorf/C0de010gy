@@ -61,7 +61,7 @@ export default function EditUserDialog({ open, setOpen, user, setUser }) {
     const setupPossibleRoles = (roles) => {
         let roleNames = [];
         roles.forEach((role) => {
-            if (userIsAdmin || role.DisplayName !== 'Administrator') { // Only allow admins to add/remove admin role
+            if (role.DisplayName !== "Demo User" && (userIsAdmin || role.DisplayName !== 'Administrator')) { // Only allow admins to add/remove admin role
                 roleNames.push(role.DisplayName);
             }
         });

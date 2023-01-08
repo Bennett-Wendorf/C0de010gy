@@ -90,12 +90,13 @@ export function Dashboard() {
     }
 
     const userIsAdmin = AuthService.useHasPermissions(["Administrator"])
+    const userIsDemo = AuthService.useHasPermissions(["Demo User"])
 
     return (
         <div>
             {/* Define the bar for the top of the screen, with its buttons */}
             <Bar title="Dashboard" />
-            {userIsAdmin && <DateRangeDonationsGraph />}
+            {(userIsAdmin || userIsDemo) && <DateRangeDonationsGraph />}
             <Carousel events={events} eventClick={handleEventClick} eventClickView={handleEventClickView}/>
             <ModifyEventDialog
                 selectedEvent={selectedEvent}
