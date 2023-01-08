@@ -122,7 +122,6 @@ export function Donations() {
         api.get(`/api/donations/me`)
             .then(response => {
                 setDonations(response.data ? response.data : [])
-                console.log("Updating donations");
             })
             .catch(err => console.error(err.message))
     }

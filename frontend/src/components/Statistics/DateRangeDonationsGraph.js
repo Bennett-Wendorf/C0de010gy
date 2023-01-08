@@ -139,10 +139,8 @@ export default function DateRangeDonationsGraph() {
         api.get('/api/donations', { params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() } })
             .then(response => {
                 const dailyAmounts = convertToDailyAmounts(response.data, startDate, endDate)
-                console.log(response.data)
                 setGraphableData(dailyAmounts)
                 setDataUnauthorized(false)
-                console.log(dailyAmounts)
             })
             .catch(err => {
                 if ((err?.response?.status ?? 401) === 401) {

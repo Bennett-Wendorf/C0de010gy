@@ -200,7 +200,6 @@ export function Events() {
         api.get(`/api/events`)
             .then(response => {
                 setEvents(response.data ? response.data.events : [])
-                console.log("Updating events");
             })
             .catch(err => console.error(err.message))
     }

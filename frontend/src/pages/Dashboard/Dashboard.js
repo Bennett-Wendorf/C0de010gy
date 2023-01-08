@@ -27,7 +27,6 @@ export function Dashboard() {
         api.get(`/api/events/future`)
             .then(response => {
                 setEvents(response.data ? response.data.events : [])
-                console.log("Updating events");
             })
             .catch(err => console.error(err.message))
     }

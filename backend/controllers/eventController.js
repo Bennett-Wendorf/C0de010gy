@@ -92,7 +92,6 @@ const createEvent = async (req, res) => {
  * @param {Response} res
  */
 const updateEvent = async (req, res) => {
-    console.log("Updating event")
     const { id } = req.params
     const { summary, description, neededVolunteers, location, volunteerQualifications, startTime, endTime } = req.body
 
@@ -176,7 +175,6 @@ const deleteEvent = async (req, res) => {
  * @param {Response} res
  */
 const validateNewEvent = (req, res, next) => {
-    console.log("Validating new event")
     if (!req.body.summary || req.body.summary.length == 0) {
         res.status(400).json({ field: 'summary', message: 'Summary is required' })
         return

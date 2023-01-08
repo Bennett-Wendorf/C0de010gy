@@ -290,13 +290,11 @@ const createUserRoles = async (user, roles) => {
     await Promise.all(roles.map(async (role) => {
         const loggedInUser = await User.findOne({ where: { UserID: user.UserID } })
         if (loggedInUser === null) {
-            console.log("User not found")
             return false
         }
 
         const userRole = await UserRole.findOne({ where: { DisplayName: role } })
         if (userRole === null) {
-            console.log("Role not found")
             return false
         }
 

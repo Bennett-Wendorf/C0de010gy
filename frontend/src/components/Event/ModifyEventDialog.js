@@ -253,7 +253,6 @@ export default function ModifyEventDialog(props) {
 
     // Handle volunteer and donation button presses
     const handleVolunteer = () => {
-        console.log(`userIsVolunteer: ${userIsVolunteer}`)
         if (!AuthService.isLoggedIn()) {
             setIsRegConfOpen(true)
         } else if (!userIsVolunteer) {

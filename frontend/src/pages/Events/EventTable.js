@@ -111,7 +111,6 @@ export function EventTable({ rows, eventUpdate }) {
     useEffect(() => {
         function handleWindowResize() {
             setContainerHeight(window.innerHeight - barHeight - margin)
-            console.log(`Updating container height based on window resize: ${window.innerHeight - barHeight - margin}`)
         }
 
         window.addEventListener('resize', handleWindowResize);
