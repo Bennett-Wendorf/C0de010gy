@@ -1,61 +1,18 @@
-const { sequelize } = require('../index.js');
 const { DataTypes } = require('sequelize');
 
-const Donation = sequelize.define("donation", {
+const sequelize = require('../sequelize_index');
+
+// The model to represent the Donation table in the database
+const Donation = sequelize.define("Donation", {
     DonationID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
     },
-    EventID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "event",
-            key: "EventID"
-        }
-    },
-    UserID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
     Amount: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false
-    },
-    Restricted: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false
-    },
-    UserIDCreatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    CreatedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
-    UserIDLastModifiedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    LastModifiedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
+    }
 })
 
-module.exports = { Donation };
+module.exports = Donation;

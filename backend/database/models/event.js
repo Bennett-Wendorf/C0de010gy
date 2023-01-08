@@ -1,19 +1,20 @@
-const { sequelize } = require('../index.js');
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize")
 
-const Event = sequelize.define("event", {
+const sequelize = require("../sequelize_index")
+
+// The model to represent the Event table in the database
+const Event = sequelize.define("Event", {
     EventID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
     },
     Summary: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     Description: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(500),
         allowNull: false
     },
     StartTime: {
@@ -24,30 +25,23 @@ const Event = sequelize.define("event", {
         type: DataTypes.DATE,
         allowNull: false
     },
-    UserIDCreatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    CreatedDateTime: {
-        type: DataTypes.DATE,
+    NeededVolunteers: {
+        type: DataTypes.SMALLINT,
         allowNull: false
     },
-    UserIDLastModifiedBy: {
-        type: DataTypes.INTEGER,
+    Location: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
+    VolunteerQualifications: {
+        type: DataTypes.STRING(250),
+        allowNull: true
+    },
+    Cancelled: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    LastModifiedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
+        defaultValue: false
+    }
 })
 
-module.exports = { Event };
+module.exports = Event

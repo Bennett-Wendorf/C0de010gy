@@ -1,53 +1,22 @@
-const { sequelize } = require('../index.js');
 const { DataTypes } = require('sequelize');
 
-const Program = sequelize.define("program", {
+const sequelize = require('../sequelize_index');
+
+// The model to represent the Program table in the database
+const Program = sequelize.define("Program", {
     ProgramID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
     },
     Summary: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     Description: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    EventID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "event",
-            key: "EventID"
-        }
-    },
-    UserIDCreatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    CreatedDateTime: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
-    UserIDLastModifiedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "user",
-            key: "UserID"
-        }
-    },
-    LastModifiedDateTime: {
-        type: DataTypes.DATE,
+        type: DataTypes.STRING(500),
         allowNull: false
     },
 })
 
-module.exports = { Program };
+module.exports = Program;
