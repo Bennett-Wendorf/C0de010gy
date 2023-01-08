@@ -21,21 +21,21 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/Bennett-Wendorf/CS_741_Project">
+  <a href="https://github.com/Bennett-Wendorf/C0de010gy">
     <img src="frontend/public/code-solid.svg" alt="Logo" width="100" height="100">
   </a>
 
   <h1 align="center">C0de010gy</h3>
 
   <p align="center">
-    Welcome to C0de010gy, an event management system for non-profits! This was a semester-long project for CS 741 at the University of Wisconsin La Crosse.
+    Welcome to C0de010gy, an event management system for non-profits! A previous version of this project (through [this](https://github.com/Bennett-Wendorf/C0de010gy/commit/c6ff352bcee4e8b84407302848682e90cb4eedfa) commit) was a semester-long project for a graduate-level university course.
     <br/>
-    <a href="https://github.com/Bennett-Wendorf/CS_741_Project"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Bennett-Wendorf/C0de010gy"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Bennett-Wendorf/CS_741_Project/issues">Report Bug</a>
+    <a href="https://github.com/Bennett-Wendorf/C0de010gy/issues">Report Bug</a>
     ·
-    <a href="https://github.com/Bennett-Wendorf/CS_741_Project/issues">Request Feature</a>
+    <a href="https://github.com/Bennett-Wendorf/C0de010gy/issues">Request Feature</a>
   </p>
 </p>
 
@@ -69,7 +69,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This was a semester-long project for CS 741 at the University of Wisconsin La Crosse. It is designed as an event management system for non-profit organizations, allowing scheduling of events with locations, times, etc. In addition, it allows individuals to volunteer to help out for events, and make donations to specific events or the organization as a whole.
+A previous version of this project (through [this](https://github.com/Bennett-Wendorf/C0de010gy/commit/c6ff352bcee4e8b84407302848682e90cb4eedfa) commit) was a semester-long project for a graduate-level university course. It is designed as an event management system for non-profit organizations, allowing scheduling of events with locations, times, etc. In addition, it allows individuals to volunteer to help out for events, and make donations to specific events or the organization as a whole.
 
 ### Built With
 
@@ -90,7 +90,7 @@ For now, there is no installer or prepackaged installation for this project. Fol
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/Bennett-Wendorf/CS_741_Project.git
+   git clone https://github.com/Bennett-Wendorf/C0de010gy.git
    ```
 2. Install dependencies
     * In the frontend directory use npm to install the requirements for the frontend.
@@ -137,7 +137,7 @@ Contributions are what make the open source community such an amazing place to b
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-If you find an issue in existing code, feel free to use the above procedure to generate a change, or open an [issue](https://github.com/Bennett-Wendorf/CS_741_Project/issues) for me to fix it.
+If you find an issue in existing code, feel free to use the above procedure to generate a change, or open an [issue](https://github.com/Bennett-Wendorf/C0de010gy/issues) for me to fix it.
 
 
 <!-- LICENSE -->
@@ -152,7 +152,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Bennett Wendorf - [Website](https://bennettwendorf.dev/) - bennettwendorf@gmail.com
 
-Project Link: [https://github.com/Bennett-Wendorf/CS_741_Project](https://github.com/Bennett-Wendorf/CS_741_Project)
+Project Link: [https://github.com/Bennett-Wendorf/C0de010gy](https://github.com/Bennett-Wendorf/C0de010gy)
 
 
 
@@ -169,13 +169,13 @@ Project Link: [https://github.com/Bennett-Wendorf/CS_741_Project](https://github
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/bennett-wendorf/CS_741_Project.svg?style=flat&color=informational
-[contributors-url]: https://github.com/bennett-wendorf/CS_741_Project/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/bennett-wendorf/CS_741_Project.svg?style=flat
-[forks-url]: https://github.com/bennett-wendorf/CS_741_Project/network/members
-[stars-shield]: https://img.shields.io/github/stars/bennett-wendorf/CS_741_Project.svg?style=flat&color=yellow
-[stars-url]: https://github.com/bennett-wendorf/CS_741_Project/stargazers
-[issues-shield]: https://img.shields.io/github/issues/bennett-wendorf/CS_741_Project.svg?style=flat&color=red
-[issues-url]: https://github.com/bennett-wendorf/CS_741_Project/issues
-[license-shield]: https://img.shields.io/github/license/bennett-wendorf/CS_741_Project.svg?style=flat
-[license-url]: https://github.com/bennett-wendorf/CS_741_Project/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/bennett-wendorf/C0de010gy.svg?style=flat&color=informational
+[contributors-url]: https://github.com/bennett-wendorf/C0de010gy/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/bennett-wendorf/C0de010gy.svg?style=flat
+[forks-url]: https://github.com/bennett-wendorf/C0de010gy/network/members
+[stars-shield]: https://img.shields.io/github/stars/bennett-wendorf/C0de010gy.svg?style=flat&color=yellow
+[stars-url]: https://github.com/bennett-wendorf/C0de010gy/stargazers
+[issues-shield]: https://img.shields.io/github/issues/bennett-wendorf/C0de010gy.svg?style=flat&color=red
+[issues-url]: https://github.com/bennett-wendorf/C0de010gy/issues
+[license-shield]: https://img.shields.io/github/license/bennett-wendorf/C0de010gy.svg?style=flat
+[license-url]: https://github.com/bennett-wendorf/C0de010gy/blob/master/LICENSE
