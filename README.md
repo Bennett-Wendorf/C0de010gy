@@ -28,7 +28,7 @@
   <h1 align="center">C0de010gy</h3>
 
   <p align="center">
-    Welcome to C0de010gy, an event management system for non-profits! A previous version of this project (through [this](https://github.com/Bennett-Wendorf/C0de010gy/commit/c6ff352bcee4e8b84407302848682e90cb4eedfa) commit) was a semester-long project for a graduate-level university course.
+    Welcome to C0de010gy, an event management system for non-profits! A previous version of this project (through <a href="https://github.com/Bennett-Wendorf/C0de010gy/commit/c6ff352bcee4e8b84407302848682e90cb4eedfa">this</a> commit) was a semester-long project for a graduate-level university course.
     <br/>
     <a href="https://github.com/Bennett-Wendorf/C0de010gy"><strong>Explore the docs »</strong></a>
     <br />
@@ -69,7 +69,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-A previous version of this project (through [this](https://github.com/Bennett-Wendorf/C0de010gy/commit/c6ff352bcee4e8b84407302848682e90cb4eedfa) commit) was a semester-long project for a graduate-level university course. It is designed as an event management system for non-profit organizations, allowing scheduling of events with locations, times, etc. In addition, it allows individuals to volunteer to help out for events, and make donations to specific events or the organization as a whole.
+A previous version of this project (through <a href="https://github.com/Bennett-Wendorf/C0de010gy/commit/c6ff352bcee4e8b84407302848682e90cb4eedfa">this</a> commit) was a semester-long project for a graduate-level university course. It is designed as an event management system for non-profit organizations, allowing scheduling of events with locations, times, etc. In addition, it allows individuals to volunteer to help out for events, and make donations to specific events or the organization as a whole.
 
 ### Built With
 
